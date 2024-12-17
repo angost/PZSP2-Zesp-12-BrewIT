@@ -53,6 +53,7 @@ class _LogInPageState extends State<LogInPage> {
                               onSaved: (newValue) {
                                 logInData["password"] = newValue;
                               },
+                              obscureText: true,
                               decoration:
                                   const InputDecoration(labelText: "Hasło"),
                             ),

@@ -63,6 +63,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                                   .jsonFieldNames[index]] =
                                               newValue;
                                         },
+                                        obscureText: registerFieldNames
+                                                  .jsonFieldNames[index].contains("password"),
                                         decoration: InputDecoration(
                                             labelText: registerFieldNames
                                                 .fieldNames[index]),
