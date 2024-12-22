@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    command: ["python", "manage.py", "runserver_plus", "--cert-file", "../localhost.crt", "--key-file", "../localhost.key"]
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "8080:8080"
+    command: [ "sh", "-c", "flutter pub get && flutter run -d web-server --web-port=8080 --web-hostname=0.0.0.0 --web-browser-flag --disable-web-security" ]
+    # command: [ "sh", "-c", "flutter channel main && flutter upgrade && flutter pub get && flutter run -d edge --web-browser-flag --disable-web-security" ]
