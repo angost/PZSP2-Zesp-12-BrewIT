@@ -17,7 +17,8 @@ services:
       POSTGRES_PASSWORD: postgres_admin
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
-    command: ["python", "manage.py", "runserver_plus", "0.0.0.0:8000", "--cert-file", "localhost.crt", "--key-file", "localhost.key"]
+    command: sh -c "python manage.py migrate &&
+              python manage.py runserver_plus 0.0.0.0:8000 --cert-file localhost.crt --key-file localhost.key"
 
   frontend:
     build:
