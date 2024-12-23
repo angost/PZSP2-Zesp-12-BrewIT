@@ -17,12 +17,7 @@ services:
       POSTGRES_PASSWORD: postgres_admin
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
-    command: >
-      sh -c "
-      python manage.py migrate &&
-      python manage.py runserver 0.0.0.0:8000
-      "
-#    command: ["python", "manage.py", "runserver_plus", "0.0.0.0:8000", "--cert-file", "localhost.crt", "--key-file", "localhost.key"]
+    command: ["python", "manage.py", "runserver_plus", "0.0.0.0:8000", "--cert-file", "localhost.crt", "--key-file", "localhost.key"]
 
   frontend:
     build:
@@ -32,11 +27,7 @@ services:
       - ./frontend:/app
     ports:
       - "8080:8080"
-    command: [ "sh", "-c",
-               "flutter pub get 
-               && flutter run -d web-server --web-port=8080 --web-hostname=0.0.0.0" ]
-
-#    command: [ "sh", "-c", "flutter pub get && flutter run -d web-server --web-port=8080 --web-hostname=0.0.0.0 --web-browser-flag --disable-web-security" ]
+    command: [ "sh", "-c", "flutter pub get && flutter run -d web-server --web-port=8080 --web-hostname=0.0.0.0" ] # --web-browser-flag --disable-web-security
 
   postgres:
     image: postgres:latest

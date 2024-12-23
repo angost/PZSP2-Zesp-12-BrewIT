@@ -56,6 +56,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'brewit.urls'
 
@@ -148,8 +149,8 @@ SESSION_COOKIE_SECURE = True  # Ciasteczka sesji będą przesyłane tylko przez 
 CSRF_COOKIE_SAMESITE = 'None'  # Ciasteczka CSRF mogą być przesyłane cross-origin
 SESSION_COOKIE_SAMESITE = 'None'  # Ciasteczka sesji mogą być przesyłane cross-origin
 
-# SECURE_SSL_REDIRECT = True
-# SECURE_HSTS_SECONDS = 3600
-# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-# SECURE_HSTS_PRELOAD = True
-# SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_SSL_REDIRECT = True  # Redirect HTTP to HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')  # Required if using a reverse proxy
+SECURE_HSTS_SECONDS = 31536000  # Enforce HTTPS for 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
