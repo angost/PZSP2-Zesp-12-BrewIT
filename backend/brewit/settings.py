@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-21i1_xa^cwgm=1xvyn*r*=2k4%71x_5m-ai!mm$r4(_^7fv0-&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1"]
 
 
 # Application definition
@@ -147,3 +147,9 @@ CSRF_COOKIE_SECURE = True  # Ciasteczka CSRF będą przesyłane tylko przez HTTP
 SESSION_COOKIE_SECURE = True  # Ciasteczka sesji będą przesyłane tylko przez HTTPS
 CSRF_COOKIE_SAMESITE = 'None'  # Ciasteczka CSRF mogą być przesyłane cross-origin
 SESSION_COOKIE_SAMESITE = 'None'  # Ciasteczka sesji mogą być przesyłane cross-origin
+
+# SECURE_SSL_REDIRECT = True
+# SECURE_HSTS_SECONDS = 3600
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# SECURE_HSTS_PRELOAD = True
+# SECURE_CONTENT_TYPE_NOSNIFF = True

@@ -10,4 +10,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 8000
 
-CMD ["python", "manage.py", "runserver_plus", "--cert-file", "../localhost.crt", "--key-file", "../localhost.key"]
+#CMD ["python", "manage.py", "runserver_plus", "--cert-file", "localhost.crt", "--key-file", "localhost.key"]
