@@ -80,6 +80,12 @@ class EquipmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Equipment
         fields = '__all__'
+        extra_kwargs = {'brewery': {'read_only': True}}
+
+    def create(self, validated_data):
+        validated_data['brewery'] = self.context['brewery']
+        return super().create(validated_data)
+
 
 
 

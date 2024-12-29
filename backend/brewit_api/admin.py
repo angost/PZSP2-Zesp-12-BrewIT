@@ -9,7 +9,7 @@ class AccountAdmin(admin.ModelAdmin):
 
 @admin.register(Brewery)
 class BreweryAdmin(admin.ModelAdmin):
-    list_display = ['brewery_id', 'selector', 'name', 'nip', 'water_ph']
+    list_display = ['brewery_id', 'selector', 'name', 'nip', 'water_ph', 'account']
     list_filter = ['selector']
     search_fields = ['name', 'nip']
     list_per_page = 20
