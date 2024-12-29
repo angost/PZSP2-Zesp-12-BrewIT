@@ -143,9 +143,8 @@ class EquipmentList(APIView):
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        brewery = request.user.breweries.first()
-        request.data['brewery'] = brewery.brewery_id
-        serializer = EquipmentSerializer(data=request.data)
+        brewery = request.user.get_brewery()
+        serializer = EquipmentSerializer(data=request.data, context={'brewery':brewery})
         if serializer.is_valid():
             serializer.save()
             return Response({'detail':'Equipment added successfully.'}, status=status.HTTP_201_CREATED)
