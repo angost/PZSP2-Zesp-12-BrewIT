@@ -31,7 +31,6 @@ class MachinesPage extends TablePageTemplate {
               ),
               MyIconButton(type: "delete")
             ],
-            // MOCK
-            apiString: "https://api.sampleapis.com/beers/ale",
+            apiString: "/equipment/",
             jsonFields: MachinesFieldNames().jsonFieldNamesTable);
 }

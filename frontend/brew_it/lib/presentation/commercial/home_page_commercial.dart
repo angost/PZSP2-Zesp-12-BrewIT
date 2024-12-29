@@ -5,6 +5,7 @@ import 'package:brew_it/presentation/_common/templates/home_page_template.dart';
 import 'package:brew_it/presentation/commercial/reservation_requests_page.dart';
 import 'package:brew_it/presentation/commercial/reservations_page.dart';
 import 'package:brew_it/presentation/log_in_register/choose_user_type_page.dart';
+import 'package:brew_it/presentation/log_in_register/log_in_page.dart';
 
 class HomePageCommercial extends HomePageTemplate {
   HomePageCommercial({super.key})
@@ -26,7 +27,7 @@ class HomePageCommercial extends HomePageTemplate {
               MenuButton(
                 "Wyloguj się",
                 type: "warning",
-                navigateToPage: const ChooseUserTypePage(),
+                navigateToPage: const LogInPage(),
               ),
             ]);
 }

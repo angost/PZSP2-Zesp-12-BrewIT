@@ -5,6 +5,7 @@ import 'package:brew_it/presentation/contract/production_processes/production_pr
 import 'package:brew_it/presentation/contract/recipes_page.dart';
 import 'package:brew_it/presentation/contract/reservations_page.dart';
 import 'package:brew_it/presentation/log_in_register/choose_user_type_page.dart';
+import 'package:brew_it/presentation/log_in_register/log_in_page.dart';
 
 class HomePageContract extends HomePageTemplate {
   HomePageContract({super.key})
@@ -31,7 +32,7 @@ class HomePageContract extends HomePageTemplate {
               MenuButton(
                 "Wyloguj się",
                 type: "warning",
-                navigateToPage: const ChooseUserTypePage(),
+                navigateToPage: const LogInPage(),
               ),
             ]);
 }

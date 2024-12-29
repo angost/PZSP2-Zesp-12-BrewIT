@@ -1,8 +1,10 @@
+import 'package:brew_it/injection_container.dart';
 import 'package:brew_it/presentation/_common/widgets/main_button.dart';
 import 'package:brew_it/presentation/_common/widgets/my_app_bar.dart';
 import 'package:brew_it/presentation/_common/widgets/my_icon_button.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+// import 'dart:html' as html;
 
 class TablePageTemplate extends StatefulWidget {
   const TablePageTemplate(
@@ -37,16 +39,18 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
   }
 
   Future<void> fetchData() async {
-    final dio = Dio();
-    final response = await dio.get(widget.apiString!);
+    try {
+      final response = await getIt<Dio>().get(widget.apiString!);
 
-    if (response.statusCode == 200) {
-      // final data = jsonDecode(response.data) as List;
-      final data = response.data;
-      setState(() {
-        elements = data;
-      });
-    } else {
+      if (response.statusCode == 200) {
+        final data = response.data;
+        setState(() {
+          elements = data;
+        });
+      } else {
+        print("An error occured");
+      }
+    } on DioException catch (e) {
       print("An error occured");
     }
   }

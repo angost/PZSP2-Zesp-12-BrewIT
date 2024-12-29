@@ -11,6 +11,42 @@ abstract class StandardFieldNames {
   List<String> jsonFieldNamesTable;
 }
 
+class RegisterCommercialFieldNames extends StandardFieldNames {
+  RegisterCommercialFieldNames()
+      : super(fieldNames: [
+          "Email",
+          "Hasło",
+          "Powtórz hasło",
+          "Nazwa firmy",
+          "NIP",
+          "Ph wody",
+        ], jsonFieldNames: [
+          "email",
+          "password",
+          "password2",
+          "name",
+          "nip",
+          "water_ph"
+        ], fieldNamesTable: [], jsonFieldNamesTable: []);
+}
+
+class RegisterContractFieldNames extends StandardFieldNames {
+  RegisterContractFieldNames()
+      : super(fieldNames: [
+          "Email",
+          "Hasło",
+          "Powtórz hasło",
+          "Nazwa firmy",
+          "NIP",
+        ], jsonFieldNames: [
+          "email",
+          "password",
+          "password2",
+          "name",
+          "nip",
+        ], fieldNamesTable: [], jsonFieldNamesTable: []);
+}
+
 class ProductionProcessesFieldNames extends StandardFieldNames {
   ProductionProcessesFieldNames()
       : super(fieldNames: [
@@ -48,10 +84,9 @@ class MachinesFieldNames extends StandardFieldNames {
           "Pojemność",
           "Cena za dzień",
         ], jsonFieldNames: [
-          // MOCK
           "name",
-          "name",
-          "price",
+          "capacity",
+          "daily_price",
         ], fieldNamesTable: [
           "Id",
           "Nazwa",
@@ -59,7 +94,9 @@ class MachinesFieldNames extends StandardFieldNames {
           "Cena za dzień",
           "Operacje"
         ], jsonFieldNamesTable: [
-          // MOCK
-          "id", "name", "name", "price",
+          "equipment_id",
+          "name",
+          "capacity",
+          "daily_price",
         ]);
 }

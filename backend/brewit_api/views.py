@@ -11,6 +11,9 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsProductionBrewery
 from .models import Equipment, Sector
+from .auth_class import CsrfExemptSessionAuthentication
+from rest_framework.authentication import BasicAuthentication
+
 
 # for development purposes
 @api_view(['GET'])
@@ -52,9 +55,8 @@ class Login(APIView):
         user = authenticate(request=request, email=email, password=password)
         if user is not None:
             login(request, user)
-            user_group = user.groups.first()
             return Response({'detail':'Logged in successfully.',
-                             'user_type': user_group.name},
+                             'user_role': user.role},
                             status=status.HTTP_200_OK)
         else:
             return Response({'detail': 'Email or Password is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -66,7 +68,10 @@ class Register(APIView):
     def post(self, request, format=None):
         serializer = RegistrationDataSerializer(data=request.data)
         if serializer.is_valid():
-            account, brewery = serializer.save()
+            try:
+                account, brewery = serializer.save()
+            except Exception as e:
+                return Response({'detail':str(e)}, status=status.HTTP_400_BAD_REQUEST) # Change later detail message
             return Response({'detail':'Registered successfully.'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -78,6 +83,7 @@ class Logout(APIView):
 
 
 class SectorList(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsProductionBrewery]
     def get(self, request, format=None):
         sectors = Sector.objects.all() # It's bad solution, need to change model so sector is connected to brewery
@@ -92,6 +98,7 @@ class SectorList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class SectorDetail(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsProductionBrewery]
     def get_object(self, pk):
         try:
@@ -119,6 +126,7 @@ class SectorDetail(APIView):
 
 
 class EquipmentList(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsProductionBrewery]
     def get(self, request, format=None):
         equipment = Equipment.objects.filter(brewery__in=request.user.breweries.all())
@@ -135,6 +143,7 @@ class EquipmentList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class EquipmentDetail(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsProductionBrewery]
     def get_object(self, pk, request):
         try:

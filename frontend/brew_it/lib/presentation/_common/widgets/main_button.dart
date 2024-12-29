@@ -1,6 +1,8 @@
 import 'package:brew_it/core/theme/button_themes.dart';
+import 'package:brew_it/injection_container.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'dart:html' as html;
 
 class MainButton extends StatelessWidget {
   MainButton(this.content,
@@ -10,6 +12,7 @@ class MainButton extends StatelessWidget {
       this.customOnPressed,
       this.formKey,
       this.apiCall,
+      this.apiCallType,
       super.key});
 
   final String content;
@@ -19,6 +22,7 @@ class MainButton extends StatelessWidget {
   final Function? customOnPressed;
   final GlobalKey<FormState>? formKey;
   final String? apiCall;
+  final String? apiCallType;
 
   final typeToStyle = {
     "default": secondaryButtonTheme,
@@ -34,19 +38,30 @@ class MainButton extends StatelessWidget {
         onPressed: () async {
           if (formKey != null && apiCall != null) {
             formKey!.currentState!.save();
-            final dio = Dio();
-            final response = await dio.post(
-              'https://jsonplaceholder.typicode.com/posts', // MOCK -> apiCall!
-              data: {
-                // MOCK -> dataForPage
-                'title': 'My post',
-                'body': 'This is my post content',
-                'userId': 1,
-              },
-            );
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return navigateToPage!(dataForPage);
-            }));
+            try {
+              final response;
+              if (apiCallType == "put") {
+                response = await getIt<Dio>().put(
+                  apiCall!,
+                  data: dataForPage,
+                );
+              } else {
+                response = await getIt<Dio>().post(
+                  apiCall!,
+                  data: dataForPage,
+                );
+              }
+              if (response.statusCode == 200 || response.statusCode == 201) {
+                // MOCK? Create add/edit template which has standart apiCallType and accepted status code
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return navigateToPage!(dataForPage);
+                }));
+              } else {
+                print("An error occured");
+              }
+            } on DioException catch (e) {
+              print("An error occured");
+            }
           } else if (navigateToPage != null) {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               if (dataForPage != null) {

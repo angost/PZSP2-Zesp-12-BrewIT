@@ -6,6 +6,7 @@ class AddEditPageTemplate extends DetailsAddEditPageTemplate {
   AddEditPageTemplate(
       {required String title,
       required String apiCall,
+      required String apiCallType,
       required Function navigateToPageSave,
       required Function navigateToPageCancel,
       required List<String> fieldNames,
@@ -21,6 +22,7 @@ class AddEditPageTemplate extends DetailsAddEditPageTemplate {
                 type: "primary_small",
                 formKey: GlobalKey<FormState>(),
                 apiCall: apiCall,
+                apiCallType: apiCallType,
                 navigateToPage: navigateToPageSave,
                 dataForPage: elementData,
               ),

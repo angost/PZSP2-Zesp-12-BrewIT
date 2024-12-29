@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-21i1_xa^cwgm=1xvyn*r*=2k4%71x_5m-ai!mm$r4(_^7fv0-&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
 
 # Application definition
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'brewit_api.apps.BrewitApiConfig',
     'corsheaders',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +56,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'brewit.urls'
 
@@ -83,9 +85,9 @@ WSGI_APPLICATION = 'brewit.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB', 'postgres'),
+        'NAME': os.environ.get('POSTGRES_DB', 'brewit_db'),
         'USER': os.environ.get('POSTGRES_USER', 'postgres'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'postgres'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'postgres_admin'),
         'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
         'PORT': os.environ.get('POSTGRES_PORT', '5432'),
     }
@@ -141,3 +143,14 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "brewit_api.Account"
+
+CSRF_COOKIE_SECURE = True  # Ciasteczka CSRF będą przesyłane tylko przez HTTPS
+SESSION_COOKIE_SECURE = True  # Ciasteczka sesji będą przesyłane tylko przez HTTPS
+CSRF_COOKIE_SAMESITE = 'None'  # Ciasteczka CSRF mogą być przesyłane cross-origin
+SESSION_COOKIE_SAMESITE = 'None'  # Ciasteczka sesji mogą być przesyłane cross-origin
+
+SECURE_SSL_REDIRECT = True  # Redirect HTTP to HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')  # Required if using a reverse proxy
+SECURE_HSTS_SECONDS = 31536000  # Enforce HTTPS for 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True

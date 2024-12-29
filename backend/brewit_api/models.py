@@ -12,17 +12,28 @@ from django.utils.translation import gettext_lazy as _
 from .managers import CustomUserManager
 from enum import Enum
 
+
 class BrewerySelectors(str, Enum):
     PRODUCTION = 'PROD'
     CONTRACT = 'CONTR'
 
 
 class Account(AbstractUser):
+    class AccountRoles(models.TextChoices):
+        PRODUCTION = 'PROD', _('Production Brewery')
+        CONTRACT = 'CONTR', _('Contract Brewery')
+        ADMIN = 'ADMIN', _('Administrator')
+
     username = None
     email = models.EmailField(_("email address"), unique=True)
+    role = models.CharField(
+        max_length=5,
+        choices=AccountRoles.choices,
+        blank=False
+    )
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['role']
 
     objects = CustomUserManager()
 

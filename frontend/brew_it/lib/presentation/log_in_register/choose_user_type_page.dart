@@ -1,7 +1,6 @@
 import 'package:brew_it/presentation/_common/widgets/my_app_bar.dart';
+import 'package:brew_it/presentation/log_in_register/register_page.dart';
 import 'package:flutter/material.dart';
-import 'package:brew_it/presentation/commercial/home_page_commercial.dart';
-import 'package:brew_it/presentation/contract/home_page_contract.dart';
 
 class ChooseUserTypePage extends StatelessWidget {
   const ChooseUserTypePage({super.key});
@@ -9,12 +8,12 @@ class ChooseUserTypePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: MyAppBar(context),
+        appBar: MyAppBar(context, hasHomeButtom: false),
         body:
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           Text(
             "Jakie konto chcesz założyć?",
-            style: Theme.of(context).textTheme.titleSmall,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -29,7 +28,8 @@ class ChooseUserTypePage extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => HomePageCommercial()));
+                                builder: (context) =>
+                                    const RegisterPage("commercial")));
                       },
                       child: const Text(
                         "Browar komercyjny",
@@ -46,7 +46,8 @@ class ChooseUserTypePage extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => HomePageContract()));
+                                builder: (context) =>
+                                    const RegisterPage("contract")));
                       },
                       child: const Text(
                         "Browar kontraktowy",

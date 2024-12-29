@@ -6,7 +6,8 @@ class MachineEditPage extends AddEditPageTemplate {
   MachineEditPage(Map elementData, {super.key})
       : super(
             title: "Urządzenie - edytuj:",
-            apiCall: "",
+            apiCall: "/equipment/" + elementData["equipment_id"].toString() + "/",
+            apiCallType: "put",
             navigateToPageSave: (Map elementData) {
               return MachineDetailsPage(elementData);
             },

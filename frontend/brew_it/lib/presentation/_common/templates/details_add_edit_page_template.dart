@@ -39,8 +39,9 @@ class _DetailsAddEditPageTemplateState
     if (widget.elementData != null && widget.elementData!.isNotEmpty) {
       fieldValues = List.generate(
           widget.jsonFieldNames.length,
-          (index) =>
-              widget.elementData![widget.jsonFieldNames[index]].toString());
+          (index) => widget.elementData![widget.jsonFieldNames[index]] != null
+              ? widget.elementData![widget.jsonFieldNames[index]].toString()
+              : "");
     }
 
     if (widget.buttons != null) {

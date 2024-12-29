@@ -8,6 +8,7 @@ class ProductionProcessAddPage extends AddEditPageTemplate {
       : super(
             title: "Dodaj nowy proces wykonania:",
             apiCall: "",
+            apiCallType: "post",
             navigateToPageSave: (Map elementData) {
               return ProductionProcessDetailsPage(elementData);
             },

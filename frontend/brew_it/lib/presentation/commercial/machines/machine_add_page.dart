@@ -7,7 +7,8 @@ class MachineAddPage extends AddEditPageTemplate {
   MachineAddPage(Map elementData, {super.key})
       : super(
             title: "Dodaj nowe urządzenie:",
-            apiCall: "",
+            apiCall: "/equipment/",
+            apiCallType: "post",
             navigateToPageSave: (Map elementData) {
               return MachineDetailsPage(elementData);
             },
@@ -17,5 +18,5 @@ class MachineAddPage extends AddEditPageTemplate {
             fieldNames: MachinesFieldNames().fieldNames,
             jsonFieldNames: MachinesFieldNames().jsonFieldNames,
             fieldEditable: [true, true, true],
-            elementData: elementData);
+            elementData: {"selector": "PROD", "sector": "1", ...elementData});
 }
