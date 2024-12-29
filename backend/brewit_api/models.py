@@ -40,6 +40,12 @@ class Account(AbstractUser):
     def __str__(self):
         return self.email
 
+    def get_brewery(self):
+        try:
+            return self.breweries.get()
+        except:
+            return None
+
 
 class BeerType(models.Model):
     beer_type_id = models.AutoField(primary_key=True)
