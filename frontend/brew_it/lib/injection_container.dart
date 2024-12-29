@@ -12,7 +12,10 @@ Dio _createDio() {
   final dio = Dio(BaseOptions(
     baseUrl: "https://127.0.0.1:8000/api",
   ));
-  // dio.options.extra['withCredentials'] = true;
+
+  dio.options.extra['withCredentials'] = true;
   dio.httpClientAdapter = BrowserHttpClientAdapter(withCredentials: true);
+
+
   return dio;
 }
