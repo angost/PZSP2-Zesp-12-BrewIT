@@ -30,12 +30,12 @@ class Command(BaseCommand):
         if Account.objects.exists():
             return
 
-        Account.objects.create_superuser(email='admin@example.com', password='admin')
+        Account.objects.create_superuser(email='admin@example.com', password='admin', role=Account.AccountRoles.ADMIN)
 
         Account.objects.bulk_create([
-            Account(email='user1@example.com', password=make_password('user1')),
-            Account(email='user2@example.com', password=make_password('user2')),
-            Account(email='user3@example.com', password=make_password('user3')),
+            Account(email='user1@example.com', password=make_password('user1'), role=Account.AccountRoles.PRODUCTION),
+            Account(email='user2@example.com', password=make_password('user2'), role=Account.AccountRoles.CONTRACT),
+            Account(email='user3@example.com', password=make_password('user3'), role=Account.AccountRoles.CONTRACT),
         ])
         print('Accounts created.')
 
