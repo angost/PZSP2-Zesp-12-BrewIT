@@ -26,6 +26,8 @@ def api_root(request, format=None):
 
 
 class AccountList(APIView):
+    serializer_class = AccountSerializer
+
     def get(self, request, format=None):
         users = get_user_model().objects.all()
         serializer = AccountSerializer(users, many=True, context={'request': request})
@@ -33,6 +35,8 @@ class AccountList(APIView):
 
 
 class AccountDetail(APIView):
+    serializer_class = AccountSerializer
+
     def get_object(self, pk):
         try:
             return get_user_model().objects.get(pk=pk)
@@ -63,6 +67,7 @@ class Login(APIView):
 
 
 class Register(APIView):
+    serializer_class = RegistrationDataSerializer
     authentication_classes = []
 
     def post(self, request, format=None):
@@ -83,6 +88,7 @@ class Logout(APIView):
 
 
 class SectorList(APIView):
+    serializer_class = SectorSerializer
     authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsProductionBrewery]
     def get(self, request, format=None):
@@ -97,7 +103,9 @@ class SectorList(APIView):
             return Response({'detail':'Sector added successfully.'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class SectorDetail(APIView):
+    serializer_class = SectorSerializer
     authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsProductionBrewery]
     def get_object(self, pk):
@@ -126,6 +134,7 @@ class SectorDetail(APIView):
 
 
 class EquipmentList(APIView):
+    serializer_class = EquipmentSerializer
     authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsProductionBrewery]
     def get(self, request, format=None):
@@ -142,7 +151,9 @@ class EquipmentList(APIView):
             return Response({'detail':'Equipment added successfully.'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class EquipmentDetail(APIView):
+    serializer_class = EquipmentSerializer
     authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsProductionBrewery]
     def get_object(self, pk, request):
