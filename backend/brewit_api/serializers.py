@@ -2,6 +2,7 @@ from .models import Account, BrewerySelectors, Brewery, Equipment, Sector
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
+from django.db import transaction
 
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,13 +17,16 @@ class AccountSerializer(serializers.ModelSerializer):
         return user
 
 class RegistrationDataSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    password = serializers.CharField()
-    password2 = serializers.CharField()
-    selector = serializers.CharField()
-    name = serializers.CharField()
-    nip = serializers.CharField()
-    water_ph = serializers.DecimalField(decimal_places=1, max_digits=3)
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(required=True)
+    password2 = serializers.CharField(required=True)
+    role = serializers.CharField(required=True)
+    selector = serializers.CharField(required=True)
+    name = serializers.CharField(required=True)
+    nip = serializers.CharField(required=True)
+    water_ph = serializers.DecimalField(decimal_places=1,
+                                        max_digits=3,
+                                        required=False)
 
     def validate_email(self, value):
         if get_user_model().objects.filter(email=value).exists():
@@ -34,27 +38,36 @@ class RegistrationDataSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid selectror")
         return value
 
+    def validate_role(self, value):
+        if value not in [el for el in Account.AccountRoles.values]:
+            raise serializers.ValidationError("Invalid role")
+        elif value == Account.AccountRoles.ADMIN.value:
+            raise serializers.ValidationError("Cannot create admin account")
+        return value
+
     def validate(self, data):
         if data['password'] != data['password2']:
             raise serializers.ValidationError("Passwords do not match")
+        elif data['role'] == Account.AccountRoles.PRODUCTION.value and not data['water_ph']:
+            raise serializers.ValidationError("Production brewery must specify water_ph")
+        elif data['role'] != data['selector']:
+            raise serializers.ValidationError("Role and selector must be the same")
         return data
 
     def create(self, validated_data):
-        account = get_user_model().objects.create_user(email=validated_data['email'],
-                                                       password=validated_data['password'])
-        if validated_data['selector'] == BrewerySelectors.PRODUCTION.value:
-            group, _ = Group.objects.get_or_create(name='Production_Brewery')
-            account.groups.add(group)
-        else:
-            group, _ = Group.objects.get_or_create(name='Contract_Brewery')
-            account.groups.add(group)
-        brewery = Brewery.objects.create(selector=validated_data['selector'],
-                                         name=validated_data['name'],
-                                         nip=validated_data['nip'],
-                                         water_ph=validated_data['water_ph'],
-                                         account=account)
-        brewery.save()
-        return (account, brewery)
+        try:
+            with transaction.atomic():
+                account = get_user_model().objects.create_user(email=validated_data['email'],
+                                            password=validated_data['password'],
+                                            role=validated_data['role'])
+                brewery = Brewery.objects.create(selector=validated_data['selector'],
+                                                 name=validated_data['name'],
+                                                 nip=validated_data['nip'],
+                                                 water_ph=validated_data['water_ph'],
+                                                 account=account)
+                return (account, brewery)
+        except Exception as e:
+            raise serializers.ValidationError(str(e)) # Change later
 
 
 class SectorSerializer(serializers.ModelSerializer):

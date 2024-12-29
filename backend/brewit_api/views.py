@@ -55,9 +55,8 @@ class Login(APIView):
         user = authenticate(request=request, email=email, password=password)
         if user is not None:
             login(request, user)
-            user_group = user.groups.first()
             return Response({'detail':'Logged in successfully.',
-                             'user_type': user_group.name},
+                             'user_role': user.role},
                             status=status.HTTP_200_OK)
         else:
             return Response({'detail': 'Email or Password is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -69,7 +68,10 @@ class Register(APIView):
     def post(self, request, format=None):
         serializer = RegistrationDataSerializer(data=request.data)
         if serializer.is_valid():
-            account, brewery = serializer.save()
+            try:
+                account, brewery = serializer.save()
+            except Exception as e:
+                return Response({'detail':str(e)}, status=status.HTTP_400_BAD_REQUEST) # Change later detail message
             return Response({'detail':'Registered successfully.'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
