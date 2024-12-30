@@ -140,3 +140,36 @@ class ReservationRequestsFieldNames extends StandardFieldNames {
           "contract_brewery",
         ]);
 }
+
+class AllowedPeopleFieldNames extends StandardFieldNames {
+  AllowedPeopleFieldNames()
+      : super(fieldNames: [], jsonFieldNames: [], fieldNamesTable: [
+          "Id",
+          "Imię",
+          "Nazwisko",
+          "Browar",
+          "Operacje",
+        ], jsonFieldNamesTable: [
+          "id",
+          "name",
+          "surname",
+          "contract_brewery",
+        ]);
+}
+
+class MachineScheduleFieldNames extends StandardFieldNames {
+  MachineScheduleFieldNames()
+      : super(fieldNames: [], jsonFieldNames: [], fieldNamesTable: [
+          "Id",
+          "Data początkowa",
+          "Data końcowa",
+          "Browar",
+          "Rezerwacja",
+          "Operacje",
+        ], jsonFieldNamesTable: [
+          "machine_schedule_id",
+          "start_date",
+          "end_date",
+          "reservation_id",
+        ]);
+}
