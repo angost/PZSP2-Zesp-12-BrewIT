@@ -225,3 +225,68 @@ class RecipesFieldNames extends StandardFieldNames {
           "beer_type_beer"
         ]);
 }
+
+class RegistrationRequestsFieldNames extends StandardFieldNames {
+  RegistrationRequestsFieldNames()
+      : super(fieldNames: [], jsonFieldNames: [], fieldNamesTable: [
+          "Id",
+          "Typ browaru",
+          "Nazwa firmy",
+          "Email",
+          "Operacje",
+        ], jsonFieldNamesTable: [
+          "account_id",
+          "role",
+          "name",
+          "email"
+        ]);
+}
+
+class StatisticsFieldNames extends StandardFieldNames {
+  StatisticsFieldNames()
+      : super(fieldNames: [
+          "Typ browaru",
+          "Nazwa",
+          "Ilość produkowanego piwa",
+          "% Anulowanych rezerwacji",
+          "% Nieudanego piwa",
+        ], jsonFieldNames: [
+          "role",
+          "name",
+          "amount",
+          "cancelled_reservations",
+          "failed_beer",
+        ], fieldNamesTable: [
+          "Id",
+          "Typ browaru",
+          "Nazwa",
+          "Ilość produkowanego piwa",
+          "% Anulowanych rezerwacji",
+          "% Nieudanego piwa",
+          "Operacje"
+        ], jsonFieldNamesTable: [
+          "brewery_id",
+          "role",
+          "name",
+          "amount",
+          "cancelled_reservations",
+          "failed_beer",
+        ]);
+}
+
+class StatisticsSumFieldNames extends StandardFieldNames {
+  StatisticsSumFieldNames()
+      : super(fieldNames: [
+          "Liczba browarów komercyjnych",
+          "Liczba browarów kontraktowych",
+          "Sumaryczna ilość produkowanego piwa",
+          "Sumaryczny % anulowanych rezerwacji",
+          "Sumaryczny % nieudanego piwa",
+        ], jsonFieldNames: [
+          "commercial_number",
+          "contract_number",
+          "amount",
+          "sum_cancelled_reservations",
+          "sum_failed_beer",
+        ], fieldNamesTable: [], jsonFieldNamesTable: []);
+}
