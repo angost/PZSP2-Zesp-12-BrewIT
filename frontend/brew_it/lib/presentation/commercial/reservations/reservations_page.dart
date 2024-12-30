@@ -1,12 +1,13 @@
+import 'package:brew_it/core/helper/field_names.dart';
 import 'package:brew_it/presentation/_common/templates/table_page_template.dart';
 import 'package:brew_it/presentation/_common/widgets/my_icon_button.dart';
-import 'package:brew_it/presentation/contract/reservation_details_page.dart';
+import 'package:brew_it/presentation/commercial/reservations/reservation_details_page.dart';
 
 class ReservationsPage extends TablePageTemplate {
   ReservationsPage({super.key})
       : super(
             title: "Twoje rezerwacje:",
-            headers: ["Id", "Browar komercyjny", "Daty", "Operacje"],
+            headers: ReservationsFieldNames().fieldNamesTable,
             options: [
               MyIconButton(
                 type: "info",
@@ -16,7 +17,7 @@ class ReservationsPage extends TablePageTemplate {
               ),
               MyIconButton(type: "delete")
             ],
-            // MOCK
-            apiString: "https://jsonplaceholder.typicode.com/todos/",
-            jsonFields: ["id", "title", "completed"]);
+            // MOCK - check names used in api
+            apiString: "/reservations/",
+            jsonFields: ReservationsFieldNames().jsonFieldNamesTable);
 }

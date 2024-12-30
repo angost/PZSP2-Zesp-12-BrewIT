@@ -3,7 +3,7 @@ import 'package:brew_it/presentation/_common/templates/table_page_template.dart'
 import 'package:brew_it/presentation/_common/widgets/main_button.dart';
 import 'package:brew_it/presentation/_common/widgets/my_icon_button.dart';
 import 'package:brew_it/presentation/commercial/machines/machines_page.dart';
-import 'package:brew_it/presentation/contract/reservations_page.dart';
+import 'package:brew_it/presentation/commercial/reservations/reservations_page.dart';
 
 class MachineSchedulePage extends TablePageTemplate {
   // MOCK - pass machine id as a parameter?

@@ -125,7 +125,7 @@ class ReservationRequestsFieldNames extends StandardFieldNames {
   ReservationRequestsFieldNames()
       : super(fieldNames: [
           "Browar",
-          "Planowana produkcja",
+          "Planowana ilość produkowanego piwa",
           "Cena",
         ], jsonFieldNames: [
           "contract_brewery",
@@ -171,5 +171,35 @@ class MachineScheduleFieldNames extends StandardFieldNames {
           "start_date",
           "end_date",
           "reservation_id",
+        ]);
+}
+
+class ReservationsFieldNames extends StandardFieldNames {
+  ReservationsFieldNames()
+      : super(fieldNames: [
+          "Browar",
+          "Data początkowa",
+          "Data końcowa",
+          "Cena",
+          "Planowana ilość produkowanego piwa",
+          "Osoby upoważnione do wstępu",
+          "Maszyny",
+        ], jsonFieldNames: [
+          "contract_brewery",
+          "brew_size",
+          "price",
+          "allowed_people",
+          "machines"
+        ], fieldNamesTable: [
+          "Id",
+          "Browar",
+          "Data początkowa",
+          "Data końcowa",
+          "Operacje",
+        ], jsonFieldNamesTable: [
+          "reservation_id",
+          "brewery",
+          "start_date",
+          "end_date",
         ]);
 }

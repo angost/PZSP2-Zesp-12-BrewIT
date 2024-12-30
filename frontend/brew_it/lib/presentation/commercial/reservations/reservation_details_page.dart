@@ -1,6 +1,8 @@
+import 'package:brew_it/core/helper/field_names.dart';
 import 'package:brew_it/presentation/_common/templates/details_add_edit_page_template.dart';
 import 'package:brew_it/presentation/_common/widgets/main_button.dart';
 import 'package:brew_it/presentation/_common/widgets/my_icon_button.dart';
+import 'package:brew_it/presentation/commercial/reservations/reservations_page.dart';
 
 class ReservationDetailsPage extends DetailsAddEditPageTemplate {
   ReservationDetailsPage(Map elementData, {super.key})
@@ -10,24 +12,17 @@ class ReservationDetailsPage extends DetailsAddEditPageTemplate {
               MainButton(
                 "Powrót",
                 type: "primary_small",
+                navigateToPage: () {
+                  return ReservationsPage();
+                },
               )
             ],
-            options: [MyIconButton(type: "delete")],
-            fieldNames: [
-              "Browar",
-              "Daty",
-              "Cena",
-              "Osoby upoważnione do wstępu",
-              "Planowana ilość warzonego piwa",
-              "Urządzenia"
+            options: [
+              MyIconButton(
+                type: "delete",
+              ),
             ],
-            jsonFieldNames: [
-              "id",
-              "title",
-              "completed",
-              "id",
-              "title",
-              "completed"
-            ], // MOCK
+            fieldNames: ReservationsFieldNames().fieldNames,
+            jsonFieldNames: ReservationsFieldNames().jsonFieldNames,
             elementData: elementData);
 }

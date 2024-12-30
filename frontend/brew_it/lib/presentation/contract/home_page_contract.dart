@@ -3,7 +3,7 @@ import 'package:brew_it/presentation/_common/templates/home_page_template.dart';
 import 'package:brew_it/presentation/contract/commercial_offers_page.dart';
 import 'package:brew_it/presentation/contract/production_processes/production_processes_page.dart';
 import 'package:brew_it/presentation/contract/recipes_page.dart';
-import 'package:brew_it/presentation/contract/reservations_page.dart';
+import 'package:brew_it/presentation/contract/reservations/reservations_page.dart';
 import 'package:brew_it/presentation/log_in_register/choose_user_type_page.dart';
 import 'package:brew_it/presentation/log_in_register/log_in_page.dart';
 
