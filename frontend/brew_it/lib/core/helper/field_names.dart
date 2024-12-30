@@ -203,3 +203,25 @@ class ReservationsFieldNames extends StandardFieldNames {
           "end_date",
         ]);
 }
+
+class RecipesFieldNames extends StandardFieldNames {
+  RecipesFieldNames()
+      : super(fieldNames: [
+          "Nazwa",
+          "Typ piwa",
+          "Treść",
+        ], jsonFieldNames: [
+          "name",
+          "beer_type_beer",
+          "recipe_body"
+        ], fieldNamesTable: [
+          "Id",
+          "Nazwa",
+          "Typ piwa",
+          "Operacje",
+        ], jsonFieldNamesTable: [
+          "recipe_id",
+          "name",
+          "beer_type_beer"
+        ]);
+}
