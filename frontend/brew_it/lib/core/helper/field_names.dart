@@ -100,3 +100,43 @@ class MachinesFieldNames extends StandardFieldNames {
           "daily_price",
         ]);
 }
+
+class SectorsFieldNames extends StandardFieldNames {
+  SectorsFieldNames()
+      : super(fieldNames: [
+          "Nazwa",
+          "Zezwala na bakterie",
+        ], jsonFieldNames: [
+          "name",
+          "allows_bacteria",
+        ], fieldNamesTable: [
+          "Id",
+          "Nazwa",
+          "Zezwala na bakterie",
+          "Operacje"
+        ], jsonFieldNamesTable: [
+          "sector_id",
+          "name",
+          "capacity",
+        ]);
+}
+
+class ReservationRequestsFieldNames extends StandardFieldNames {
+  ReservationRequestsFieldNames()
+      : super(fieldNames: [
+          "Browar",
+          "Planowana produkcja",
+          "Cena",
+        ], jsonFieldNames: [
+          "contract_brewery",
+          "brew_size",
+          "price"
+        ], fieldNamesTable: [
+          "Id",
+          "Browar",
+          "Operacje",
+        ], jsonFieldNamesTable: [
+          "reservation_id",
+          "contract_brewery",
+        ]);
+}
