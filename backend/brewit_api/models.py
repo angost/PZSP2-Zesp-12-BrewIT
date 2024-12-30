@@ -13,9 +13,9 @@ from .managers import CustomUserManager
 from enum import Enum
 
 
-class BrewerySelectors(str, Enum):
-    PRODUCTION = 'PROD'
-    CONTRACT = 'CONTR'
+# class BrewerySelectors(str, Enum):
+#     PRODUCTION = 'PROD'
+#     CONTRACT = 'CONTR'
 
 
 class Account(AbstractUser):
@@ -58,8 +58,14 @@ class BeerType(models.Model):
 
 
 class Brewery(models.Model):
+    class BrewerySelectors(models.TextChoices):
+        PRODUCTION = 'PROD', _('Production Brewery')
+        CONTRACT = 'CONTR', _('Contract Brewery')
+
     brewery_id = models.AutoField(primary_key=True)
-    selector = models.CharField(max_length=10)
+    selector = models.CharField(max_length=10,
+                                choices=BrewerySelectors.choices,
+                                blank=False)
     name = models.CharField(max_length=128)
     nip = models.CharField(max_length=10, blank=True, null=True)
     water_ph = models.DecimalField(max_digits=3, decimal_places=1, blank=True, null=True)

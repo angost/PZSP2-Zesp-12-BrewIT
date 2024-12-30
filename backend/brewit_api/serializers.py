@@ -1,4 +1,4 @@
-from .models import Account, BrewerySelectors, Brewery, Equipment, Sector
+from .models import Account, Brewery, Equipment, Sector
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -34,7 +34,7 @@ class RegistrationDataSerializer(serializers.Serializer):
         return value
 
     def validate_selector(self, value):
-        if value not in [el.value for el in BrewerySelectors]:
+        if value not in [el for el in Brewery.BrewerySelectors.values]:
             raise serializers.ValidationError("Invalid selectror")
         return value
 
