@@ -10,12 +10,6 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from .managers import CustomUserManager
-from enum import Enum
-
-
-# class BrewerySelectors(str, Enum):
-#     PRODUCTION = 'PROD'
-#     CONTRACT = 'CONTR'
 
 
 class Account(AbstractUser):
@@ -80,6 +74,7 @@ class Sector(models.Model):
     sector_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=32)
     allows_bacteria = models.BooleanField()
+    brewery = models.ForeignKey(Brewery, models.DO_NOTHING, related_name='sectors')
 
     class Meta:
         managed = True
@@ -87,32 +82,25 @@ class Sector(models.Model):
 
 
 class Equipment(models.Model):
+    class EquipmentSelectors(models.TextChoices):
+        VAT = 'VAT', _('Vat')
+        BREWSET = 'BREWSET', _('Brewing Set')
     equipment_id = models.AutoField(primary_key=True)
-    selector = models.CharField(max_length=10)
+    selector = models.CharField(max_length=10,
+                                choices=EquipmentSelectors.choices,
+                                blank=False)
     capacity = models.IntegerField()
     name = models.CharField(max_length=32)
     daily_price = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.CharField(max_length=512, blank=True, null=True)
     min_temperature = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     max_temperature = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
-    brewery = models.ForeignKey(Brewery, models.DO_NOTHING)
+    brewery = models.ForeignKey(Brewery, models.DO_NOTHING, related_name='equipment')
     sector = models.ForeignKey('Sector', models.DO_NOTHING)
 
     class Meta:
         managed = True
         db_table = 'equipment'
-
-
-class EquipmentReservation(models.Model):
-    selector = models.CharField(max_length=10)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
-    equipment = models.ForeignKey(Equipment, models.DO_NOTHING)
-    reservation_id = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = True
-        db_table = 'equipment_reservation'
 
 
 class Recipe(models.Model):
@@ -139,6 +127,23 @@ class Reservation(models.Model):
         db_table = 'reservation'
 
 
+class EquipmentReservation(models.Model):
+    class EquipmentSelectors(models.TextChoices):
+        CLEAN = 'CLEAN', _('Cleaning')
+        BREW = 'BREW', _('Brewing')
+    selector = models.CharField(max_length=10,
+                                choices=EquipmentSelectors.choices,
+                                blank=False)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    equipment = models.ForeignKey(Equipment, models.DO_NOTHING, related_name='reservations')
+    reservation_id = models.ForeignKey(Reservation, models.DO_NOTHING, blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'equipment_reservation'
+
+
 class ExecutionLog(models.Model):
     log_id = models.AutoField(primary_key=True)
     start_date = models.DateTimeField()
@@ -153,20 +158,25 @@ class ExecutionLog(models.Model):
         db_table = 'execution_log'
 
 
-class Packagingtype(models.Model):
-    packaging_type_id = models.AutoField(primary_key=True)
-    name = models.CharField(unique=True, max_length=32)
+# class Packagingtype(models.Model):
+#     packaging_type_id = models.AutoField(primary_key=True)
+#     name = models.CharField(unique=True, max_length=32)
 
-    class Meta:
-        managed = True
-        db_table = 'packagingtype'
+#     class Meta:
+#         managed = True
+#         db_table = 'packagingtype'
 
 
 class Vatpackaging(models.Model):
+    class PackagingTypes(models.TextChoices):
+        BOTTLE = 'BOTTLE', _('Bottle')
+        CAN = 'CAN', _('Can')
+        KEG = 'KEG', _('Keg')
     vat_packaging_id = models.AutoField(primary_key=True)
-    equipment = models.ForeignKey(Equipment, models.DO_NOTHING)
-    packaging_type = models.ForeignKey(Packagingtype, models.DO_NOTHING)
-
+    equipment = models.ForeignKey(Equipment, models.DO_NOTHING, related_name='vat_packaging')
+    packaging_type = models.CharField(max_length=10,
+                                      choices=PackagingTypes.choices,
+                                      blank=False)
     class Meta:
         managed = True
         db_table = 'vatpackaging'
