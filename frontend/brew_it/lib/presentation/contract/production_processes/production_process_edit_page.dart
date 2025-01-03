@@ -6,7 +6,9 @@ class ProductionProcessEditPage extends AddEditPageTemplate {
   ProductionProcessEditPage(Map elementData, {super.key})
       : super(
             title: "Proces wykonania - edytuj:",
-            apiCall: "",
+            apiCall: "/production_process/" +
+                elementData["production_process_id"].toString() +
+                "/",
             apiCallType: "put",
             navigateToPageSave: (Map elementData) {
               return ProductionProcessDetailsPage(elementData);

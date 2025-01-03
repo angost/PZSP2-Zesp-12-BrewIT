@@ -29,7 +29,7 @@ class ProductionProcessesPage extends TablePageTemplate {
                 },
               )
             ],
-            // MOCK
-            apiString: "https://jsonplaceholder.typicode.com/todos/",
+            // MOCK - check names used in api
+            apiString: "/production_processes/",
             jsonFields: ProductionProcessesFieldNames().jsonFieldNamesTable);
 }
