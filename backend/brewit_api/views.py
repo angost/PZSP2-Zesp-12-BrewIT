@@ -1,18 +1,23 @@
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
+from rest_framework import generics
 from rest_framework.response import Response
 from django.http import Http404
 from brewit_api.serializers import AccountSerializer, RegistrationDataSerializer, EquipmentSerializer,\
-     SectorSerializer
+     SectorSerializer, BrewerySerializer, EquipmentFilterParametersSerializer, BreweriesFilterParametersSerializer
 from rest_framework.reverse import reverse
 from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate, login, logout
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsProductionBrewery
-from .models import Equipment, Sector
+from .permissions import IsProductionBrewery, IsBrewery, IsContractBrewery
+from .models import Equipment, Sector, Brewery
 from .auth_class import CsrfExemptSessionAuthentication
 from rest_framework.authentication import BasicAuthentication
+from .filters import BreweryFilter, EquipmentFilter
+from django_filters import rest_framework as filters
+from .utils import filter_equipment, filter_breweries
+from drf_spectacular.utils import extend_schema, OpenApiResponse
 
 
 # for development purposes
@@ -110,7 +115,7 @@ class SectorDetail(APIView):
     permission_classes = [IsAuthenticated, IsProductionBrewery]
     def get_object(self, pk):
         try:
-            return Sector.objects.get(pk=pk)
+            return self.request.user.get_brewery().sectors.get(pk=pk)
         except Sector.DoesNotExist:
             raise Http404
 
@@ -133,22 +138,26 @@ class SectorDetail(APIView):
         return Response({'detail':'Sector deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
 
 
-class EquipmentList(APIView):
+class EquipmentList(generics.ListCreateAPIView):
     serializer_class = EquipmentSerializer
     authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
-    permission_classes = [IsAuthenticated, IsProductionBrewery]
-    def get(self, request, format=None):
-        equipment = Equipment.objects.filter(brewery__in=request.user.breweries.all())
-        serializer = EquipmentSerializer(equipment, many=True, context={'request': request})
-        return Response(serializer.data)
+    permission_classes = [IsAuthenticated, IsBrewery]
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = EquipmentFilter
 
-    def post(self, request, format=None):
-        brewery = request.user.get_brewery()
-        serializer = EquipmentSerializer(data=request.data, context={'brewery':brewery})
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'detail':'Equipment added successfully.'}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def get_permissions(self):
+        self.permission_classes = [IsAuthenticated, IsBrewery]
+        if self.request.method == "POST":
+            self.permission_classes = [IsAuthenticated, IsProductionBrewery]
+        return super(EquipmentList, self).get_permissions()
+
+    def get_queryset(self):
+        if self.request.user.role == get_user_model().AccountRoles.PRODUCTION.value:
+            return Equipment.objects.filter(brewery=self.request.user.get_brewery())
+        return Equipment.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(brewery=self.request.user.get_brewery())
 
 
 class EquipmentDetail(APIView):
@@ -157,7 +166,7 @@ class EquipmentDetail(APIView):
     permission_classes = [IsAuthenticated, IsProductionBrewery]
     def get_object(self, pk, request):
         try:
-            return Equipment.objects.filter(brewery__in=request.user.breweries.all()).get(pk=pk)
+            return request.user.get_brewery().equipment.get(pk=pk)
         except Equipment.DoesNotExist:
             raise Http404
 
@@ -180,3 +189,97 @@ class EquipmentDetail(APIView):
         return Response({'detail':'Equipment deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
 
 
+class EquipmentFiltered(APIView):
+    serializer_class = EquipmentFilterParametersSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsProductionBrewery]
+
+    @extend_schema(
+        request=EquipmentFilterParametersSerializer,
+        responses={
+            200: OpenApiResponse(
+                response=EquipmentSerializer(many=True),
+                description="List of filtered equipment"
+            ),
+            400: OpenApiResponse(
+                response=None,
+                description="Invalid input parameters"
+            )
+        }
+    )
+    def post(self, request, format=None):
+        serializer = EquipmentFilterParametersSerializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.validated_data
+            data['contract_brewery'] = request.user.get_brewery().brewery_id
+            equipment = filter_equipment(data)
+            serializer = EquipmentSerializer(equipment, many=True, context={'request': request})
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BreweryFiltered(APIView):
+    serializer_class = BreweriesFilterParametersSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsContractBrewery]
+
+    @extend_schema(
+        request=BreweriesFilterParametersSerializer,
+        responses={
+            200: OpenApiResponse(
+                response=BrewerySerializer(many=True),
+                description="List of filtered equipment"
+            ),
+            400: OpenApiResponse(
+                response=None,
+                description="Invalid input parameters"
+            )
+        }
+    )
+    def post(self, request, format=None):
+        serializer = BreweriesFilterParametersSerializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.validated_data
+            data['contract_brewery'] = request.user.get_brewery().brewery_id
+            breweries = filter_breweries(data)
+            serializer = BrewerySerializer(breweries, many=True, context={'request': request})
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BreweryList(generics.ListAPIView):
+    serializer_class = BrewerySerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = BreweryFilter
+
+    def get_queryset(self):
+        if self.request.user.role == get_user_model().AccountRoles.ADMIN.value:
+            return Brewery.objects.all()
+        elif self.request.user.role == get_user_model().AccountRoles.CONTRACT.value:
+            return Brewery.objects.filter(selector=Brewery.BrewerySelectors.PRODUCTION.value)
+        else:
+            return Brewery.objects.filter(selector=Brewery.BrewerySelectors.CONTRACT.value)
+
+
+class BreweryDetail(APIView):
+    serializer_class = BrewerySerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    def get_object(self, pk):
+        if self.request.user.role == get_user_model().AccountRoles.ADMIN.value:
+            breweries = Brewery.objects.all()
+        elif self.request.user.role == get_user_model().AccountRoles.CONTRACT.value:
+            breweries = Brewery.objects.filter(selector=Brewery.BrewerySelectors.PRODUCTION.value)
+        else:
+            breweries = Brewery.objects.filter(selector=Brewery.BrewerySelectors.CONTRACT.value)
+        try:
+            return breweries.get(pk=pk)
+        except Brewery.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        brewery = self.get_object(pk)
+        serializer = BrewerySerializer(brewery, context={'request': request})
+        return Response(serializer.data)

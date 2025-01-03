@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
-from .models import Brewery, Sector, Equipment
+from .models import Brewery, Sector, Equipment, Reservation, EquipmentReservation, Vatpackaging
 
 # Register your models here.
 @admin.register(get_user_model())
@@ -28,7 +28,29 @@ class SectorAdmin(admin.ModelAdmin):
 @admin.register(Equipment)
 class EquipmentAdmin(admin.ModelAdmin):
     list_display = ['equipment_id', 'selector', 'name', 'daily_price', 'description',
-                    'min_temperature', 'max_temperature', 'brewery', 'sector']
+                    'min_temperature', 'max_temperature', 'brewery', 'sector', 'capacity']
     list_per_page = 20
     list_max_show_all = 50
     list_editable = []
+
+@admin.register(Reservation)
+class ReservationAdmin(admin.ModelAdmin):
+    list_display = ['reservation_id', 'price', 'brew_size', 'authorised_workers', 'production_brewery', 'contract_brewery']
+    list_per_page = 20
+    list_max_show_all = 50
+    list_editable = []
+
+@admin.register(EquipmentReservation)
+class EquipmentReservationAdmin(admin.ModelAdmin):
+    list_display = ['id', 'selector', 'start_date', 'end_date', 'equipment', 'reservation_id']
+    list_per_page = 20
+    list_max_show_all = 50
+    list_editable = []
+
+@admin.register(Vatpackaging)
+class VatpackagingAdmin(admin.ModelAdmin):
+    list_display = ['vat_packaging_id', 'equipment', 'packaging_type']
+    list_per_page = 20
+    list_max_show_all = 50
+    list_editable = []
+
