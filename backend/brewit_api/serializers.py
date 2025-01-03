@@ -74,7 +74,8 @@ class RegistrationDataSerializer(serializers.Serializer):
 class SectorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sector
-        fields = ['sector_id', 'name', 'allows_bacteria']
+        fields = ['sector_id', 'name', 'allows_bacteria', 'brewery']
+        extra_kwargs = {'brewery': {'read_only': True}}
 
 
 class EquipmentSerializer(serializers.ModelSerializer):
@@ -82,7 +83,13 @@ class EquipmentSerializer(serializers.ModelSerializer):
         model = Equipment
         fields = '__all__'
         extra_kwargs = {'brewery': {'read_only': True}}
-    # TODO VALIDATE IF SECTOR AND EQUIPMENT BREWERY ARE THE SAME
+
+    def validate(self, attrs):
+        brewery = self.context['request'].user.get_brewery()
+        sector = Sector.objects.get(sector_id=attrs['sector'].sector_id)
+        if sector.brewery != brewery:
+            raise serializers.ValidationError("You cannot add equipment to a sector from another brewery")
+        return attrs
 
 
 class BrewerySerializer(serializers.ModelSerializer):

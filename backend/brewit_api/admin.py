@@ -18,7 +18,7 @@ class BreweryAdmin(admin.ModelAdmin):
 
 @admin.register(Sector)
 class SectorAdmin(admin.ModelAdmin):
-    list_display = ['sector_id', 'name', 'allows_bacteria']
+    list_display = ['sector_id', 'name', 'allows_bacteria', 'brewery']
     list_filter = ['allows_bacteria']
     search_fields = ['name']
     list_per_page = 20

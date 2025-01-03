@@ -104,7 +104,8 @@ class SectorList(APIView):
     def post(self, request, format=None):
         serializer = SectorSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            brewery = request.user.get_brewery()
+            serializer.save(brewery=brewery)
             return Response({'detail':'Sector added successfully.'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
