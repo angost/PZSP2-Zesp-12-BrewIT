@@ -4,20 +4,24 @@ from rest_framework import generics
 from rest_framework.response import Response
 from django.http import Http404
 from brewit_api.serializers import AccountSerializer, RegistrationDataSerializer, EquipmentSerializer,\
-     SectorSerializer, BrewerySerializer, EquipmentFilterParametersSerializer, BreweriesFilterParametersSerializer
+     SectorSerializer, BrewerySerializer, EquipmentFilterParametersSerializer, BreweriesFilterParametersSerializer,\
+     ReservationRequestSerializer, ReservationCreateSerializer, ReservationSerializer
 from rest_framework.reverse import reverse
 from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate, login, logout
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsProductionBrewery, IsBrewery, IsContractBrewery
-from .models import Equipment, Sector, Brewery
+from .models import Equipment, Sector, Brewery, ReservationRequest, EquipmentReservation, Reservation,\
+                    EqipmentReservationRequest
 from .auth_class import CsrfExemptSessionAuthentication
 from rest_framework.authentication import BasicAuthentication
 from .filters import BreweryFilter, EquipmentFilter
 from django_filters import rest_framework as filters
 from .utils import filter_equipment, filter_breweries
 from drf_spectacular.utils import extend_schema, OpenApiResponse
+from django.db import transaction
+from rest_framework import serializers
 
 
 # for development purposes
@@ -284,3 +288,136 @@ class BreweryDetail(APIView):
         brewery = self.get_object(pk)
         serializer = BrewerySerializer(brewery, context={'request': request})
         return Response(serializer.data)
+
+
+class ReservationRequestList(APIView):
+    serializer_class = ReservationRequestSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsBrewery]
+
+    def get(self, request, format=None):
+        if request.user.role == get_user_model().AccountRoles.PRODUCTION.value:
+            reservations = ReservationRequest.objects.filter(production_brewery=request.user.get_brewery())
+        else:
+            reservations = ReservationRequest.objects.filter(contract_brewery=request.user.get_brewery())
+        serializer = ReservationRequestSerializer(reservations, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = ReservationRequestSerializer(data=request.data,
+                                                  context={'request': request,
+                                                           'contract_brewery': request.user.get_brewery()})
+        if serializer.is_valid():
+            serializer.save(contract_brewery=request.user.get_brewery())
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_permissions(self):
+        self.permission_classes = [IsAuthenticated, IsBrewery]
+        if self.request.method == "POST":
+            self.permission_classes = [IsAuthenticated, IsContractBrewery]
+        return super(ReservationRequestList, self).get_permissions()
+
+
+class ReservationRequestDetail(APIView):
+    serializer_class = ReservationRequestSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsBrewery]
+
+    def get_object(self, pk):
+        try:
+            if self.request.user.role == get_user_model().AccountRoles.PRODUCTION.value:
+                return ReservationRequest.objects.get(production_brewery=self.request.user.get_brewery(), pk=pk)
+            else:
+                return ReservationRequest.objects.get(contract_brewery=self.request.user.get_brewery(), pk=pk)
+        except ReservationRequest.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        reservation = self.get_object(pk)
+        serializer = ReservationRequestSerializer(reservation, context={'request': request})
+        return Response(serializer.data)
+
+    def delete(self, request, pk, format=None):
+        reservation = self.get_object(pk)
+        reservation.delete()
+        return Response({'detail':'Reservation request deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class ReservationList(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+
+    def get_permissions(self):
+        self.permission_classes = [IsAuthenticated, IsBrewery]
+        if self.request.method == "POST":
+            self.permission_classes = [IsAuthenticated, IsProductionBrewery]
+        return super(ReservationList, self).get_permissions()
+
+    @extend_schema(
+        request=ReservationCreateSerializer,
+        responses={
+            201: OpenApiResponse(
+                response=ReservationSerializer(many=False),
+                description="New reservation created successfully"
+            ),
+            400: OpenApiResponse(
+                response=None,
+                description="Invalid input"
+            )
+        }
+    )
+    def post(self, request):
+        serializer = ReservationCreateSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            try:
+                reservation = serializer.save()
+            except serializers.ValidationError as e:
+                return Response({'detail':str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            output_data = ReservationSerializer(reservation, context={'request': request}).data
+            return Response(output_data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @extend_schema(
+        responses={
+            200: OpenApiResponse(
+                response=ReservationSerializer(many=False),
+                description="Reservation returned successfully"
+            ),
+            400: OpenApiResponse(
+                response=None,
+                description="Reservation not found"
+            )
+        }
+    )
+    def get(self, request):
+        if request.user.role == get_user_model().AccountRoles.PRODUCTION.value:
+            reservations = Reservation.objects.filter(production_brewery=request.user.get_brewery())
+        else:
+            reservations = Reservation.objects.filter(contract_brewery=request.user.get_brewery())
+        serializer = ReservationSerializer(reservations, many=True, context={'request': request})
+        return Response(serializer.data)
+
+
+class ReservationDetail(APIView):
+    serializer_class = ReservationSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsBrewery]
+
+    def get_object(self, pk):
+        try:
+            if self.request.user.role == get_user_model().AccountRoles.PRODUCTION.value:
+                return Reservation.objects.get(production_brewery=self.request.user.get_brewery(), pk=pk)
+            else:
+                return Reservation.objects.get(contract_brewery=self.request.user.get_brewery(), pk=pk)
+        except Reservation.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        reservation = self.get_object(pk)
+        serializer = ReservationSerializer(reservation, context={'request': request})
+        return Response(serializer.data)
+
+    def delete(self, request, pk, format=None):
+        reservation = self.get_object(pk)
+        reservation.delete()
+        return Response({'detail':'Reservation deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
