@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
-from .models import Brewery, Sector, Equipment, Reservation, EquipmentReservation, Vatpackaging
+from .models import Brewery, Sector, Equipment, Reservation, EquipmentReservation, Vatpackaging,\
+    EqipmentReservationRequest, ReservationRequest
 
 # Register your models here.
 @admin.register(get_user_model())
@@ -35,7 +36,7 @@ class EquipmentAdmin(admin.ModelAdmin):
 
 @admin.register(Reservation)
 class ReservationAdmin(admin.ModelAdmin):
-    list_display = ['reservation_id', 'price', 'brew_size', 'authorised_workers', 'production_brewery', 'contract_brewery']
+    list_display = ['reservation_id', 'price', 'brew_size', 'authorised_workers', 'production_brewery', 'contract_brewery', 'allows_sector_share']
     list_per_page = 20
     list_max_show_all = 50
     list_editable = []
@@ -53,4 +54,19 @@ class VatpackagingAdmin(admin.ModelAdmin):
     list_per_page = 20
     list_max_show_all = 50
     list_editable = []
+
+@admin.register(EqipmentReservationRequest)
+class EqipmentReservationRequestAdmin(admin.ModelAdmin):
+    list_display = ['id', 'start_date', 'end_date', 'equipment', 'reservation_request']
+    list_per_page = 20
+    list_max_show_all = 50
+    list_editable = []
+
+@admin.register(ReservationRequest)
+class Reservation(admin.ModelAdmin):
+    list_display = ['id', 'price', 'brew_size', 'authorised_workers', 'production_brewery', 'contract_brewery', 'allows_sector_share']
+    list_per_page = 20
+    list_max_show_all = 50
+    list_editable = []
+
 
