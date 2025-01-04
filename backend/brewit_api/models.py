@@ -114,6 +114,23 @@ class Recipe(models.Model):
         db_table = 'recipe'
 
 
+class ReservationRequest(models.Model):
+    price = models.IntegerField()
+    brew_size = models.IntegerField()
+    authorised_workers = models.CharField(max_length=512, blank=True, null=True)
+    production_brewery = models.ForeignKey(Brewery, models.DO_NOTHING)
+    contract_brewery = models.ForeignKey(Brewery, models.DO_NOTHING, related_name='reservation_requests_contract')
+    allows_sector_share = models.BooleanField()
+    # uses_bacteria = models.BooleanField() idk
+
+
+class EqipmentReservationRequest(models.Model):
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    equipment = models.ForeignKey(Equipment, models.DO_NOTHING, related_name='equipment_reservation_requests')
+    reservation_request = models.ForeignKey(ReservationRequest, models.CASCADE, related_name='equipment_reservation_requests')
+
+
 class Reservation(models.Model):
     reservation_id = models.AutoField(primary_key=True)
     price = models.IntegerField()
@@ -121,6 +138,7 @@ class Reservation(models.Model):
     authorised_workers = models.CharField(max_length=512, blank=True, null=True)
     production_brewery = models.ForeignKey(Brewery, models.DO_NOTHING)
     contract_brewery = models.ForeignKey(Brewery, models.DO_NOTHING, related_name='reservation_contract_brewery_set')
+    allows_sector_share = models.BooleanField()
 
     class Meta:
         managed = True
@@ -137,7 +155,7 @@ class EquipmentReservation(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     equipment = models.ForeignKey(Equipment, models.DO_NOTHING, related_name='reservations')
-    reservation_id = models.ForeignKey(Reservation, models.DO_NOTHING, blank=True, null=True)
+    reservation_id = models.ForeignKey(Reservation, models.CASCADE, blank=True, null=True, related_name='equipment_reservations')
 
     class Meta:
         managed = True
@@ -156,15 +174,6 @@ class ExecutionLog(models.Model):
     class Meta:
         managed = True
         db_table = 'execution_log'
-
-
-# class Packagingtype(models.Model):
-#     packaging_type_id = models.AutoField(primary_key=True)
-#     name = models.CharField(unique=True, max_length=32)
-
-#     class Meta:
-#         managed = True
-#         db_table = 'packagingtype'
 
 
 class Vatpackaging(models.Model):
