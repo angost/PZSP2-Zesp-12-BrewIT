@@ -109,8 +109,8 @@ class Command(BaseCommand):
 
         breweries = Brewery.objects.all()
         Reservation.objects.bulk_create([
-            Reservation(price=5000, brew_size=1000, authorised_workers='Alice, Bob', production_brewery=breweries[0], contract_brewery=breweries[3]),
-            Reservation(price=7000, brew_size=700, authorised_workers='Alice, Bob', production_brewery=breweries[0], contract_brewery=breweries[4]),
+            Reservation(price=5000, brew_size=1000, authorised_workers='Alice, Bob', production_brewery=breweries[0], contract_brewery=breweries[3], allows_sector_share=True),
+            Reservation(price=7000, brew_size=700, authorised_workers='Alice, Bob', production_brewery=breweries[0], contract_brewery=breweries[4], allows_sector_share=True),
         ])
         print('Reservations created.')
 
