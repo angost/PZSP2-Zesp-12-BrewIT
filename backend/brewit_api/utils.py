@@ -41,6 +41,7 @@ def filter_equipment(parameters: dict):
 
     equimpment = equimpment.exclude(equipment_id__in=alredy_reserved)
 
+    # exlude sectors, where there is reservation made by another brewery
     if not parameters['allows_sector_share']:
         occupied_sectors = EquipmentReservation.objects.filter(
             Q(start_date__lt=parameters['end_date']) &
@@ -48,8 +49,17 @@ def filter_equipment(parameters: dict):
         ).exclude(
             reservation_id__contract_brewery=parameters['contract_brewery']
         ).values_list('equipment__sector_id', flat=True)
+    else:
+        # exlude sectors, where there is reservation with allows_sector_share=False made by another brewery
+        occupied_sectors = EquipmentReservation.objects.filter(
+            Q(start_date__lt=parameters['end_date']) &
+            Q(end_date__gt=parameters['start_date']) &
+            Q(reservation_id__allows_sector_share=False)
+        ).exclude(
+            reservation_id__contract_brewery=parameters['contract_brewery']
+        ).values_list('equipment__sector_id', flat=True)
 
-        equimpment = equimpment.exclude(sector_id__in=occupied_sectors)
+    equimpment = equimpment.exclude(sector_id__in=occupied_sectors)
 
     return equimpment
 
