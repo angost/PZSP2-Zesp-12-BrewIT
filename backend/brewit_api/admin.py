@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from .models import Brewery, Sector, Equipment, Reservation, EquipmentReservation, Vatpackaging,\
-    EqipmentReservationRequest, ReservationRequest
+    EqipmentReservationRequest, ReservationRequest, Recipe, ExecutionLog, BeerType
 
 # Register your models here.
 @admin.register(get_user_model())
@@ -68,5 +68,26 @@ class Reservation(admin.ModelAdmin):
     list_per_page = 20
     list_max_show_all = 50
     list_editable = []
+
+@admin.register(Recipe)
+class RecipeAdmin(admin.ModelAdmin):
+    list_display = ['recipe_id', 'recipe_body', 'beer_type', 'contract_brewery']
+    list_per_page = 20
+    list_max_show_all = 50
+    list_editable = ['recipe_body']
+
+@admin.register(ExecutionLog)
+class ExecutionLogAdmin(admin.ModelAdmin):
+    list_display = ['log_id', 'start_date', 'end_date', 'is_successful', 'log', 'recipe', 'reservation']
+    list_per_page = 20
+    list_max_show_all = 50
+    list_editable = ['log']
+
+@admin.register(BeerType)
+class BeerTypeAdmin(admin.ModelAdmin):
+    list_display = ['beer_type_id', 'name', 'uses_bacteria']
+    list_per_page = 20
+    list_max_show_all = 50
+    list_editable = ['name', 'uses_bacteria']
 
 
