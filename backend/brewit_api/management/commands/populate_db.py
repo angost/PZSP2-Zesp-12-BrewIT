@@ -157,7 +157,7 @@ class Command(BaseCommand):
         beer_types = BeerType.objects.all()
         breweries = Brewery.objects.all()
         Recipe.objects.bulk_create([
-            Recipe(recipe_body='Add hops and yeast. Ferment for 2 weeks.', beer_type_beer=beer_types[0], contract_brewery_brewery=breweries[1]),
+            Recipe(recipe_body='Add hops and yeast. Ferment for 2 weeks.', beer_type=beer_types[0], contract_brewery=breweries[3]),
         ])
         print('Recipes created.')
 
