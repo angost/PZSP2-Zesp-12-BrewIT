@@ -58,4 +58,10 @@ urlpatterns = [
     path('reservations/<int:pk>/',
             views.ReservationDetail.as_view(),
             name='reservation-detail'),
+    path('recipes/',
+         views.RecipeList.as_view(),
+         name='recipe-list'),
+    path('recipes/<int:pk>/',
+         views.RecipeDetail.as_view(),
+         name='recipe-detail'),
 ]
