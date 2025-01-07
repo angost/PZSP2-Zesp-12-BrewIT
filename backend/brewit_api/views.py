@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from django.http import Http404
 from brewit_api.serializers import AccountSerializer, RegistrationDataSerializer, EquipmentSerializer,\
      SectorSerializer, BrewerySerializer, EquipmentFilterParametersSerializer, BreweriesFilterParametersSerializer,\
-     ReservationRequestSerializer, ReservationCreateSerializer, ReservationSerializer
+     ReservationRequestSerializer, ReservationCreateSerializer, ReservationSerializer, RecipeSerializer
 from rest_framework.reverse import reverse
 from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate, login, logout
@@ -13,14 +13,14 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsProductionBrewery, IsBrewery, IsContractBrewery
 from .models import Equipment, Sector, Brewery, ReservationRequest, EquipmentReservation, Reservation,\
-                    EqipmentReservationRequest
+                    EqipmentReservationRequest, Recipe, ExecutionLog, BeerType
 from .auth_class import CsrfExemptSessionAuthentication
 from rest_framework.authentication import BasicAuthentication
 from .filters import BreweryFilter, EquipmentFilter
 from django_filters import rest_framework as filters
 from .utils import filter_equipment, filter_breweries
 from drf_spectacular.utils import extend_schema, OpenApiResponse
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from rest_framework import serializers
 
 
@@ -421,3 +421,40 @@ class ReservationDetail(APIView):
         reservation = self.get_object(pk)
         reservation.delete()
         return Response({'detail':'Reservation deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class RecipeDetail(APIView):
+    serializer_class = RecipeSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsContractBrewery]
+
+    def get_object(self, pk):
+        try:
+            return Recipe.objects.get(contract_brewery=self.request.user.get_brewery(), pk=pk)
+        except Recipe.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        recipe = self.get_object(pk)
+        serializer = RecipeSerializer(recipe, context={'request': request})
+        return Response(serializer.data)
+
+    def delete(self, request, pk, format=None):
+        recipe = self.get_object(pk)
+        if ExecutionLog.objects.filter(recipe=recipe).exists():
+            return Response({'detail':'Cannot delete recipe used in execution log.'}, status=status.HTTP_400_BAD_REQUEST)
+        recipe.delete()
+        return Response({'detail':'Recipe deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class RecipeList(generics.ListCreateAPIView):
+    serializer_class = RecipeSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsContractBrewery]
+
+    def get_queryset(self):
+        return Recipe.objects.filter(contract_brewery=self.request.user.get_brewery())
+
+    def perform_create(self, serializer):
+        serializer.save(contract_brewery=self.request.user.get_brewery())
+
