@@ -1,6 +1,6 @@
 from .models import Account, Brewery, Equipment, Sector, Vatpackaging,\
                     EqipmentReservationRequest, ReservationRequest, EquipmentReservation,\
-                    Reservation
+                    Reservation, Recipe, ExecutionLog, BeerType
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -296,4 +296,8 @@ class ReservationCreateSerializer(serializers.Serializer):
             raise serializers.ValidationError(str(e))
 
 
-
+class RecipeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = '__all__'
+        extra_kwargs = {'contract_brewery': {'read_only': True}}
