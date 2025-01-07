@@ -106,8 +106,8 @@ class Equipment(models.Model):
 class Recipe(models.Model):
     recipe_id = models.AutoField(primary_key=True)
     recipe_body = models.CharField(max_length=2048, blank=True, null=True)
-    beer_type_beer = models.ForeignKey(BeerType, models.DO_NOTHING)
-    contract_brewery_brewery = models.ForeignKey(Brewery, models.DO_NOTHING)
+    beer_type = models.ForeignKey(BeerType, models.DO_NOTHING)
+    contract_brewery = models.ForeignKey(Brewery, models.DO_NOTHING)
 
     class Meta:
         managed = True
