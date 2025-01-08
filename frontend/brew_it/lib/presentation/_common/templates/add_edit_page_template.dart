@@ -24,7 +24,7 @@ class AddEditPageTemplate extends DetailsAddEditPageTemplate {
                 apiCall: apiCall,
                 apiCallType: apiCallType,
                 navigateToPage: navigateToPageSave,
-                dataForPage: elementData,
+                dataForPage: elementData
               ),
               MainButton(
                 "Anuluj",

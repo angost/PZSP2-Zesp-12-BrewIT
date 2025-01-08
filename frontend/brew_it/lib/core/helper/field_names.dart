@@ -50,30 +50,32 @@ class RegisterContractFieldNames extends StandardFieldNames {
 class ProductionProcessesFieldNames extends StandardFieldNames {
   ProductionProcessesFieldNames()
       : super(fieldNames: [
-          "Typ piwa",
-          "Browar komercyjny",
-          "Receptura",
-          "Daty",
+          "Id",
+          "Data początkowa",
+          "Data końcowa",
           "Rezerwacja",
+          "Przepis",
+          "Opis",
           "Czy udany",
         ], jsonFieldNames: [
-          // MOCK
-          "id",
-          "title",
-          "completed",
-          "id",
-          "title",
-          "completed",
+          "log_id",
+          "start_date",
+          "end_date",
+          "reservation",
+          "recipe",
+          "log",
+          "is_successful",
         ], fieldNamesTable: [
           "Id",
-          "Typ piwa",
-          "Browar komercyjny",
-          "Daty",
+          "Data początkowa",
+          "Data końcowa",
           "Czy udany",
           "Operacje"
         ], jsonFieldNamesTable: [
-          // MOCK
-          "id", "title", "completed"
+          "log_id",
+          "start_date",
+          "end_date",
+          "is_successful"
         ]);
 }
 

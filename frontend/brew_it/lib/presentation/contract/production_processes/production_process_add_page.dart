@@ -7,7 +7,7 @@ class ProductionProcessAddPage extends AddEditPageTemplate {
   ProductionProcessAddPage(Map elementData, {super.key})
       : super(
             title: "Dodaj nowy proces wykonania:",
-            apiCall: "/production_process/",
+            apiCall: "/execution-logs/",
             apiCallType: "post",
             navigateToPageSave: (Map elementData) {
               return ProductionProcessDetailsPage(elementData);
@@ -17,6 +17,6 @@ class ProductionProcessAddPage extends AddEditPageTemplate {
             },
             fieldNames: ProductionProcessesFieldNames().fieldNames,
             jsonFieldNames: ProductionProcessesFieldNames().jsonFieldNames,
-            fieldEditable: [false, false, true, false, true, false],
+            fieldEditable: [false, true, true, true, true, true, false],
             elementData: elementData);
 }
