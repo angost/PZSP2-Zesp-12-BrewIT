@@ -6,7 +6,7 @@ from django.http import Http404
 from brewit_api.serializers import AccountSerializer, RegistrationDataSerializer, EquipmentSerializer,\
      SectorSerializer, BrewerySerializer, EquipmentFilterParametersSerializer, BreweriesFilterParametersSerializer,\
      ReservationRequestSerializer, ReservationCreateSerializer, ReservationSerializer, RecipeSerializer,\
-     ExecutionLogSerializer, ExecutionLogEditSerializer
+     ExecutionLogSerializer, ExecutionLogEditSerializer, BeerTypeSerializer
 from rest_framework.reverse import reverse
 from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate, login, logout
@@ -505,6 +505,25 @@ class ExecutionLogDetail(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BeerTypeList(generics.ListAPIView):
+    serializer_class = BeerTypeSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return BeerType.objects.all()
+
+
+class BeerTypeDetail(generics.RetrieveAPIView):
+    serializer_class = BeerTypeSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = BeerType.objects.all()
+
+
+
 
 
 

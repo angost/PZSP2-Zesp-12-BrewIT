@@ -327,3 +327,9 @@ class ExecutionLogEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExecutionLog
         fields = ['log', 'is_successful']
+
+
+class BeerTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BeerType
+        fields = '__all__'
