@@ -5,7 +5,9 @@ from rest_framework.response import Response
 from django.http import Http404
 from brewit_api.serializers import AccountSerializer, RegistrationDataSerializer, EquipmentSerializer,\
      SectorSerializer, BrewerySerializer, EquipmentFilterParametersSerializer, BreweriesFilterParametersSerializer,\
-     ReservationRequestSerializer, ReservationCreateSerializer, ReservationSerializer
+     ReservationRequestSerializer, ReservationCreateSerializer, ReservationSerializer, RecipeSerializer,\
+     ExecutionLogSerializer, ExecutionLogEditSerializer, BeerTypeSerializer, CleanupSerializer,\
+     EquipmentReservationSerializer
 from rest_framework.reverse import reverse
 from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate, login, logout
@@ -13,14 +15,14 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsProductionBrewery, IsBrewery, IsContractBrewery
 from .models import Equipment, Sector, Brewery, ReservationRequest, EquipmentReservation, Reservation,\
-                    EqipmentReservationRequest
+                    EqipmentReservationRequest, Recipe, ExecutionLog, BeerType
 from .auth_class import CsrfExemptSessionAuthentication
 from rest_framework.authentication import BasicAuthentication
-from .filters import BreweryFilter, EquipmentFilter
+from .filters import BreweryFilter, EquipmentFilter, EquipmentReservationFilter
 from django_filters import rest_framework as filters
 from .utils import filter_equipment, filter_breweries
 from drf_spectacular.utils import extend_schema, OpenApiResponse
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from rest_framework import serializers
 
 
@@ -421,3 +423,144 @@ class ReservationDetail(APIView):
         reservation = self.get_object(pk)
         reservation.delete()
         return Response({'detail':'Reservation deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class RecipeDetail(APIView):
+    serializer_class = RecipeSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsContractBrewery]
+
+    def get_object(self, pk):
+        try:
+            return Recipe.objects.get(contract_brewery=self.request.user.get_brewery(), pk=pk)
+        except Recipe.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        recipe = self.get_object(pk)
+        serializer = RecipeSerializer(recipe, context={'request': request})
+        return Response(serializer.data)
+
+    def delete(self, request, pk, format=None):
+        recipe = self.get_object(pk)
+        if ExecutionLog.objects.filter(recipe=recipe).exists():
+            return Response({'detail':'Cannot delete recipe used in execution log.'}, status=status.HTTP_400_BAD_REQUEST)
+        recipe.delete()
+        return Response({'detail':'Recipe deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class RecipeList(generics.ListCreateAPIView):
+    serializer_class = RecipeSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsContractBrewery]
+
+    def get_queryset(self):
+        return Recipe.objects.filter(contract_brewery=self.request.user.get_brewery())
+
+    def perform_create(self, serializer):
+        serializer.save(contract_brewery=self.request.user.get_brewery())
+
+
+class ExecutionLogList(APIView):
+    serializer_class = ExecutionLogSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsContractBrewery]
+
+    def get(self, request, format=None):
+        logs = ExecutionLog.objects.filter(reservation__contract_brewery=request.user.get_brewery())
+        serializer = ExecutionLogSerializer(logs, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = ExecutionLogSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ExecutionLogDetail(APIView):
+    serializer_class = ExecutionLogSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsContractBrewery]
+
+    def get_object(self, pk):
+        try:
+            return ExecutionLog.objects.get(reservation__contract_brewery=self.request.user.get_brewery(), pk=pk)
+        except ExecutionLog.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        log = self.get_object(pk)
+        serializer = ExecutionLogSerializer(log, context={'request': request})
+        return Response(serializer.data)
+
+    @extend_schema(
+        request=ExecutionLogEditSerializer,
+        responses=ExecutionLogEditSerializer,
+    )
+    def put(self, request, pk, format=None):
+        log = self.get_object(pk)
+        serializer = ExecutionLogEditSerializer(log, data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BeerTypeList(generics.ListAPIView):
+    serializer_class = BeerTypeSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return BeerType.objects.all()
+
+
+class BeerTypeDetail(generics.RetrieveAPIView):
+    serializer_class = BeerTypeSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = BeerType.objects.all()
+
+
+class CleanupCreate(APIView):
+    serializer_class = CleanupSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsProductionBrewery]
+
+    def post(self, request):
+        serializer = CleanupSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save(selector=EquipmentReservation.EquipmentSelectors.CLEAN.value)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CleanupDelete(APIView):
+    serializer_class = CleanupSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsProductionBrewery]
+
+    def delete(self, request, pk):
+        try:
+            cleanup = EquipmentReservation.objects.get(equipment__brewery=request.user.get_brewery(),
+                                                       selector=EquipmentReservation.EquipmentSelectors.CLEAN.value,
+                                                       pk=pk)
+        except EquipmentReservation.DoesNotExist:
+            raise Http404
+        cleanup.delete()
+        return Response({'detail':'Cleanup deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class EquipmentReservationList(generics.ListAPIView):
+    serializer_class = EquipmentReservationSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsProductionBrewery]
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = EquipmentReservationFilter
+
+    def get_queryset(self):
+        return EquipmentReservation.objects.filter(
+            equipment__brewery=self.request.user.get_brewery(),
+        )

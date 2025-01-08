@@ -44,11 +44,26 @@ class Command(BaseCommand):
         if BeerType.objects.exists():
             return
 
-        BeerType.objects.bulk_create([
+        beer_types = [
             BeerType(name='Lager', uses_bacteria=False),
             BeerType(name='Ale', uses_bacteria=False),
             BeerType(name='Sour', uses_bacteria=True),
-        ])
+            BeerType(name='Stout', uses_bacteria=False),
+            BeerType(name='Porter', uses_bacteria=False),
+            BeerType(name='IPA', uses_bacteria=False),
+            BeerType(name='Gose', uses_bacteria=True),
+            BeerType(name='Berliner Weisse', uses_bacteria=True),
+            BeerType(name='Wheat Beer', uses_bacteria=False),
+            BeerType(name='Pilsner', uses_bacteria=False),
+            BeerType(name='Barleywine', uses_bacteria=False),
+            BeerType(name='Belgian Tripel', uses_bacteria=False),
+            BeerType(name='Lambic', uses_bacteria=True),
+            BeerType(name='Saison', uses_bacteria=False),
+            BeerType(name='Kolsch', uses_bacteria=False),
+            BeerType(name='Different with bacteria', uses_bacteria=True),
+            BeerType(name='Different without bacteria', uses_bacteria=False),
+        ]
+        BeerType.objects.bulk_create(beer_types)
         print('Beer types created.')
 
     def create_breweries(self):
@@ -157,7 +172,7 @@ class Command(BaseCommand):
         beer_types = BeerType.objects.all()
         breweries = Brewery.objects.all()
         Recipe.objects.bulk_create([
-            Recipe(recipe_body='Add hops and yeast. Ferment for 2 weeks.', beer_type_beer=beer_types[0], contract_brewery_brewery=breweries[1]),
+            Recipe(recipe_body='Add hops and yeast. Ferment for 2 weeks.', beer_type=beer_types[0], contract_brewery=breweries[3]),
         ])
         print('Recipes created.')
 

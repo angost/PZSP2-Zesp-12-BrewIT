@@ -1,6 +1,6 @@
 from .models import Account, Brewery, Equipment, Sector, Vatpackaging,\
                     EqipmentReservationRequest, ReservationRequest, EquipmentReservation,\
-                    Reservation
+                    Reservation, Recipe, ExecutionLog, BeerType
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -294,6 +294,69 @@ class ReservationCreateSerializer(serializers.Serializer):
                 return reservation
         except Exception as e:
             raise serializers.ValidationError(str(e))
+
+
+class RecipeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = '__all__'
+        extra_kwargs = {'contract_brewery': {'read_only': True}}
+
+
+class ExecutionLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExecutionLog
+        fields = '__all__'
+        extra_kwargs = {'is_successful': {'read_only': True}}
+
+    def validate(self, attrs):
+        contract_brewery = self.context.get('request').user.get_brewery()
+        recipe = attrs.get('recipe')
+        reservation = attrs.get('reservation')
+
+        if recipe.contract_brewery != contract_brewery:
+            raise serializers.ValidationError("Recipe does not exist")
+        if reservation.contract_brewery != contract_brewery:
+            raise serializers.ValidationError("Reservation does not exist")
+        if ExecutionLog.objects.filter(reservation=reservation).exists():
+            raise serializers.ValidationError("Execution log for this reservation already exists")
+        return attrs
+
+
+class ExecutionLogEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExecutionLog
+        fields = ['log', 'is_successful']
+
+
+class BeerTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BeerType
+        fields = '__all__'
+
+
+class CleanupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EquipmentReservation
+        fields = ['start_date', 'end_date', 'equipment', 'selector']
+        extra_kwargs = {'selector': {'read_only': True}}
+
+    def validate(self, attrs):
+        production_brewery = self.context.get('request').user.get_brewery()
+        try:
+            equipment = Equipment.objects.get(equipment_id=attrs['equipment'].equipment_id,
+                                              brewery=production_brewery)
+        except Equipment.DoesNotExist:
+            raise serializers.ValidationError("Equipment does not exist")
+        if EquipmentReservation.objects.filter(
+                                        equipment=attrs['equipment'],
+                                        start_date__lt=attrs['end_date'],
+                                        end_date__gt=attrs['start_date']).exists():
+
+            raise serializers.ValidationError("Equipment is already reserved for that period")
+        return attrs
+
+
 
 
 
