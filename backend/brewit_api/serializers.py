@@ -301,3 +301,29 @@ class RecipeSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = '__all__'
         extra_kwargs = {'contract_brewery': {'read_only': True}}
+
+
+class ExecutionLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExecutionLog
+        fields = '__all__'
+        extra_kwargs = {'is_successful': {'read_only': True}}
+
+    def validate(self, attrs):
+        contract_brewery = self.context.get('request').user.get_brewery()
+        recipe = attrs.get('recipe')
+        reservation = attrs.get('reservation')
+
+        if recipe.contract_brewery != contract_brewery:
+            raise serializers.ValidationError("Recipe does not exist")
+        if reservation.contract_brewery != contract_brewery:
+            raise serializers.ValidationError("Reservation does not exist")
+        if ExecutionLog.objects.filter(reservation=reservation).exists():
+            raise serializers.ValidationError("Execution log for this reservation already exists")
+        return attrs
+
+
+class ExecutionLogEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExecutionLog
+        fields = ['log', 'is_successful']
