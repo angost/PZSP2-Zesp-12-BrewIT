@@ -64,4 +64,10 @@ urlpatterns = [
     path('recipes/<int:pk>/',
          views.RecipeDetail.as_view(),
          name='recipe-detail'),
+    path('execution-logs/',
+         views.ExecutionLogList.as_view(),
+         name='execution-log-list'),
+    path('execution-logs/<int:pk>/',
+         views.ExecutionLogDetail.as_view(),
+         name='execution-log-detail'),
 ]
