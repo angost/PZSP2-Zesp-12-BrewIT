@@ -6,7 +6,7 @@ from django.http import Http404
 from brewit_api.serializers import AccountSerializer, RegistrationDataSerializer, EquipmentSerializer,\
      SectorSerializer, BrewerySerializer, EquipmentFilterParametersSerializer, BreweriesFilterParametersSerializer,\
      ReservationRequestSerializer, ReservationCreateSerializer, ReservationSerializer, RecipeSerializer,\
-     ExecutionLogSerializer, ExecutionLogEditSerializer, BeerTypeSerializer
+     ExecutionLogSerializer, ExecutionLogEditSerializer, BeerTypeSerializer, CleanupSerializer
 from rest_framework.reverse import reverse
 from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate, login, logout
@@ -523,8 +523,30 @@ class BeerTypeDetail(generics.RetrieveAPIView):
     queryset = BeerType.objects.all()
 
 
+class CleanupCreate(APIView):
+    serializer_class = CleanupSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsProductionBrewery]
+
+    def post(self, request):
+        serializer = CleanupSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save(selector=EquipmentReservation.EquipmentSelectors.CLEAN.value)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class CleanupDelete(APIView):
+    serializer_class = CleanupSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsProductionBrewery]
 
-
-
+    def delete(self, request, pk):
+        try:
+            cleanup = EquipmentReservation.objects.get(equipment__brewery=request.user.get_brewery(),
+                                                       selector=EquipmentReservation.EquipmentSelectors.CLEAN.value,
+                                                       pk=pk)
+        except EquipmentReservation.DoesNotExist:
+            raise Http404
+        cleanup.delete()
+        return Response({'detail':'Cleanup deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)

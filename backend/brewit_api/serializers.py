@@ -333,3 +333,30 @@ class BeerTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = BeerType
         fields = '__all__'
+
+
+class CleanupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EquipmentReservation
+        fields = ['start_date', 'end_date', 'equipment', 'selector']
+        extra_kwargs = {'selector': {'read_only': True}}
+
+    def validate(self, attrs):
+        production_brewery = self.context.get('request').user.get_brewery()
+        try:
+            equipment = Equipment.objects.get(equipment_id=attrs['equipment'].equipment_id,
+                                              brewery=production_brewery)
+        except Equipment.DoesNotExist:
+            raise serializers.ValidationError("Equipment does not exist")
+        if EquipmentReservation.objects.filter(
+                                        equipment=attrs['equipment'],
+                                        start_date__lt=attrs['end_date'],
+                                        end_date__gt=attrs['start_date']).exists():
+
+            raise serializers.ValidationError("Equipment is already reserved for that period")
+        return attrs
+
+
+
+
+

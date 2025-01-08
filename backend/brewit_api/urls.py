@@ -76,4 +76,10 @@ urlpatterns = [
     path('beer-types/<int:pk>/',
          views.BeerTypeDetail.as_view(),
          name='beer-type-detail'),
+    path('cleanups/',
+         views.CleanupCreate.as_view(),
+         name='cleanup-create'),
+    path('cleanups/<int:pk>/',
+         views.CleanupDelete.as_view(),
+         name='cleanup-delete'),
 ]
