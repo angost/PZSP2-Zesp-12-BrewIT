@@ -6,7 +6,8 @@ from django.http import Http404
 from brewit_api.serializers import AccountSerializer, RegistrationDataSerializer, EquipmentSerializer,\
      SectorSerializer, BrewerySerializer, EquipmentFilterParametersSerializer, BreweriesFilterParametersSerializer,\
      ReservationRequestSerializer, ReservationCreateSerializer, ReservationSerializer, RecipeSerializer,\
-     ExecutionLogSerializer, ExecutionLogEditSerializer, BeerTypeSerializer, CleanupSerializer
+     ExecutionLogSerializer, ExecutionLogEditSerializer, BeerTypeSerializer, CleanupSerializer,\
+     EquipmentReservationSerializer
 from rest_framework.reverse import reverse
 from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate, login, logout
@@ -17,7 +18,7 @@ from .models import Equipment, Sector, Brewery, ReservationRequest, EquipmentRes
                     EqipmentReservationRequest, Recipe, ExecutionLog, BeerType
 from .auth_class import CsrfExemptSessionAuthentication
 from rest_framework.authentication import BasicAuthentication
-from .filters import BreweryFilter, EquipmentFilter
+from .filters import BreweryFilter, EquipmentFilter, EquipmentReservationFilter
 from django_filters import rest_framework as filters
 from .utils import filter_equipment, filter_breweries
 from drf_spectacular.utils import extend_schema, OpenApiResponse
@@ -550,3 +551,16 @@ class CleanupDelete(APIView):
             raise Http404
         cleanup.delete()
         return Response({'detail':'Cleanup deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class EquipmentReservationList(generics.ListAPIView):
+    serializer_class = EquipmentReservationSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsProductionBrewery]
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = EquipmentReservationFilter
+
+    def get_queryset(self):
+        return EquipmentReservation.objects.filter(
+            equipment__brewery=self.request.user.get_brewery(),
+        )

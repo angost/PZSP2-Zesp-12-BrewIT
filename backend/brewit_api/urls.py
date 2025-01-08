@@ -82,4 +82,7 @@ urlpatterns = [
     path('cleanups/<int:pk>/',
          views.CleanupDelete.as_view(),
          name='cleanup-delete'),
+    path('equipment-reservations/',
+         views.EquipmentReservationList.as_view(),
+         name='equipment-reservation-list'),
 ]
