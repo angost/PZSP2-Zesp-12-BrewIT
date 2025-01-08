@@ -5,7 +5,8 @@ from rest_framework.response import Response
 from django.http import Http404
 from brewit_api.serializers import AccountSerializer, RegistrationDataSerializer, EquipmentSerializer,\
      SectorSerializer, BrewerySerializer, EquipmentFilterParametersSerializer, BreweriesFilterParametersSerializer,\
-     ReservationRequestSerializer, ReservationCreateSerializer, ReservationSerializer, RecipeSerializer
+     ReservationRequestSerializer, ReservationCreateSerializer, ReservationSerializer, RecipeSerializer,\
+     ExecutionLogSerializer, ExecutionLogEditSerializer
 from rest_framework.reverse import reverse
 from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate, login, logout
@@ -457,4 +458,54 @@ class RecipeList(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(contract_brewery=self.request.user.get_brewery())
+
+
+class ExecutionLogList(APIView):
+    serializer_class = ExecutionLogSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsContractBrewery]
+
+    def get(self, request, format=None):
+        logs = ExecutionLog.objects.filter(reservation__contract_brewery=request.user.get_brewery())
+        serializer = ExecutionLogSerializer(logs, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = ExecutionLogSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ExecutionLogDetail(APIView):
+    serializer_class = ExecutionLogSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsContractBrewery]
+
+    def get_object(self, pk):
+        try:
+            return ExecutionLog.objects.get(reservation__contract_brewery=self.request.user.get_brewery(), pk=pk)
+        except ExecutionLog.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        log = self.get_object(pk)
+        serializer = ExecutionLogSerializer(log, context={'request': request})
+        return Response(serializer.data)
+
+    @extend_schema(
+        request=ExecutionLogEditSerializer,
+        responses=ExecutionLogEditSerializer,
+    )
+    def put(self, request, pk, format=None):
+        log = self.get_object(pk)
+        serializer = ExecutionLogEditSerializer(log, data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 
