@@ -1,5 +1,4 @@
 import 'package:brew_it/presentation/_common/widgets/menu_logout_button.dart';
-import 'package:brew_it/presentation/commercial/allowed_people/allowed_people_page.dart';
 import 'package:brew_it/presentation/commercial/machines/machines_page.dart';
 import 'package:brew_it/presentation/_common/widgets/menu_button.dart';
 import 'package:brew_it/presentation/_common/templates/home_page_template.dart';
@@ -19,10 +18,10 @@ class HomePageCommercial extends HomePageTemplate {
               ),
               MenuButton("Prośby o rezerwację od browarów kontraktowych",
                   navigateToPage: ReservationRequestsPage()),
-              MenuButton(
-                "Uprawnieni do wstępu do browaru",
-                navigateToPage: AllowedPeoplePage(),
-              ),
+              // MenuButton(
+              //   "Uprawnieni do wstępu do browaru",
+              //   navigateToPage: AllowedPeoplePage(),
+              // ),
               MenuLogoutButton(),
             ]);
 }

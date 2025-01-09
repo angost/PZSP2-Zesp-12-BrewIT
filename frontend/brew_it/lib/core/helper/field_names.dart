@@ -163,13 +163,14 @@ class MachineScheduleFieldNames extends StandardFieldNames {
   MachineScheduleFieldNames()
       : super(fieldNames: [], jsonFieldNames: [], fieldNamesTable: [
           "Id",
+          "Typ rezerwacji",
           "Data początkowa",
           "Data końcowa",
-          "Browar",
           "Rezerwacja",
           "Operacje",
         ], jsonFieldNamesTable: [
-          "machine_schedule_id",
+          "id",
+          "selector",
           "start_date",
           "end_date",
           "reservation_id",

@@ -2,6 +2,7 @@ import 'package:brew_it/core/helper/field_names.dart';
 import 'package:brew_it/presentation/_common/templates/table_page_template.dart';
 import 'package:brew_it/presentation/_common/widgets/main_button.dart';
 import 'package:brew_it/presentation/_common/widgets/my_icon_button.dart';
+import 'package:brew_it/presentation/commercial/machine_schedule/machine_schedule_page.dart';
 import 'package:brew_it/presentation/commercial/machines/machine_add_page.dart';
 import 'package:brew_it/presentation/commercial/machines/machine_details_page.dart';
 import 'package:brew_it/presentation/commercial/machines/machine_edit_page.dart';
@@ -22,7 +23,12 @@ class MachinesPage extends TablePageTemplate {
                   return MachineDetailsPage(elementData);
                 },
               ),
-              MyIconButton(type: "time"),
+              MyIconButton(
+                type: "time",
+                navigateToPage: (Map elementData) {
+                  return MachineSchedulePage(elementData);
+                },
+              ),
               MyIconButton(
                 type: "edit",
                 navigateToPage: (Map elementData) {
