@@ -155,6 +155,7 @@ class BreweryModelTests(TestCase):
 
 
 class SectorModelTests(TestCase):
+
     def test_create_sector(self):
         account = Account.objects.create_user(
             email='sector@example.com',
@@ -174,3 +175,104 @@ class SectorModelTests(TestCase):
         self.assertEqual(sector.name, 'Fermentation')
         self.assertTrue(sector.allows_bacteria)
         self.assertEqual(sector.brewery, brewery)
+
+
+class EquipmentModelTests(TestCase):
+
+    def test_create_equipment(self):
+        account = Account.objects.create_user(
+            email='equipment@example.com',
+            password='testpassword123',
+            role=Account.AccountRoles.PRODUCTION
+        )
+        brewery = Brewery.objects.create(
+            selector=Brewery.BrewerySelectors.PRODUCTION,
+            name='Equipment Brewery',
+            account=account
+        )
+        sector = Sector.objects.create(
+            name='Sector 1',
+            allows_bacteria=False,
+            brewery=brewery
+        )
+        equipment = Equipment.objects.create(
+            selector=Equipment.EquipmentSelectors.VAT,
+            capacity=100,
+            name='Vat #1',
+            daily_price=50.00,
+            min_temperature=15,
+            max_temperature=35,
+            brewery=brewery,
+            sector=sector
+        )
+        self.assertEqual(equipment.selector, Equipment.EquipmentSelectors.VAT)
+        self.assertEqual(equipment.capacity, 100)
+        self.assertEqual(equipment.min_temperature, 15)
+        self.assertEqual(equipment.max_temperature, 35)
+        self.assertEqual(equipment.brewery, brewery)
+        self.assertEqual(equipment.sector, sector)
+
+
+class RecipeModelTests(TestCase):
+
+    def test_create_recipe(self):
+        beer_type = BeerType.objects.create(name='Lager', uses_bacteria=False)
+        account = Account.objects.create_user(
+            email='recipe@example.com',
+            password='testpassword123',
+            role=Account.AccountRoles.CONTRACT
+        )
+        brewery = Brewery.objects.create(
+            selector=Brewery.BrewerySelectors.CONTRACT,
+            name='Brewery for Recipes',
+            account=account
+        )
+        recipe = Recipe.objects.create(
+            recipe_body='Ingredients list ...',
+            beer_type=beer_type,
+            contract_brewery=brewery
+        )
+        self.assertIsNotNone(recipe.recipe_id)
+        self.assertEqual(recipe.beer_type, beer_type)
+        self.assertEqual(recipe.contract_brewery, brewery)
+
+
+class ReservationRequestModelTests(TestCase):
+    def test_create_reservation_request(self):
+        """
+        Ensure we can create a ReservationRequest.
+        """
+        account_prod = Account.objects.create_user(
+            email='prod@example.com',
+            password='testpassword123',
+            role=Account.AccountRoles.PRODUCTION
+        )
+        account_contr = Account.objects.create_user(
+            email='contr@example.com',
+            password='testpassword123',
+            role=Account.AccountRoles.CONTRACT
+        )
+        brewery_prod = Brewery.objects.create(
+            selector=Brewery.BrewerySelectors.PRODUCTION,
+            name='Production Brewery RQ',
+            account=account_prod
+        )
+        brewery_contr = Brewery.objects.create(
+            selector=Brewery.BrewerySelectors.CONTRACT,
+            name='Contract Brewery RQ',
+            account=account_contr
+        )
+        rr = ReservationRequest.objects.create(
+            price=1000,
+            brew_size=500,
+            authorised_workers='John Doe, Alice Brown',
+            production_brewery=brewery_prod,
+            contract_brewery=brewery_contr,
+            allows_sector_share=True
+        )
+        self.assertEqual(rr.price, 1000)
+        self.assertEqual(rr.brew_size, 500)
+        self.assertIn('John', rr.authorised_workers)
+        self.assertEqual(rr.production_brewery, brewery_prod)
+        self.assertEqual(rr.contract_brewery, brewery_contr)
+        self.assertTrue(rr.allows_sector_share)
