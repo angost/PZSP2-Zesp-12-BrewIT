@@ -1,9 +1,10 @@
+import datetime
 from django.test import TestCase
 
 # Create your tests here.
 from django.test import TestCase
 from django.core.exceptions import ValidationError
-from django.utils.timezone import now
+from django.utils import timezone
 from ..models import (
     Account, BeerType, Brewery, Sector, Equipment, Recipe,
     ReservationRequest, EqipmentReservationRequest, Reservation,
@@ -276,3 +277,140 @@ class ReservationRequestModelTests(TestCase):
         self.assertEqual(rr.production_brewery, brewery_prod)
         self.assertEqual(rr.contract_brewery, brewery_contr)
         self.assertTrue(rr.allows_sector_share)
+
+
+class EqipmentReservationRequestModelTests(TestCase):
+
+    def test_create_equipment_reservation_request(self):
+        account = Account.objects.create_user(
+            email='eq_res_req@example.com',
+            password='testpassword123',
+            role=Account.AccountRoles.PRODUCTION
+        )
+        brewery = Brewery.objects.create(
+            selector=Brewery.BrewerySelectors.PRODUCTION,
+            name='Equipment Reservations Brewery',
+            account=account
+        )
+        sector = Sector.objects.create(
+            name='Sector #2',
+            allows_bacteria=False,
+            brewery=brewery
+        )
+        equipment = Equipment.objects.create(
+            selector=Equipment.EquipmentSelectors.BREWSET,
+            capacity=200,
+            name='Brewset #2',
+            daily_price=100.00,
+            brewery=brewery,
+            sector=sector
+        )
+        rr = ReservationRequest.objects.create(
+            price=2000,
+            brew_size=1000,
+            production_brewery=brewery,
+            contract_brewery=brewery,
+            allows_sector_share=False
+        )
+        now = timezone.now()
+        later = now + datetime.timedelta(days=1)
+
+        eq_res_req = EqipmentReservationRequest.objects.create(
+            start_date=now,
+            end_date=later,
+            equipment=equipment,
+            reservation_request=rr
+        )
+        self.assertEqual(eq_res_req.equipment, equipment)
+        self.assertEqual(eq_res_req.reservation_request, rr)
+        self.assertEqual(eq_res_req.start_date, now)
+        self.assertEqual(eq_res_req.end_date, later)
+
+
+class ReservationModelTests(TestCase):
+    def test_create_reservation(self):
+
+        account_prod = Account.objects.create_user(
+            email='res_prod@example.com',
+            password='testpassword123',
+            role=Account.AccountRoles.PRODUCTION
+        )
+        account_contr = Account.objects.create_user(
+            email='res_contr@example.com',
+            password='testpassword123',
+            role=Account.AccountRoles.CONTRACT
+        )
+        brewery_prod = Brewery.objects.create(
+            selector=Brewery.BrewerySelectors.PRODUCTION,
+            name='Production Brewery RS',
+            account=account_prod
+        )
+        brewery_contr = Brewery.objects.create(
+            selector=Brewery.BrewerySelectors.CONTRACT,
+            name='Contract Brewery RS',
+            account=account_contr
+        )
+        reservation = Reservation.objects.create(
+            price=5000,
+            brew_size=2000,
+            authorised_workers='John Doe, Bob Brown',
+            production_brewery=brewery_prod,
+            contract_brewery=brewery_contr,
+            allows_sector_share=True
+        )
+        self.assertEqual(reservation.price, 5000)
+        self.assertEqual(reservation.brew_size, 2000)
+        self.assertIn('John Doe', reservation.authorised_workers)
+        self.assertEqual(reservation.production_brewery, brewery_prod)
+        self.assertEqual(reservation.contract_brewery, brewery_contr)
+        self.assertTrue(reservation.allows_sector_share)
+
+
+class EquipmentReservationModelTests(TestCase):
+    def test_create_equipment_reservation(self):
+
+        account = Account.objects.create_user(
+            email='eq_res@example.com',
+            password='testpassword123',
+            role=Account.AccountRoles.PRODUCTION
+        )
+        brewery = Brewery.objects.create(
+            selector=Brewery.BrewerySelectors.PRODUCTION,
+            name='Equipment Reservation Brewery',
+            account=account
+        )
+        sector = Sector.objects.create(
+            name='Sector #3',
+            allows_bacteria=False,
+            brewery=brewery
+        )
+        equipment = Equipment.objects.create(
+            selector=Equipment.EquipmentSelectors.BREWSET,
+            capacity=300,
+            name='Brewset #3',
+            daily_price=80.00,
+            brewery=brewery,
+            sector=sector
+        )
+        reservation = Reservation.objects.create(
+            price=3000,
+            brew_size=1500,
+            production_brewery=brewery,
+            contract_brewery=brewery,
+            allows_sector_share=False
+        )
+        now = timezone.now()
+        later = now + datetime.timedelta(days=3)
+
+        eq_res = EquipmentReservation.objects.create(
+            selector=EquipmentReservation.EquipmentSelectors.BREW,
+            start_date=now,
+            end_date=later,
+            equipment=equipment,
+            reservation_id=reservation
+        )
+        self.assertEqual(eq_res.selector, EquipmentReservation.EquipmentSelectors.BREW)
+        self.assertEqual(eq_res.start_date, now)
+        self.assertEqual(eq_res.end_date, later)
+        self.assertEqual(eq_res.equipment, equipment)
+        self.assertEqual(eq_res.reservation_id, reservation)
