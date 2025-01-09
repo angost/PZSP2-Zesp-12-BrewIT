@@ -6,7 +6,7 @@ from .models import Brewery, Sector, Equipment, Reservation, EquipmentReservatio
 # Register your models here.
 @admin.register(get_user_model())
 class AccountAdmin(admin.ModelAdmin):
-    list_display = ['id', 'email']
+    list_display = ['id', 'email', 'role']
 
 @admin.register(Brewery)
 class BreweryAdmin(admin.ModelAdmin):
