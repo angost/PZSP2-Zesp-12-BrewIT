@@ -209,22 +209,20 @@ class ReservationsFieldNames extends StandardFieldNames {
 class RecipesFieldNames extends StandardFieldNames {
   RecipesFieldNames()
       : super(fieldNames: [
-          "Nazwa",
+          "Id",
           "Typ piwa",
           "Treść",
         ], jsonFieldNames: [
-          "name",
-          "beer_type_beer",
-          "recipe_body"
+          "recipe_id",
+          "beer_type",
+          "recipe_body",
         ], fieldNamesTable: [
           "Id",
-          "Nazwa",
           "Typ piwa",
           "Operacje",
         ], jsonFieldNamesTable: [
           "recipe_id",
-          "name",
-          "beer_type_beer"
+          "beer_type",
         ]);
 }
 
