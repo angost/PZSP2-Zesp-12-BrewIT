@@ -7,7 +7,7 @@ class ReservationsPage extends TablePageTemplate {
   ReservationsPage({super.key})
       : super(
             title: "Twoje rezerwacje:",
-            headers: ReservationsFieldNames().fieldNamesTable,
+            headers: ReservationsCommercialFieldNames().fieldNamesTable,
             options: [
               MyIconButton(
                 type: "info",
@@ -15,9 +15,15 @@ class ReservationsPage extends TablePageTemplate {
                   return ReservationDetailsPage(elementData);
                 },
               ),
-              MyIconButton(type: "delete")
+              MyIconButton(
+                type: "delete",
+                apiCall: "/reservations/",
+                apiCallType: "delete",
+                navigateToPage: () {
+                  return ReservationsPage();
+                },
+              ),
             ],
-            // MOCK - check names used in api
             apiString: "/reservations/",
-            jsonFields: ReservationsFieldNames().jsonFieldNamesTable);
+            jsonFields: ReservationsCommercialFieldNames().jsonFieldNamesTable);
 }

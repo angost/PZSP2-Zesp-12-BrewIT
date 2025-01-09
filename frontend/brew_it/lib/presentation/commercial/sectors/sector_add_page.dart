@@ -7,7 +7,7 @@ class SectorAddPage extends AddEditPageTemplate {
   SectorAddPage(Map elementData, {super.key})
       : super(
             title: "Dodaj nowy sektor:",
-            apiCall: "/sector/",
+            apiCall: "/sectors/",
             apiCallType: "post",
             navigateToPageSave: (Map elementData) {
               return SectorDetailsPage(elementData);
@@ -17,6 +17,6 @@ class SectorAddPage extends AddEditPageTemplate {
             },
             fieldNames: SectorsFieldNames().fieldNames,
             jsonFieldNames: SectorsFieldNames().jsonFieldNames,
-            fieldEditable: [true, true],
+            fieldEditable: [false, true, true],
             elementData: elementData);
 }

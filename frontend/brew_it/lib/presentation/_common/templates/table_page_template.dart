@@ -112,6 +112,13 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
                               navigateToPage: optionButton.navigateToPage,
                               dataForPage: elements[index],
                               customOnPressed: optionButton.customOnPressed,
+                              apiCall: optionButton.apiCall,
+                              apiCallType: optionButton.apiCallType,
+                              apiIdName: optionButton.apiIdName,
+                              elementId: widget.headers.indexOf("Id") != -1
+                                  ? element[widget.jsonFields![
+                                      widget.headers.indexOf("Id")]]
+                                  : 0,
                             ));
                           }
                         }

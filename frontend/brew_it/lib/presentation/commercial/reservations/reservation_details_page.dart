@@ -20,9 +20,15 @@ class ReservationDetailsPage extends DetailsAddEditPageTemplate {
             options: [
               MyIconButton(
                 type: "delete",
+                apiCall: "/reservations/",
+                apiCallType: "delete",
+                elementId: elementData["reservation_id"],
+                navigateToPage: () {
+                  return ReservationsPage();
+                },
               ),
             ],
-            fieldNames: ReservationsFieldNames().fieldNames,
-            jsonFieldNames: ReservationsFieldNames().jsonFieldNames,
+            fieldNames: ReservationsCommercialFieldNames().fieldNames,
+            jsonFieldNames: ReservationsCommercialFieldNames().jsonFieldNames,
             elementData: elementData);
 }

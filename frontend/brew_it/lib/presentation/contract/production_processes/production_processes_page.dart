@@ -29,7 +29,6 @@ class ProductionProcessesPage extends TablePageTemplate {
                 },
               )
             ],
-            // MOCK - check names used in api
-            apiString: "/production_processes/",
+            apiString: "/execution-logs/",
             jsonFields: ProductionProcessesFieldNames().jsonFieldNamesTable);
 }

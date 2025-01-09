@@ -50,63 +50,81 @@ class RegisterContractFieldNames extends StandardFieldNames {
 class ProductionProcessesFieldNames extends StandardFieldNames {
   ProductionProcessesFieldNames()
       : super(fieldNames: [
-          "Typ piwa",
-          "Browar komercyjny",
-          "Receptura",
-          "Daty",
+          "Id",
+          "Data początkowa",
+          "Data końcowa",
           "Rezerwacja",
+          "Przepis",
+          "Opis",
           "Czy udany",
         ], jsonFieldNames: [
-          // MOCK
-          "id",
-          "title",
-          "completed",
-          "id",
-          "title",
-          "completed",
+          "log_id",
+          "start_date",
+          "end_date",
+          "reservation",
+          "recipe",
+          "log",
+          "is_successful",
         ], fieldNamesTable: [
           "Id",
-          "Typ piwa",
-          "Browar komercyjny",
-          "Daty",
+          "Data początkowa",
+          "Data końcowa",
           "Czy udany",
           "Operacje"
         ], jsonFieldNamesTable: [
-          // MOCK
-          "id", "title", "completed"
+          "log_id",
+          "start_date",
+          "end_date",
+          "is_successful"
         ]);
 }
 
 class MachinesFieldNames extends StandardFieldNames {
   MachinesFieldNames()
       : super(fieldNames: [
+          "Id",
+          "Typ",
           "Nazwa",
-          "Pojemność",
+          "Opis",
           "Cena za dzień",
+          "Pojemność",
+          "Temperatura minimalna",
+          "Temperatura maksymalna",
+          "Sektor",
         ], jsonFieldNames: [
+          "equipment_id",
+          "selector",
           "name",
-          "capacity",
+          "description",
           "daily_price",
+          "capacity",
+          "min_temperature",
+          "max_temperature",
+          "sector"
         ], fieldNamesTable: [
           "Id",
+          "Typ",
           "Nazwa",
-          "Pojemność",
           "Cena za dzień",
+          "Pojemność",
           "Operacje"
         ], jsonFieldNamesTable: [
           "equipment_id",
+          "selector",
           "name",
-          "capacity",
           "daily_price",
+          "capacity",
         ]);
 }
 
 class SectorsFieldNames extends StandardFieldNames {
   SectorsFieldNames()
       : super(fieldNames: [
+          "Id",
           "Nazwa",
           "Zezwala na bakterie",
         ], jsonFieldNames: [
+          "sector_id",
           "name",
           "allows_bacteria",
         ], fieldNamesTable: [
@@ -117,27 +135,41 @@ class SectorsFieldNames extends StandardFieldNames {
         ], jsonFieldNamesTable: [
           "sector_id",
           "name",
-          "capacity",
+          "allows_bacteria",
         ]);
 }
 
 class ReservationRequestsFieldNames extends StandardFieldNames {
   ReservationRequestsFieldNames()
       : super(fieldNames: [
-          "Browar",
-          "Planowana ilość produkowanego piwa",
+          //"Id",
+          "Browar kontraktowy",
+          "Ilość produkowanego piwa",
           "Cena",
+          "Pozwala na dzielenie sektorów",
+          "Osoby upoważnione do wstępu",
+          // "Maszyny"
         ], jsonFieldNames: [
+          //"id",
           "contract_brewery",
           "brew_size",
-          "price"
+          "price",
+          "allows_sector_share",
+          "authorised_workers",
+          // "equipment_reservation_requests",
         ], fieldNamesTable: [
-          "Id",
-          "Browar",
+          //"Id",
+          "Browar kontraktowy",
+          "Ilość produkowanego piwa",
+          "Cena",
+          "Pozwala na dzielenie sektorów",
           "Operacje",
         ], jsonFieldNamesTable: [
-          "reservation_id",
+          // "id",
           "contract_brewery",
+          "brew_size",
+          "price",
+          "allows_sector_share",
         ]);
 }
 
@@ -161,68 +193,105 @@ class MachineScheduleFieldNames extends StandardFieldNames {
   MachineScheduleFieldNames()
       : super(fieldNames: [], jsonFieldNames: [], fieldNamesTable: [
           "Id",
+          "Typ rezerwacji",
           "Data początkowa",
           "Data końcowa",
-          "Browar",
           "Rezerwacja",
           "Operacje",
         ], jsonFieldNamesTable: [
-          "machine_schedule_id",
+          "id",
+          "selector",
           "start_date",
           "end_date",
           "reservation_id",
         ]);
 }
 
-class ReservationsFieldNames extends StandardFieldNames {
-  ReservationsFieldNames()
+class ReservationsCommercialFieldNames extends StandardFieldNames {
+  ReservationsCommercialFieldNames()
       : super(fieldNames: [
-          "Browar",
-          "Data początkowa",
-          "Data końcowa",
+          "Id",
+          "Browar kontraktowy",
+          "Ilość produkowanego piwa",
           "Cena",
-          "Planowana ilość produkowanego piwa",
+          "Pozwala na dzielenie sektorów",
           "Osoby upoważnione do wstępu",
-          "Maszyny",
+          // "Maszyny"
         ], jsonFieldNames: [
+          "reservation_id",
           "contract_brewery",
           "brew_size",
           "price",
-          "allowed_people",
-          "machines"
+          "allows_sector_share",
+          "authorised_workers",
+          // "equipment_reservation_requests",
         ], fieldNamesTable: [
           "Id",
-          "Browar",
-          "Data początkowa",
-          "Data końcowa",
+          "Browar kontraktowy",
+          "Ilość produkowanego piwa",
+          "Cena",
+          "Pozwala na dzielenie sektorów",
           "Operacje",
         ], jsonFieldNamesTable: [
           "reservation_id",
-          "brewery",
-          "start_date",
-          "end_date",
+          "contract_brewery",
+          "brew_size",
+          "price",
+          "allows_sector_share",
+        ]);
+}
+
+class ReservationsContractFieldNames extends StandardFieldNames {
+  ReservationsContractFieldNames()
+      : super(fieldNames: [
+          "Id",
+          "Browar komercyjny",
+          "Ilość produkowanego piwa",
+          "Cena",
+          "Pozwala na dzielenie sektorów",
+          "Osoby upoważnione do wstępu",
+          // "Maszyny"
+        ], jsonFieldNames: [
+          "reservation_id",
+          "production_brewery",
+          "brew_size",
+          "price",
+          "allows_sector_share",
+          "authorised_workers",
+          // "equipment_reservation_requests",
+        ], fieldNamesTable: [
+          "Id",
+          "Browar komercyjny",
+          "Ilość produkowanego piwa",
+          "Cena",
+          "Pozwala na dzielenie sektorów",
+          "Operacje",
+        ], jsonFieldNamesTable: [
+          "reservation_id",
+          "production_brewery",
+          "brew_size",
+          "price",
+          "allows_sector_share",
         ]);
 }
 
 class RecipesFieldNames extends StandardFieldNames {
   RecipesFieldNames()
       : super(fieldNames: [
-          "Nazwa",
+          "Id",
           "Typ piwa",
           "Treść",
         ], jsonFieldNames: [
-          "name",
-          "beer_type_beer",
-          "recipe_body"
+          "recipe_id",
+          "beer_type",
+          "recipe_body",
         ], fieldNamesTable: [
           "Id",
-          "Nazwa",
           "Typ piwa",
           "Operacje",
         ], jsonFieldNamesTable: [
           "recipe_id",
-          "name",
-          "beer_type_beer"
+          "beer_type",
         ]);
 }
 
