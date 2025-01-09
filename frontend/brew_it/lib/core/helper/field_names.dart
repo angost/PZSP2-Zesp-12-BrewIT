@@ -82,24 +82,38 @@ class ProductionProcessesFieldNames extends StandardFieldNames {
 class MachinesFieldNames extends StandardFieldNames {
   MachinesFieldNames()
       : super(fieldNames: [
+          "Id",
+          "Typ",
           "Nazwa",
-          "Pojemność",
+          "Opis",
           "Cena za dzień",
+          "Pojemność",
+          "Temperatura minimalna",
+          "Temperatura maksymalna",
+          "Sektor",
         ], jsonFieldNames: [
+          "equipment_id",
+          "selector",
           "name",
-          "capacity",
+          "description",
           "daily_price",
+          "capacity",
+          "min_temperature",
+          "max_temperature",
+          "sector"
         ], fieldNamesTable: [
           "Id",
+          "Typ",
           "Nazwa",
-          "Pojemność",
           "Cena za dzień",
+          "Pojemność",
           "Operacje"
         ], jsonFieldNamesTable: [
           "equipment_id",
+          "selector",
           "name",
-          "capacity",
           "daily_price",
+          "capacity",
         ]);
 }
 

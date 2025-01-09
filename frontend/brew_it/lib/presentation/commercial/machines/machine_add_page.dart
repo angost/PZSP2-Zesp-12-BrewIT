@@ -17,6 +17,16 @@ class MachineAddPage extends AddEditPageTemplate {
             },
             fieldNames: MachinesFieldNames().fieldNames,
             jsonFieldNames: MachinesFieldNames().jsonFieldNames,
-            fieldEditable: [true, true, true],
-            elementData: {"selector": "PROD", "sector": "1", ...elementData});
+            fieldEditable: [
+              false,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            elementData: elementData);
 }
