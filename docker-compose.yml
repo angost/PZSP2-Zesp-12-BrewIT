@@ -29,6 +29,7 @@ services:
     container_name: drf-backend
     command: >
       sh -c "./wait-for-it.sh db:5432 --
+      && python manage.py collectstatic --no-input
       && python manage.py migrate
       && gunicorn brewit.wsgi:application --bind 0.0.0.0:8000"
 
