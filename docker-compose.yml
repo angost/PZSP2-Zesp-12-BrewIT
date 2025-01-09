@@ -1,6 +1,6 @@
 services:
   reverse-proxy:
-    image: nginx:latest
+    image: nginx:1.27.3
     restart: always
     container_name: nginx
     ports:
@@ -37,7 +37,7 @@ services:
       DATABASE_URL: postgres://postgres:postgres_admin@db:5432/brewit_db
       POSTGRES_DB: brewit_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres_admin
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
 
@@ -56,7 +56,7 @@ services:
     environment:
       POSTGRES_DB: brewit_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres_admin
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
