@@ -1,4 +1,3 @@
-import 'package:brew_it/presentation/_common/widgets/menu_button.dart';
 import 'package:brew_it/presentation/_common/widgets/my_app_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -7,7 +6,7 @@ class HomePageTemplate extends StatelessWidget {
       {required this.title, required this.buttons, super.key});
 
   final String title;
-  final List<MenuButton> buttons;
+  final List<Widget> buttons;
 
   @override
   Widget build(BuildContext context) {
