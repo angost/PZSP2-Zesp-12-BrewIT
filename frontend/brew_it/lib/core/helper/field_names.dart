@@ -126,20 +126,34 @@ class SectorsFieldNames extends StandardFieldNames {
 class ReservationRequestsFieldNames extends StandardFieldNames {
   ReservationRequestsFieldNames()
       : super(fieldNames: [
-          "Browar",
-          "Planowana ilość produkowanego piwa",
+          //"Id",
+          "Browar kontraktowy",
+          "Ilość produkowanego piwa",
           "Cena",
+          "Pozwala na dzielenie sektorów",
+          "Osoby upoważnione do wstępu",
+          // "Maszyny"
         ], jsonFieldNames: [
+          //"id",
           "contract_brewery",
           "brew_size",
-          "price"
+          "price",
+          "allows_sector_share",
+          "authorised_workers",
+          // "equipment_reservation_requests",
         ], fieldNamesTable: [
-          "Id",
-          "Browar",
+          //"Id",
+          "Browar kontraktowy",
+          "Ilość produkowanego piwa",
+          "Cena",
+          "Pozwala na dzielenie sektorów",
           "Operacje",
         ], jsonFieldNamesTable: [
-          "reservation_id",
+          // "id",
           "contract_brewery",
+          "brew_size",
+          "price",
+          "allows_sector_share",
         ]);
 }
 
