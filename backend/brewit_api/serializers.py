@@ -81,6 +81,11 @@ class SectorSerializer(serializers.ModelSerializer):
         fields = ['sector_id', 'name', 'allows_bacteria', 'brewery']
         extra_kwargs = {'brewery': {'read_only': True}}
 
+class SectorEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sector
+        fields = ['name']
+
 
 class EquipmentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -94,6 +99,11 @@ class EquipmentSerializer(serializers.ModelSerializer):
         if sector.brewery != brewery:
             raise serializers.ValidationError("You cannot add equipment to a sector from another brewery")
         return attrs
+
+class EquipmentEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Equipment
+        fields = ['name', 'daily_price', 'description']
 
 
 class BrewerySerializer(serializers.ModelSerializer):
