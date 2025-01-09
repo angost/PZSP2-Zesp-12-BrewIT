@@ -6,7 +6,7 @@ class SectorEditPage extends AddEditPageTemplate {
   SectorEditPage(Map elementData, {super.key})
       : super(
             title: "Sektor - edytuj:",
-            apiCall: "/sector/" + elementData["sector_id"].toString() + "/",
+            apiCall: "/sectors/${elementData["sector_id"]}/",
             apiCallType: "put",
             navigateToPageSave: (Map elementData) {
               return SectorDetailsPage(elementData);
@@ -16,6 +16,6 @@ class SectorEditPage extends AddEditPageTemplate {
             },
             fieldNames: SectorsFieldNames().fieldNames,
             jsonFieldNames: SectorsFieldNames().jsonFieldNames,
-            fieldEditable: [true, true],
+            fieldEditable: [false, true, true],
             elementData: elementData);
 }

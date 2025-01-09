@@ -120,9 +120,11 @@ class MachinesFieldNames extends StandardFieldNames {
 class SectorsFieldNames extends StandardFieldNames {
   SectorsFieldNames()
       : super(fieldNames: [
+          "Id",
           "Nazwa",
           "Zezwala na bakterie",
         ], jsonFieldNames: [
+          "sector_id",
           "name",
           "allows_bacteria",
         ], fieldNamesTable: [
@@ -133,7 +135,7 @@ class SectorsFieldNames extends StandardFieldNames {
         ], jsonFieldNamesTable: [
           "sector_id",
           "name",
-          "capacity",
+          "allows_bacteria",
         ]);
 }
 

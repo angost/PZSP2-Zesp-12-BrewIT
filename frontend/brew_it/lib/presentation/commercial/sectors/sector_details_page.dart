@@ -19,7 +19,7 @@ class SectorDetailsPage extends DetailsAddEditPageTemplate {
               )
             ],
             options: [
-              MyIconButton(type: "link"),
+              // MyIconButton(type: "link"),
               MyIconButton(
                 type: "edit",
                 navigateToPage: (Map elementData) {

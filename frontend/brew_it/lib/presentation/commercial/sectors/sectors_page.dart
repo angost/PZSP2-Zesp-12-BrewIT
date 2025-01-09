@@ -22,7 +22,7 @@ class SectorsPage extends TablePageTemplate {
                   return SectorDetailsPage(elementData);
                 },
               ),
-              MyIconButton(type: "link"),
+              // MyIconButton(type: "link"),
               MyIconButton(
                 type: "edit",
                 navigateToPage: (Map elementData) {
@@ -31,7 +31,6 @@ class SectorsPage extends TablePageTemplate {
               ),
               MyIconButton(type: "delete")
             ],
-            // MOCK - check names used in api
-            apiString: "/sector/",
+            apiString: "/sectors/",
             jsonFields: SectorsFieldNames().jsonFieldNamesTable);
 }

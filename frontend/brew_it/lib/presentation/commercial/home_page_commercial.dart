@@ -4,6 +4,7 @@ import 'package:brew_it/presentation/_common/widgets/menu_button.dart';
 import 'package:brew_it/presentation/_common/templates/home_page_template.dart';
 import 'package:brew_it/presentation/commercial/reservation_requests/reservation_requests_page.dart';
 import 'package:brew_it/presentation/commercial/reservations/reservations_page.dart';
+import 'package:brew_it/presentation/commercial/sectors/sectors_page.dart';
 
 class HomePageCommercial extends HomePageTemplate {
   HomePageCommercial({super.key})
@@ -12,6 +13,7 @@ class HomePageCommercial extends HomePageTemplate {
             buttons: [
               MenuButton("Zarządzanie urządzeniami",
                   type: "important", navigateToPage: MachinesPage()),
+              MenuButton("Twoje sektory", navigateToPage: SectorsPage()),
               MenuButton(
                 "Twoje rezerwacje",
                 navigateToPage: ReservationsPage(),
