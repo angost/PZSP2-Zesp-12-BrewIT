@@ -414,3 +414,79 @@ class EquipmentReservationModelTests(TestCase):
         self.assertEqual(eq_res.end_date, later)
         self.assertEqual(eq_res.equipment, equipment)
         self.assertEqual(eq_res.reservation_id, reservation)
+
+
+class ExecutionLogModelTests(TestCase):
+    def test_create_execution_log(self):
+
+        beer_type = BeerType.objects.create(name='Stout', uses_bacteria=False)
+        account = Account.objects.create_user(
+            email='exec_log@example.com',
+            password='testpassword123',
+            role=Account.AccountRoles.CONTRACT
+        )
+        brewery = Brewery.objects.create(
+            selector=Brewery.BrewerySelectors.CONTRACT,
+            name='ExecutionLog Brewery',
+            account=account
+        )
+        recipe = Recipe.objects.create(
+            recipe_body='Some recipe text...',
+            beer_type=beer_type,
+            contract_brewery=brewery
+        )
+        reservation = Reservation.objects.create(
+            price=10000,
+            brew_size=5000,
+            production_brewery=brewery,
+            contract_brewery=brewery,
+            allows_sector_share=False
+        )
+
+        now = timezone.now()
+        log = ExecutionLog.objects.create(
+            start_date=now,
+            is_successful=False,
+            log='Starting brew process',
+            recipe=recipe,
+            reservation=reservation
+        )
+        self.assertIsNotNone(log.log_id)
+        self.assertEqual(log.start_date, now)
+        self.assertFalse(log.is_successful)
+        self.assertIn('Starting brew process', log.log)
+
+
+class VatpackagingModelTests(TestCase):
+
+    def test_create_vatpackaging(self):
+        account = Account.objects.create_user(
+            email='vatpackaging@example.com',
+            password='testpassword123',
+            role=Account.AccountRoles.PRODUCTION
+        )
+        brewery = Brewery.objects.create(
+            selector=Brewery.BrewerySelectors.PRODUCTION,
+            name='Packaging Brewery',
+            account=account
+        )
+        sector = Sector.objects.create(
+            name='Packaging Sector',
+            allows_bacteria=False,
+            brewery=brewery
+        )
+        equipment = Equipment.objects.create(
+            selector=Equipment.EquipmentSelectors.VAT,
+            capacity=400,
+            name='Vat #4',
+            daily_price=100.00,
+            brewery=brewery,
+            sector=sector
+        )
+        vatpackaging = Vatpackaging.objects.create(
+            equipment=equipment,
+            packaging_type=Vatpackaging.PackagingTypes.BOTTLE
+        )
+        self.assertIsNotNone(vatpackaging.vat_packaging_id)
+        self.assertEqual(vatpackaging.equipment, equipment)
+        self.assertEqual(vatpackaging.packaging_type, Vatpackaging.PackagingTypes.BOTTLE)
