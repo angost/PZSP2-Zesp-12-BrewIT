@@ -182,11 +182,11 @@ class ReservationRequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ReservationRequest
-        fields = ['brew_size', 'authorised_workers', 'production_brewery', 'price',
-                  'contract_brewery', 'equipment_reservation_requests', 'allows_sector_share']
+        fields = '__all__'
 
         extra_kwargs = {'price': {'read_only': True},
                         'contract_brewery': {'read_only': True},
+                        'id': {'read_only': True}
              }
 
     def validate(self, attrs):
