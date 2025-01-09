@@ -7,6 +7,7 @@ import 'package:brew_it/presentation/log_in_register/choose_user_type_page.dart'
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:brew_it/presentation/commercial/home_page_commercial.dart';
+import 'package:brew_it/core/helper/user_data.dart' as user_data;
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
@@ -70,6 +71,8 @@ class _LogInPageState extends State<LogInPage> {
                                   data: logInData,
                                 );
                                 if (response.statusCode == 200) {
+                                  user_data.userRole =
+                                      response.data["user_role"];
                                   if (response.data["user_role"] == "PROD") {
                                     Navigator.push(
                                         context,
@@ -92,6 +95,7 @@ class _LogInPageState extends State<LogInPage> {
                                                 HomePageAdmin()));
                                   } else {
                                     print("Unknown user role");
+                                    user_data.userRole = "";
                                   }
                                 } else {
                                   print("Log in failed");
