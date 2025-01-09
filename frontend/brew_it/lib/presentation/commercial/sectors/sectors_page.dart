@@ -29,7 +29,14 @@ class SectorsPage extends TablePageTemplate {
                   return SectorEditPage(elementData);
                 },
               ),
-              MyIconButton(type: "delete")
+              MyIconButton(
+                type: "delete",
+                apiCall: "/sectors/",
+                apiCallType: "delete",
+                navigateToPage: () {
+                  return SectorsPage();
+                },
+              ),
             ],
             apiString: "/sectors/",
             jsonFields: SectorsFieldNames().jsonFieldNamesTable);

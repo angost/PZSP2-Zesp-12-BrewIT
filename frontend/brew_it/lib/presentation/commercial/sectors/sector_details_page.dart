@@ -29,6 +29,12 @@ class SectorDetailsPage extends DetailsAddEditPageTemplate {
               ),
               MyIconButton(
                 type: "delete",
+                apiCall: "/sectors/",
+                apiCallType: "delete",
+                elementId: elementData["sector_id"],
+                navigateToPage: () {
+                  return SectorsPage();
+                },
               ),
             ],
             fieldNames: SectorsFieldNames().fieldNames,

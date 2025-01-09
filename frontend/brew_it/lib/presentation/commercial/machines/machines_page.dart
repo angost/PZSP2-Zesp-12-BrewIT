@@ -35,7 +35,14 @@ class MachinesPage extends TablePageTemplate {
                   return MachineEditPage(elementData);
                 },
               ),
-              MyIconButton(type: "delete")
+              MyIconButton(
+                type: "delete",
+                apiCall: "/equipment/",
+                apiCallType: "delete",
+                navigateToPage: () {
+                  return MachinesPage();
+                },
+              ),
             ],
             apiString: "/equipment/",
             jsonFields: MachinesFieldNames().jsonFieldNamesTable);

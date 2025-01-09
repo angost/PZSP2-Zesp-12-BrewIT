@@ -27,7 +27,14 @@ class RecipesPage extends TablePageTemplate {
               //     return RecipeEditPage(elementData);
               //   },
               // ),
-              MyIconButton(type: "delete")
+              MyIconButton(
+                type: "delete",
+                apiCall: "/recipes/",
+                apiCallType: "delete",
+                navigateToPage: () {
+                  return RecipesPage();
+                },
+              ),
             ],
             apiString: "/recipes/",
             jsonFields: RecipesFieldNames().jsonFieldNamesTable);

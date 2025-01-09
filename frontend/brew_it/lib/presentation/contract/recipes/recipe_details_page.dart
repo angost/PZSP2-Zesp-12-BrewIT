@@ -27,6 +27,12 @@ class RecipeDetailsPage extends DetailsAddEditPageTemplate {
               // ),
               MyIconButton(
                 type: "delete",
+                apiCall: "/recipes/",
+                apiCallType: "delete",
+                elementId: elementData["recipe_id"],
+                navigateToPage: () {
+                  return RecipesPage();
+                },
               ),
             ],
             fieldNames: RecipesFieldNames().fieldNames,

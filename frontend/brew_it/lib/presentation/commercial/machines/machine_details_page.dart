@@ -35,6 +35,12 @@ class MachineDetailsPage extends DetailsAddEditPageTemplate {
               ),
               MyIconButton(
                 type: "delete",
+                apiCall: "/equipment/",
+                apiCallType: "delete",
+                elementId: elementData["equipment_id"],
+                navigateToPage: () {
+                  return MachinesPage();
+                },
               ),
             ],
             fieldNames: MachinesFieldNames().fieldNames,
