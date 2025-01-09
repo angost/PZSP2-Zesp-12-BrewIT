@@ -4,6 +4,7 @@ import 'package:brew_it/injection_container.dart';
 import 'package:brew_it/presentation/log_in_register/log_in_page.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:brew_it/core/helper/user_data.dart' as user_data;
 
 class MenuLogoutButton extends StatelessWidget {
   const MenuLogoutButton({super.key});
@@ -21,6 +22,7 @@ class MenuLogoutButton extends StatelessWidget {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return const LogInPage();
               }));
+              user_data.userRole = "";
             } else {
               print("An error occured");
             }
