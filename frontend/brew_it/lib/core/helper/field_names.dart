@@ -191,33 +191,71 @@ class MachineScheduleFieldNames extends StandardFieldNames {
         ]);
 }
 
-class ReservationsFieldNames extends StandardFieldNames {
-  ReservationsFieldNames()
+class ReservationsCommercialFieldNames extends StandardFieldNames {
+  ReservationsCommercialFieldNames()
       : super(fieldNames: [
-          "Browar",
-          "Data początkowa",
-          "Data końcowa",
+          "Id",
+          "Browar kontraktowy",
+          "Ilość produkowanego piwa",
           "Cena",
-          "Planowana ilość produkowanego piwa",
+          "Pozwala na dzielenie sektorów",
           "Osoby upoważnione do wstępu",
-          "Maszyny",
+          // "Maszyny"
         ], jsonFieldNames: [
+          "reservation_id",
           "contract_brewery",
           "brew_size",
           "price",
-          "allowed_people",
-          "machines"
+          "allows_sector_share",
+          "authorised_workers",
+          // "equipment_reservation_requests",
         ], fieldNamesTable: [
           "Id",
-          "Browar",
-          "Data początkowa",
-          "Data końcowa",
+          "Browar kontraktowy",
+          "Ilość produkowanego piwa",
+          "Cena",
+          "Pozwala na dzielenie sektorów",
           "Operacje",
         ], jsonFieldNamesTable: [
           "reservation_id",
-          "brewery",
-          "start_date",
-          "end_date",
+          "contract_brewery",
+          "brew_size",
+          "price",
+          "allows_sector_share",
+        ]);
+}
+
+class ReservationsContractFieldNames extends StandardFieldNames {
+  ReservationsContractFieldNames()
+      : super(fieldNames: [
+          "Id",
+          "Browar komercyjny",
+          "Ilość produkowanego piwa",
+          "Cena",
+          "Pozwala na dzielenie sektorów",
+          "Osoby upoważnione do wstępu",
+          // "Maszyny"
+        ], jsonFieldNames: [
+          "reservation_id",
+          "production_brewery",
+          "brew_size",
+          "price",
+          "allows_sector_share",
+          "authorised_workers",
+          // "equipment_reservation_requests",
+        ], fieldNamesTable: [
+          "Id",
+          "Browar komercyjny",
+          "Ilość produkowanego piwa",
+          "Cena",
+          "Pozwala na dzielenie sektorów",
+          "Operacje",
+        ], jsonFieldNamesTable: [
+          "reservation_id",
+          "production_brewery",
+          "brew_size",
+          "price",
+          "allows_sector_share",
         ]);
 }
 

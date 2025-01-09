@@ -22,7 +22,7 @@ class ReservationDetailsPage extends DetailsAddEditPageTemplate {
                 type: "delete",
               ),
             ],
-            fieldNames: ReservationsFieldNames().fieldNames,
-            jsonFieldNames: ReservationsFieldNames().jsonFieldNames,
+            fieldNames: ReservationsCommercialFieldNames().fieldNames,
+            jsonFieldNames: ReservationsCommercialFieldNames().jsonFieldNames,
             elementData: elementData);
 }
