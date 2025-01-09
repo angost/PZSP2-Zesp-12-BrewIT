@@ -1,6 +1,7 @@
 import 'package:brew_it/injection_container.dart';
 import 'package:brew_it/presentation/_common/widgets/main_button.dart';
 import 'package:brew_it/presentation/_common/widgets/my_app_bar.dart';
+import 'package:brew_it/presentation/admin/home_page_admin.dart';
 import 'package:brew_it/presentation/contract/home_page_contract.dart';
 import 'package:brew_it/presentation/log_in_register/choose_user_type_page.dart';
 import 'package:dio/dio.dart';
@@ -69,19 +70,28 @@ class _LogInPageState extends State<LogInPage> {
                                   data: logInData,
                                 );
                                 if (response.statusCode == 200) {
-                                  if (response.data["user_type"] ==
-                                      "Production_Brewery") {
+                                  if (response.data["user_role"] == "PROD") {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 HomePageCommercial()));
-                                  } else {
+                                  } else if (response.data["user_role"] ==
+                                      "CONTR") {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 HomePageContract()));
+                                  } else if (response.data["user_role"] ==
+                                      "ADMIN") {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                HomePageAdmin()));
+                                  } else {
+                                    print("Unknown user role");
                                   }
                                 } else {
                                   print("Log in failed");
