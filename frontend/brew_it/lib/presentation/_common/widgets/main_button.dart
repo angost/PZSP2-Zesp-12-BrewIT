@@ -13,6 +13,7 @@ class MainButton extends StatelessWidget {
       this.apiCall,
       this.apiCallType,
       this.pop = false,
+      this.navigateIsTablePage = false,
       super.key});
 
   final String content;
@@ -24,6 +25,7 @@ class MainButton extends StatelessWidget {
   final String? apiCall;
   final String? apiCallType;
   final bool pop;
+  final bool navigateIsTablePage;
 
   final typeToStyle = {
     "default": secondaryButtonTheme,
@@ -63,6 +65,10 @@ class MainButton extends StatelessWidget {
                 if (apiCallType == "post_use_response_data") {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return navigateToPage!(dataForPage, responseData);
+                  }));
+                } else if (navigateIsTablePage) {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return navigateToPage!();
                   }));
                 } else {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {

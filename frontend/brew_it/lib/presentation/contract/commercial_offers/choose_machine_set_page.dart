@@ -2,6 +2,7 @@ import 'package:brew_it/core/theme/colors.dart';
 import 'package:brew_it/injection_container.dart';
 import 'package:brew_it/presentation/_common/widgets/main_button.dart';
 import 'package:brew_it/presentation/_common/widgets/my_app_bar.dart';
+import 'package:brew_it/presentation/contract/commercial_offers/reservation_request_add_page.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
@@ -78,8 +79,6 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
         print("An error occured");
       }
 
-      print(vatElements);
-      print(brewsetElements);
     } on DioException catch (e) {
       print("An error occured");
     }
@@ -101,13 +100,33 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
                       Text("Wybierz zestaw urządzeń:",
                           style: Theme.of(context).textTheme.titleSmall),
                       const Spacer(),
-                      MainButton(
-                        "Wybierz",
-                        type: "primary_small",
-                      ),
+                      MainButton("Wybierz", type: "primary_small",
+                          navigateToPage: () {
+                        return ReservationRequestAddPage({
+                          "production_brewery": widget.commercialId,
+                          "allows_sector_share":
+                              widget.filtersData!["allows_sector_share"],
+                          "equipment_reservation_requests": [
+                            {
+                              "start_date":
+                                  widget.filtersData!["vat_start_date"],
+                              "end_date": widget.filtersData!["vat_end_date"],
+                              "equipment": chosenVatId
+                            },
+                            {
+                              "start_date":
+                                  widget.filtersData!["brewset_start_date"],
+                              "end_date":
+                                  widget.filtersData!["brewset_end_date"],
+                              "equipment": chosenBrewsetId
+                            }
+                          ],
+                        });
+                      }),
                       MainButton(
                         "Anuluj",
                         type: "secondary_small",
+                        pop: true,
                       )
                     ]),
               ),

@@ -203,6 +203,7 @@ class ReservationRequestsFieldNames extends StandardFieldNames {
       : super(fieldNames: [
           "Id",
           "Browar kontraktowy",
+          "Browar komercyjny",
           "Ilość produkowanego piwa",
           "Cena",
           "Pozwala na dzielenie sektorów",
@@ -211,6 +212,7 @@ class ReservationRequestsFieldNames extends StandardFieldNames {
         ], jsonFieldNames: [
           "id",
           "contract_brewery",
+          "production_brewery",
           "brew_size",
           "price",
           "allows_sector_share",
