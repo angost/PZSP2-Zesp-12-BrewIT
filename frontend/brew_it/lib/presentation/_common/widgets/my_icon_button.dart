@@ -14,6 +14,7 @@ class MyIconButton extends StatelessWidget {
       this.apiCallType,
       this.apiIdName,
       this.elementId,
+      this.filtersData,
       super.key});
 
   final String type;
@@ -24,6 +25,7 @@ class MyIconButton extends StatelessWidget {
   final String? apiCallType;
   final String? apiIdName;
   final int? elementId;
+  final Map? filtersData;
 
   final typeToIcon = {
     "default": Icons.info_outline,
@@ -73,6 +75,10 @@ class MyIconButton extends StatelessWidget {
             } on DioException catch (e) {
               print("An error occured");
             }
+          } else if (navigateToPage != null && filtersData != null) {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return navigateToPage!(dataForPage, filtersData);
+            }));
           } else if (navigateToPage != null) {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               if (dataForPage != null) {
