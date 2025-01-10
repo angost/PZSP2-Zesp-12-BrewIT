@@ -4,7 +4,6 @@ import 'package:brew_it/presentation/_common/widgets/my_app_bar.dart';
 import 'package:brew_it/presentation/_common/widgets/my_icon_button.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-// import 'dart:html' as html;
 
 class TablePageTemplate extends StatefulWidget {
   const TablePageTemplate(
@@ -14,6 +13,7 @@ class TablePageTemplate extends StatefulWidget {
       this.options,
       this.apiString,
       this.jsonFields,
+      this.passedElements,
       super.key});
 
   final String title;
@@ -22,6 +22,7 @@ class TablePageTemplate extends StatefulWidget {
   final List<MyIconButton>? options;
   final String? apiString;
   final List<String>? jsonFields;
+  final List? passedElements;
 
   @override
   State<TablePageTemplate> createState() => _TablePageTemplateState();
@@ -33,7 +34,11 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
   @override
   void initState() {
     super.initState();
-    if (widget.apiString != null && widget.apiString != "") {
+    if (widget.passedElements != null) {
+      setState(() {
+        elements = widget.passedElements!;
+      });
+    } else if (widget.apiString != null && widget.apiString != "") {
       fetchData();
     }
   }
