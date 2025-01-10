@@ -215,7 +215,7 @@ class EquipmentDetail(APIView):
 class EquipmentFiltered(APIView):
     serializer_class = EquipmentFilterParametersSerializer
     authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
-    permission_classes = [IsAuthenticated, IsProductionBrewery]
+    permission_classes = [IsAuthenticated, IsContractBrewery]
 
     @extend_schema(
         request=EquipmentFilterParametersSerializer,

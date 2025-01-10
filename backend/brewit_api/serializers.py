@@ -127,7 +127,7 @@ class EquipmentFilterParametersSerializer(serializers.Serializer):
 
     def validate_production_brewery(self, value):
         try:
-            brewery = Brewery.objects.get(value)
+            brewery = Brewery.objects.get(brewery_id=value)
             if brewery.selector != Brewery.BrewerySelectors.PRODUCTION.value:
                 raise serializers.ValidationError("Production brewery does not exist")
             return value
