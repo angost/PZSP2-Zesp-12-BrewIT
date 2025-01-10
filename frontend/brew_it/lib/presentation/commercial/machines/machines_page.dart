@@ -11,10 +11,10 @@ class MachinesPage extends TablePageTemplate {
   MachinesPage({super.key})
       : super(
             title: "Twoje urządzenia:",
-            button: MainButton("Dodaj urządzenie", type: "secondary_small",
+            buttons: [MainButton("Dodaj urządzenie", type: "secondary_small",
                 navigateToPage: () {
               return MachineAddPage({});
-            }),
+            })],
             headers: MachinesFieldNames().fieldNamesTable,
             options: [
               MyIconButton(

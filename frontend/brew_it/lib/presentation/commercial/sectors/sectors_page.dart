@@ -10,10 +10,10 @@ class SectorsPage extends TablePageTemplate {
   SectorsPage({super.key})
       : super(
             title: "Twoje sektory:",
-            button: MainButton("Dodaj sektor", type: "secondary_small",
+            buttons: [MainButton("Dodaj sektor", type: "secondary_small",
                 navigateToPage: () {
               return SectorAddPage({});
-            }),
+            })],
             headers: SectorsFieldNames().fieldNamesTable,
             options: [
               MyIconButton(

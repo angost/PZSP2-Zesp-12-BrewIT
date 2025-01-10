@@ -8,15 +8,24 @@ class CommercialOffersPage extends TablePageTemplate {
   CommercialOffersPage([Map? filtersData, List? filteredElements])
       : super(
             title: "Browary spełniające warunki:",
-            button: MainButton(
-              "FILTRUJ",
-              type: "primary_small",
-              navigateToPage: () {
-                return filtersData != null
-                    ? CommercialOffersFilterPage(filtersData)
-                    : CommercialOffersFilterPage({});
-              },
-            ),
+            buttons: [
+              MainButton(
+                "FILTRUJ",
+                type: "primary_small",
+                navigateToPage: () {
+                  return filtersData != null
+                      ? CommercialOffersFilterPage(filtersData)
+                      : CommercialOffersFilterPage({});
+                },
+              ),
+              MainButton(
+                "Wyczyść filtry",
+                type: "secondary_small",
+                navigateToPage: () {
+                  return CommercialOffersPage();
+                },
+              )
+            ],
             headers: CommercialOffersFieldNames().fieldNamesTable,
             options: [
               MyIconButton(type: "configure"),

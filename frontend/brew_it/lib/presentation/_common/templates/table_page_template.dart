@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 class TablePageTemplate extends StatefulWidget {
   const TablePageTemplate(
       {required this.title,
-      this.button,
+      this.buttons,
       required this.headers,
       this.options,
       this.apiString,
@@ -17,7 +17,7 @@ class TablePageTemplate extends StatefulWidget {
       super.key});
 
   final String title;
-  final MainButton? button;
+  final List<MainButton>? buttons;
   final List<String> headers;
   final List<MyIconButton>? options;
   final String? apiString;
@@ -62,6 +62,11 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> buttonWidgets = [];
+    if (widget.buttons != null) {
+      buttonWidgets.addAll(widget.buttons!);
+    }
+
     return Scaffold(
         appBar: MyAppBar(context),
         body: Padding(
@@ -73,12 +78,12 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
                 flex: 1,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(widget.title,
-                        style: Theme.of(context).textTheme.titleSmall),
-                    const Spacer(),
-                    widget.button ?? Container()
-                  ],
+                  children: <Widget>[
+                        Text(widget.title,
+                            style: Theme.of(context).textTheme.titleSmall),
+                        const Spacer()
+                      ] +
+                      buttonWidgets,
                 ),
               ),
               Expanded(

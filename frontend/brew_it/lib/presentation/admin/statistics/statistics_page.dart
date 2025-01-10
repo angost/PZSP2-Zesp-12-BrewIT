@@ -9,17 +9,19 @@ class StatisticsPage extends TablePageTemplate {
   StatisticsPage({super.key})
       : super(
             title: "Statystyki szczegółowe:",
-            button: MainButton("Statystyki łączne", type: "secondary_small",
-                navigateToPage: () {
-              return StatisticsSumPage(const {
-                // MOCK - implement option of fetching data from api to DetailsAddEditPageTemplate apart from passing it in constructor
-                "commercial_number": 999,
-                "contract_number": 999,
-                "amount": 999,
-                "sum_cancelled_reservations": 999,
-                "sum_failed_beer": 999,
-              });
-            }),
+            buttons: [
+              MainButton("Statystyki łączne", type: "secondary_small",
+                  navigateToPage: () {
+                return StatisticsSumPage(const {
+                  // MOCK - implement option of fetching data from api to DetailsAddEditPageTemplate apart from passing it in constructor
+                  "commercial_number": 999,
+                  "contract_number": 999,
+                  "amount": 999,
+                  "sum_cancelled_reservations": 999,
+                  "sum_failed_beer": 999,
+                });
+              })
+            ],
             headers: StatisticsFieldNames().fieldNamesTable,
             options: [
               MyIconButton(
