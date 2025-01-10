@@ -129,6 +129,7 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
                                   ? element[widget.jsonFields![
                                       widget.headers.indexOf("Id")]]
                                   : 0,
+                              filtersData: optionButton.filtersData,
                             ));
                           }
                         }

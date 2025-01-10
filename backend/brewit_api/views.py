@@ -7,7 +7,7 @@ from brewit_api.serializers import AccountSerializer, RegistrationDataSerializer
      SectorSerializer, BrewerySerializer, EquipmentFilterParametersSerializer, BreweriesFilterParametersSerializer,\
      ReservationRequestSerializer, ReservationCreateSerializer, ReservationSerializer, RecipeSerializer,\
      ExecutionLogSerializer, ExecutionLogEditSerializer, BeerTypeSerializer, CleanupSerializer,\
-     EquipmentReservationSerializer
+     EquipmentReservationSerializer, SectorEditSerializer, EquipmentEditSerializer
 from rest_framework.reverse import reverse
 from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate, login, logout
@@ -61,7 +61,7 @@ class AccountDetail(APIView):
 
 
 class Login(APIView):
-    authentication_classes = []
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
 
     def post(self, request, format=None):
         email = request.data.get('email')
@@ -79,7 +79,7 @@ class Login(APIView):
 
 class Register(APIView):
     serializer_class = RegistrationDataSerializer
-    authentication_classes = []
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
 
     def post(self, request, format=None):
         serializer = RegistrationDataSerializer(data=request.data)
@@ -93,6 +93,8 @@ class Register(APIView):
 
 
 class Logout(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+
     def post(self, request, format=None):
         logout(request)
         return Response({'detail':'Logged out successfully.'}, status=status.HTTP_200_OK)
@@ -103,7 +105,7 @@ class SectorList(APIView):
     authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsProductionBrewery]
     def get(self, request, format=None):
-        sectors = Sector.objects.all() # It's bad solution, need to change model so sector is connected to brewery
+        sectors = Sector.objects.filter(brewery=request.user.get_brewery()).all()
         serializer = SectorSerializer(sectors, many=True, context={'request': request})
         return Response(serializer.data)
 
@@ -112,7 +114,7 @@ class SectorList(APIView):
         if serializer.is_valid():
             brewery = request.user.get_brewery()
             serializer.save(brewery=brewery)
-            return Response({'detail':'Sector added successfully.'}, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -131,9 +133,13 @@ class SectorDetail(APIView):
         serializer = SectorSerializer(sector, context={'request': request})
         return Response(serializer.data)
 
+    @extend_schema(
+        request=SectorEditSerializer,
+        responses=SectorEditSerializer,
+    )
     def put(self, request, pk, format=None):
         sector = self.get_object(pk)
-        serializer = SectorSerializer(sector, data=request.data, context={'request': request})
+        serializer = SectorEditSerializer(sector, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -141,6 +147,8 @@ class SectorDetail(APIView):
 
     def delete(self, request, pk, format=None):
         sector = self.get_object(pk)
+        if Equipment.objects.filter(sector=sector).exists():
+            return Response({'detail':'Cannot delete sector with equipment assigned.'}, status=status.HTTP_400_BAD_REQUEST)
         sector.delete()
         return Response({'detail':'Sector deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
 
@@ -182,9 +190,13 @@ class EquipmentDetail(APIView):
         serializer = EquipmentSerializer(equipment, context={'request': request})
         return Response(serializer.data)
 
+    @extend_schema(
+        request=EquipmentEditSerializer,
+        responses=EquipmentEditSerializer,
+    )
     def put(self, request, pk, format=None):
         equipment = self.get_object(pk, request)
-        serializer = EquipmentSerializer(equipment, data=request.data, context={'request': request})
+        serializer = EquipmentEditSerializer(equipment, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -192,6 +204,10 @@ class EquipmentDetail(APIView):
 
     def delete(self, request, pk, format=None):
         equipment = self.get_object(pk, request)
+        if EquipmentReservation.objects.filter(equipment=equipment).exists():
+            return Response({'detail':'Cannot delete equipment with active reservations.'}, status=status.HTTP_400_BAD_REQUEST)
+        if EqipmentReservationRequest.objects.filter(equipment=equipment).exists():
+            return Response({'detail':'Cannot delete equipment with active reservation requests.'}, status=status.HTTP_400_BAD_REQUEST)
         equipment.delete()
         return Response({'detail':'Equipment deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
 
@@ -199,7 +215,7 @@ class EquipmentDetail(APIView):
 class EquipmentFiltered(APIView):
     serializer_class = EquipmentFilterParametersSerializer
     authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
-    permission_classes = [IsAuthenticated, IsProductionBrewery]
+    permission_classes = [IsAuthenticated, IsContractBrewery]
 
     @extend_schema(
         request=EquipmentFilterParametersSerializer,
@@ -221,7 +237,7 @@ class EquipmentFiltered(APIView):
             data['contract_brewery'] = request.user.get_brewery().brewery_id
             equipment = filter_equipment(data)
             serializer = EquipmentSerializer(equipment, many=True, context={'request': request})
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
