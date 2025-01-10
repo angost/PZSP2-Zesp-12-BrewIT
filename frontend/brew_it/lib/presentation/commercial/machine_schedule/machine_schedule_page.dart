@@ -9,10 +9,10 @@ class MachineSchedulePage extends TablePageTemplate {
   MachineSchedulePage(Map elementData, {super.key})
       : super(
             title: "Daty zarezerwowania urządzenia:",
-            button: MainButton("Powrót", type: "primary_small",
+            buttons: [MainButton("Powrót", type: "primary_small",
                 navigateToPage: (Map elementData) {
               return MachineDetailsPage(elementData);
-            }, dataForPage: elementData),
+            }, dataForPage: elementData)],
             headers: MachineScheduleFieldNames().fieldNamesTable,
             options: [
               MyIconButton(

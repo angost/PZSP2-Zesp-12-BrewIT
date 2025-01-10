@@ -47,6 +47,65 @@ class RegisterContractFieldNames extends StandardFieldNames {
         ], fieldNamesTable: [], jsonFieldNamesTable: []);
 }
 
+class CommercialOffersFieldNames extends StandardFieldNames {
+  CommercialOffersFieldNames()
+      : super(fieldNames: [
+          "Id",
+          "Nazwa",
+          "NIP",
+          "Ph wody",
+        ], jsonFieldNames: [
+          "brewery_id",
+          "name",
+          "nip",
+          "water_ph"
+        ], fieldNamesTable: [
+          "Id",
+          "Nazwa",
+          "NIP",
+          "Ph wody",
+          "Operacje"
+        ], jsonFieldNamesTable: [
+          "brewery_id",
+          "name",
+          "nip",
+          "water_ph"
+        ]);
+}
+
+class CommercialOffersFiltersFieldNames extends StandardFieldNames {
+  CommercialOffersFiltersFieldNames()
+      : super(fieldNames: [
+          "Zbiornik - data początkowa",
+          "Zbiornik - data końcowa",
+          "Zbiornik - pojemność",
+          "Zbiornik - temperatura minimalna",
+          "Zbiornik - temperatura maksymalna",
+          "Zbiornik - typ pakowania",
+          "Zestaw do warzenia - data początkowa",
+          "Zestaw do warzenia - data końcowa",
+          "Zestaw do warzenia - pojemność",
+          "Zezwala na bakterie",
+          "Zezwala na dzielenie sektorów",
+          "Ph wody minimalne",
+          "Ph wody maksymalne",
+        ], jsonFieldNames: [
+          "vat_start_date",
+          "vat_end_date",
+          "vat_capacity",
+          "vat_min_temperature",
+          "vat_max_temperature",
+          "vat_package_type",
+          "brewset_start_date",
+          "brewset_end_date",
+          "brewset_capacity",
+          "uses_bacteria",
+          "allows_sector_share",
+          "water_ph_min",
+          "water_ph_max"
+        ], fieldNamesTable: [], jsonFieldNamesTable: []);
+}
+
 class ProductionProcessesFieldNames extends StandardFieldNames {
   ProductionProcessesFieldNames()
       : super(fieldNames: [

@@ -4,24 +4,25 @@ import 'package:brew_it/presentation/_common/widgets/my_app_bar.dart';
 import 'package:brew_it/presentation/_common/widgets/my_icon_button.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-// import 'dart:html' as html;
 
 class TablePageTemplate extends StatefulWidget {
   const TablePageTemplate(
       {required this.title,
-      this.button,
+      this.buttons,
       required this.headers,
       this.options,
       this.apiString,
       this.jsonFields,
+      this.passedElements,
       super.key});
 
   final String title;
-  final MainButton? button;
+  final List<MainButton>? buttons;
   final List<String> headers;
   final List<MyIconButton>? options;
   final String? apiString;
   final List<String>? jsonFields;
+  final List? passedElements;
 
   @override
   State<TablePageTemplate> createState() => _TablePageTemplateState();
@@ -33,7 +34,11 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
   @override
   void initState() {
     super.initState();
-    if (widget.apiString != null && widget.apiString != "") {
+    if (widget.passedElements != null) {
+      setState(() {
+        elements = widget.passedElements!;
+      });
+    } else if (widget.apiString != null && widget.apiString != "") {
       fetchData();
     }
   }
@@ -57,6 +62,11 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> buttonWidgets = [];
+    if (widget.buttons != null) {
+      buttonWidgets.addAll(widget.buttons!);
+    }
+
     return Scaffold(
         appBar: MyAppBar(context),
         body: Padding(
@@ -68,12 +78,12 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
                 flex: 1,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(widget.title,
-                        style: Theme.of(context).textTheme.titleSmall),
-                    const Spacer(),
-                    widget.button ?? Container()
-                  ],
+                  children: <Widget>[
+                        Text(widget.title,
+                            style: Theme.of(context).textTheme.titleSmall),
+                        const Spacer()
+                      ] +
+                      buttonWidgets,
                 ),
               ),
               Expanded(

@@ -9,10 +9,10 @@ class RecipesPage extends TablePageTemplate {
   RecipesPage({super.key})
       : super(
             title: "Twoje receptury:",
-            button: MainButton("Dodaj recepturę", type: "secondary_small",
+            buttons: [MainButton("Dodaj recepturę", type: "secondary_small",
                 navigateToPage: () {
               return RecipeAddPage({});
-            }),
+            })],
             headers: RecipesFieldNames().fieldNamesTable,
             options: [
               MyIconButton(
