@@ -131,17 +131,20 @@ class _DetailsAddEditPageTemplateState
                               label: widget.fieldNames[index],
                               jsonFieldName: jsonFieldName,
                               value: fieldValues != null
-                                  ? (fieldValues[index] == "true")
+                                  ? (fieldValues[index] == "true") // Convert to boolean
                                   : false,
                               editable: editable,
                               onChanged: (newValue) {
                                 if (editable) {
                                   widget.elementData ??= {};
-                                  widget.elementData![jsonFieldName] = newValue;
+                                  widget.elementData![jsonFieldName] = newValue.toString();
+                                  fieldValues != null ? fieldValues[index] = newValue.toString() : false; // Update fieldValues
+                                  setState(() {}); // Trigger rebuild
                                 }
                               },
                             ),
                           );
+
                         default: // TextField
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
