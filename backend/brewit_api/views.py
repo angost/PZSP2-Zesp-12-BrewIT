@@ -7,7 +7,8 @@ from brewit_api.serializers import AccountSerializer, RegistrationDataSerializer
      SectorSerializer, BrewerySerializer, EquipmentFilterParametersSerializer, BreweriesFilterParametersSerializer,\
      ReservationRequestSerializer, ReservationCreateSerializer, ReservationSerializer, RecipeSerializer,\
      ExecutionLogSerializer, ExecutionLogEditSerializer, BeerTypeSerializer, CleanupSerializer,\
-     EquipmentReservationSerializer, SectorEditSerializer, EquipmentEditSerializer, BreweryStatisticsSerializer
+     EquipmentReservationSerializer, SectorEditSerializer, EquipmentEditSerializer, BreweryStatisticsSerializer,\
+     CombinedStatisticsSerializer
 from rest_framework.reverse import reverse
 from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate, login, logout
@@ -20,7 +21,7 @@ from .auth_class import CsrfExemptSessionAuthentication
 from rest_framework.authentication import BasicAuthentication
 from .filters import BreweryFilter, EquipmentFilter, EquipmentReservationFilter
 from django_filters import rest_framework as filters
-from .utils import filter_equipment, filter_breweries, get_brewery_statistics
+from .utils import filter_equipment, filter_breweries, get_brewery_statistics, get_combined_statistics
 from drf_spectacular.utils import extend_schema, OpenApiResponse
 from rest_framework import serializers
 
@@ -589,4 +590,15 @@ class StatisticsList(APIView):
     def get(self, request):
         stats = get_brewery_statistics()
         serializer = BreweryStatisticsSerializer(stats, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class CombinedStatisticsList(APIView):
+    serializer_class = CombinedStatisticsSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        stats = get_combined_statistics()
+        serializer = CombinedStatisticsSerializer(stats, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)

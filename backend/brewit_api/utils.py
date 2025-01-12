@@ -198,3 +198,44 @@ def get_brewery_statistics():
         })
 
     return brewery_stats
+
+
+def get_combined_statistics():
+    all_contract = Brewery.objects.filter(
+        selector=Brewery.BrewerySelectors.CONTRACT.value).count()
+
+    all_production = Brewery.objects.filter(
+        selector=Brewery.BrewerySelectors.PRODUCTION.value).count()
+
+    total_beer_produced = Reservation.objects.filter(
+        execution_logs__is_successful=True).aggregate(
+               total_beer_produced=Sum('brew_size', distinct=True))
+
+    total_beer_in_production = Reservation.objects.aggregate(
+        total_beer_in_production=Sum(
+            Case(
+                When(equipment_reservations__start_date__lte=datetime.now(),
+                     equipment_reservations__end_date__gte=datetime.now(),
+                     then=F('brew_size')),
+                default=0,
+                output_field=FloatField()
+            ),
+            distinct=True
+        )
+    )
+    total_failed_beer = Reservation.objects.filter(
+        execution_logs__is_successful=False).count()
+    total_succeded_beer = Reservation.objects.filter(
+        execution_logs__is_successful=True).count()
+    if total_failed_beer + total_succeded_beer != 0:
+        total_failed_percentage = total_failed_beer * 100.0 / (total_failed_beer + total_succeded_beer)
+    else:
+        total_failed_percentage = 0
+    combined_stats = {
+        "all_contract": all_contract,
+        "all_production": all_production,
+        "total_beer_produced": total_beer_produced['total_beer_produced'],
+        "total_beer_in_production": total_beer_in_production['total_beer_in_production'],
+        "total_failed_percentage": total_failed_percentage
+    }
+    return combined_stats

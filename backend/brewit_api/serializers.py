@@ -376,6 +376,14 @@ class BreweryStatisticsSerializer(serializers.Serializer):
     beer_in_production = serializers.FloatField()
 
 
+class CombinedStatisticsSerializer(serializers.Serializer):
+    all_contract = serializers.IntegerField()
+    all_production = serializers.IntegerField()
+    total_beer_produced = serializers.FloatField()
+    total_beer_in_production = serializers.FloatField()
+    total_failed_percentage = serializers.FloatField()
+
+
 
 
 

@@ -88,4 +88,7 @@ urlpatterns = [
      path('statistics/',
           views.StatisticsList.as_view(),
           name='statistics'),
+     path('statistics/combined/',
+          views.CombinedStatisticsList.as_view(),
+          name='combined-statistics'),
 ]
