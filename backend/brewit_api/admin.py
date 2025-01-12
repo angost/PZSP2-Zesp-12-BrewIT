@@ -82,7 +82,7 @@ class ExecutionLogAdmin(admin.ModelAdmin):
     list_display = ['log_id', 'start_date', 'end_date', 'is_successful', 'log', 'recipe', 'reservation']
     list_per_page = 20
     list_max_show_all = 50
-    list_editable = ['log']
+    list_editable = ['is_successful']
 
 @admin.register(BeerType)
 class BeerTypeAdmin(admin.ModelAdmin):

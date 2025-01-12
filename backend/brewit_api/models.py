@@ -11,7 +11,6 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from .managers import CustomUserManager
 
-
 class Account(AbstractUser):
     class AccountRoles(models.TextChoices):
         PRODUCTION = 'PROD', _('Production Brewery')
@@ -136,8 +135,8 @@ class Reservation(models.Model):
     price = models.IntegerField()
     brew_size = models.IntegerField()
     authorised_workers = models.CharField(max_length=512, blank=True, null=True)
-    production_brewery = models.ForeignKey(Brewery, models.DO_NOTHING)
-    contract_brewery = models.ForeignKey(Brewery, models.DO_NOTHING, related_name='reservation_contract_brewery_set')
+    production_brewery = models.ForeignKey(Brewery, models.DO_NOTHING, related_name='reservation_production_brewery')
+    contract_brewery = models.ForeignKey(Brewery, models.DO_NOTHING, related_name='reservation_contract_brewery')
     allows_sector_share = models.BooleanField()
 
     class Meta:
@@ -169,7 +168,7 @@ class ExecutionLog(models.Model):
     is_successful = models.BooleanField(blank=True, null=True)
     log = models.CharField(max_length=2048, blank=True, null=True)
     recipe = models.ForeignKey('Recipe', models.DO_NOTHING)
-    reservation = models.ForeignKey('Reservation', models.DO_NOTHING)
+    reservation = models.ForeignKey('Reservation', models.DO_NOTHING, related_name='execution_logs')
 
     class Meta:
         managed = True

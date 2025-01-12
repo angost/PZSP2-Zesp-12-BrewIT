@@ -85,4 +85,7 @@ urlpatterns = [
     path('equipment-reservations/',
          views.EquipmentReservationList.as_view(),
          name='equipment-reservation-list'),
+     path('statistics/',
+          views.StatisticsList.as_view(),
+          name='statistics'),
 ]

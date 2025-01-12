@@ -367,6 +367,15 @@ class CleanupSerializer(serializers.ModelSerializer):
         return attrs
 
 
+class BreweryStatisticsSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    type = serializers.ChoiceField(choices=[el for el in Brewery.BrewerySelectors.values])
+    name = serializers.CharField()
+    produced_beer = serializers.FloatField()
+    failed_beer_percentage = serializers.FloatField()
+    beer_in_production = serializers.FloatField()
+
+
 
 
 
