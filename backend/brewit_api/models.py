@@ -69,6 +69,21 @@ class Brewery(models.Model):
         db_table = 'brewery'
 
 
+class RegistrationRequest(models.Model):
+    email = models.EmailField(_("email address"))
+    role = models.CharField(
+        max_length=5,
+        choices=Account.AccountRoles.choices,
+        blank=False
+    )
+    password = models.CharField()
+    selector = models.CharField(max_length=10,
+                                choices=Brewery.BrewerySelectors.choices,
+                                blank=False)
+    name = models.CharField(max_length=128)
+    nip = models.CharField(max_length=10, blank=True, null=True)
+    water_ph = models.DecimalField(max_digits=3, decimal_places=1, blank=True, null=True)
+
 class Sector(models.Model):
     sector_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=32)

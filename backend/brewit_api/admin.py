@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from .models import Brewery, Sector, Equipment, Reservation, EquipmentReservation, Vatpackaging,\
-    EqipmentReservationRequest, ReservationRequest, Recipe, ExecutionLog, BeerType
+    EqipmentReservationRequest, ReservationRequest, Recipe, ExecutionLog, BeerType, RegistrationRequest
 
 
 @admin.register(get_user_model())
@@ -91,4 +91,8 @@ class BeerTypeAdmin(admin.ModelAdmin):
     list_max_show_all = 50
     list_editable = ['name', 'uses_bacteria']
 
-
+@admin.register(RegistrationRequest)
+class RegistrationRequestAdmin(admin.ModelAdmin):
+    list_display = ['id', 'email', 'role', 'selector', 'name', 'nip', 'water_ph']
+    list_per_page = 20
+    list_max_show_all = 50

@@ -3,12 +3,12 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.response import Response
 from django.http import Http404
-from brewit_api.serializers import AccountSerializer, RegistrationDataSerializer, EquipmentSerializer,\
+from brewit_api.serializers import AccountSerializer, RegistrationRequestSerializer, EquipmentSerializer,\
      SectorSerializer, BrewerySerializer, EquipmentFilterParametersSerializer, BreweriesFilterParametersSerializer,\
      ReservationRequestSerializer, ReservationCreateSerializer, ReservationSerializer, RecipeSerializer,\
      ExecutionLogSerializer, ExecutionLogEditSerializer, BeerTypeSerializer, CleanupSerializer,\
      EquipmentReservationSerializer, SectorEditSerializer, EquipmentEditSerializer, BreweryStatisticsSerializer,\
-     CombinedStatisticsSerializer
+     CombinedStatisticsSerializer, BreweryCreateSerializer, BreweryWithAccountSerializer
 from rest_framework.reverse import reverse
 from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate, login, logout
@@ -16,7 +16,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsProductionBrewery, IsBrewery, IsContractBrewery, IsAdmin
 from .models import Equipment, Sector, Brewery, ReservationRequest, EquipmentReservation, Reservation,\
-                    EqipmentReservationRequest, Recipe, ExecutionLog, BeerType
+                    EqipmentReservationRequest, Recipe, ExecutionLog, BeerType, RegistrationRequest
 from .auth_class import CsrfExemptSessionAuthentication
 from rest_framework.authentication import BasicAuthentication
 from .filters import BreweryFilter, EquipmentFilter, EquipmentReservationFilter
@@ -77,19 +77,79 @@ class Login(APIView):
             return Response({'detail': 'Email or Password is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class Register(APIView):
-    serializer_class = RegistrationDataSerializer
+class RegistrationRequestList(APIView):
+    serializer_class = RegistrationRequestSerializer
     authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = []
+
+    def get_permissions(self):
+        self.permission_classes = []
+        if self.request.method == "GET":
+            self.permission_classes = [IsAuthenticated, IsAdmin]
+        return super(RegistrationRequestList, self).get_permissions()
 
     def post(self, request, format=None):
-        serializer = RegistrationDataSerializer(data=request.data)
+        serializer = RegistrationRequestSerializer(data=request.data)
         if serializer.is_valid():
-            try:
-                account, brewery = serializer.save()
-            except Exception as e:
-                return Response({'detail':str(e)}, status=status.HTTP_400_BAD_REQUEST) # Change later detail message
-            return Response({'detail':'Registered successfully.'}, status=status.HTTP_201_CREATED)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, format=None):
+        requests = RegistrationRequest.objects.all()
+        serializer = RegistrationRequestSerializer(requests, many=True, context={'request': request})
+        return Response(serializer.data)
+
+
+class RegistrationRequestDetail(APIView):
+    serializer_class = RegistrationRequestSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def get_object(self, pk):
+        try:
+            return RegistrationRequest.objects.get(pk=pk)
+        except RegistrationRequest.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        request = self.get_object(pk)
+        serializer = RegistrationRequestSerializer(request, context={'request': request})
+        return Response(serializer.data)
+
+    def delete(self, request, pk, format=None):
+        request = self.get_object(pk)
+        request.delete()
+        return Response({'detail':'Registration request deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class RegistrationRequestAccept(APIView):
+    serializer_class = BreweryCreateSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    @extend_schema(
+        request=BreweryCreateSerializer,
+        responses={
+            201: OpenApiResponse(
+                response=BreweryWithAccountSerializer(),
+                description="Registration request accepted successfully"
+            ),
+            400: OpenApiResponse(
+                response=None,
+                description="Invalid input parameters"
+            )
+        }
+    )
+    def post(self, request, format=None):
+        serializer = BreweryCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            brewery = serializer.save()
+            brewery_serializer = BreweryWithAccountSerializer(brewery)
+            return Response(brewery_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 class Logout(APIView):
