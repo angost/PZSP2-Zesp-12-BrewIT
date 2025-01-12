@@ -4,6 +4,7 @@ import 'package:brew_it/presentation/_common/widgets/main_button.dart';
 import 'package:brew_it/presentation/_common/widgets/my_app_bar.dart';
 import 'package:brew_it/presentation/_common/widgets/my_icon_button.dart';
 import 'package:flutter/material.dart';
+import 'package:brew_it/presentation/_common/widgets/form_fields.dart';
 
 class FilterPageTemplate extends StatefulWidget {
   FilterPageTemplate({
@@ -93,7 +94,7 @@ class _DetailsAddEditPageTemplateState
                             child: DatePickerField(
                               label: widget.fieldNames[index],
                               jsonFieldName: jsonFieldName,
-                              initialValue: fieldValues != null
+                              initialValue: fieldValues != null && fieldValues[index].isNotEmpty
                                   ? fieldValues[index]
                                   : "",
                               editable: editable,
@@ -105,6 +106,7 @@ class _DetailsAddEditPageTemplateState
                               },
                             ),
                           );
+
                         case "EnumField":
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -144,6 +146,7 @@ class _DetailsAddEditPageTemplateState
                               },
                             ),
                           );
+
 
                         default: // TextField
                           return Padding(
@@ -186,122 +189,6 @@ class _DetailsAddEditPageTemplateState
           ],
         ),
       ),
-    );
-  }
-}
-
-
-class DatePickerField extends StatelessWidget {
-  final String label;
-  final String jsonFieldName;
-  final String initialValue;
-  final bool editable;
-  final void Function(String?) onSaved;
-
-  const DatePickerField({
-    required this.label,
-    required this.jsonFieldName,
-    required this.initialValue,
-    required this.editable,
-    required this.onSaved,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final TextEditingController controller =
-    TextEditingController(text: initialValue);
-
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(labelText: label),
-      readOnly: true,
-      enabled: editable,
-      onTap: () async {
-        if (!editable) return;
-        DateTime? pickedDate = await showDatePicker(
-          context: context,
-          initialDate: DateTime.tryParse(initialValue) ?? DateTime.now(),
-          firstDate: DateTime(2000),
-          lastDate: DateTime(2100),
-        );
-        if (pickedDate != null) {
-          // Format the date in API-compatible format
-          String formattedDate = "${pickedDate.toIso8601String()}";
-          controller.text = "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
-          onSaved(formattedDate);
-        }
-      },
-    );
-  }
-}
-
-class BooleanField extends StatelessWidget {
-  final String label;
-  final String jsonFieldName;
-  final bool value;
-  final bool editable;
-  final void Function(bool?) onChanged;
-
-  const BooleanField({
-    required this.label,
-    required this.jsonFieldName,
-    required this.value,
-    required this.editable,
-    required this.onChanged,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Switch(
-          value: value,
-          onChanged: editable ? onChanged : null,
-        ),
-        const SizedBox(width: 8),
-        Text(label),
-      ],
-    );
-  }
-}
-
-class EnumField extends StatelessWidget {
-  final String label;
-  final String jsonFieldName;
-  final List<Map<String, String>> options;
-  final String selectedValue;
-  final bool editable;
-  final void Function(String?) onChanged;
-
-  const EnumField({
-    required this.label,
-    required this.jsonFieldName,
-    required this.options,
-    required this.selectedValue,
-    required this.editable,
-    required this.onChanged,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(labelText: label),
-      value: selectedValue.isNotEmpty ? selectedValue : null,
-      items: options.map((option) {
-        return DropdownMenuItem<String>(
-          value: option['apiValue'],
-          child: Text(option['display']!),
-        );
-      }).toList(),
-      onChanged: editable
-          ? (newValue) {
-        // When an option is selected, pass the API value (not the display value)
-        onChanged(newValue);
-      }
-          : null,
     );
   }
 }
