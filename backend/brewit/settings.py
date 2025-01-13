@@ -159,7 +159,7 @@ AUTH_USER_MODEL = "brewit_api.Account"
 # SESSION_COOKIE_SECURE = True  # Ciasteczka sesji będą przesyłane tylko przez HTTPS
 # CSRF_COOKIE_SAMESITE = 'None'  # Ciasteczka CSRF mogą być przesyłane cross-origin
 # SESSION_COOKIE_SAMESITE = 'None'  # Ciasteczka sesji mogą być przesyłane cross-origin
-
+CSRF_TRUSTED_ORIGINS = ['https://localhost']
 # SECURE_SSL_REDIRECT = True  # Redirect HTTP to HTTPS
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')  # Required if using a reverse proxy
 # SECURE_HSTS_SECONDS = 31536000  # Enforce HTTPS for 1 year
