@@ -17,8 +17,8 @@ from rest_framework.permissions import IsAuthenticated
 from .permissions import IsProductionBrewery, IsBrewery, IsContractBrewery, IsAdmin
 from .models import Equipment, Sector, Brewery, ReservationRequest, EquipmentReservation, Reservation,\
                     EqipmentReservationRequest, Recipe, ExecutionLog, BeerType, RegistrationRequest
-from .auth_class import CsrfExemptSessionAuthentication
-from rest_framework.authentication import BasicAuthentication
+# from .auth_class import CsrfExemptSessionAuthentication
+from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from .filters import BreweryFilter, EquipmentFilter, EquipmentReservationFilter
 from django_filters import rest_framework as filters
 from .utils import filter_equipment, filter_breweries, get_brewery_statistics, get_combined_statistics
@@ -61,7 +61,7 @@ class AccountDetail(APIView):
 
 
 class Login(APIView):
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
 
     def post(self, request, format=None):
         email = request.data.get('email')
@@ -79,7 +79,7 @@ class Login(APIView):
 
 class RegistrationRequestList(APIView):
     serializer_class = RegistrationRequestSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = []
 
     def get_permissions(self):
@@ -103,7 +103,7 @@ class RegistrationRequestList(APIView):
 
 class RegistrationRequestDetail(APIView):
     serializer_class = RegistrationRequestSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsAdmin]
 
     def get_object(self, pk):
@@ -125,7 +125,7 @@ class RegistrationRequestDetail(APIView):
 
 class RegistrationRequestAccept(APIView):
     serializer_class = BreweryCreateSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsAdmin]
 
     @extend_schema(
@@ -153,7 +153,7 @@ class RegistrationRequestAccept(APIView):
 
 
 class Logout(APIView):
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
 
     def post(self, request, format=None):
         logout(request)
@@ -162,7 +162,7 @@ class Logout(APIView):
 
 class SectorList(APIView):
     serializer_class = SectorSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsProductionBrewery]
     def get(self, request, format=None):
         sectors = Sector.objects.filter(brewery=request.user.get_brewery()).all()
@@ -180,7 +180,7 @@ class SectorList(APIView):
 
 class SectorDetail(APIView):
     serializer_class = SectorSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsProductionBrewery]
     def get_object(self, pk):
         try:
@@ -215,7 +215,7 @@ class SectorDetail(APIView):
 
 class EquipmentList(generics.ListCreateAPIView):
     serializer_class = EquipmentSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsBrewery]
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = EquipmentFilter
@@ -237,7 +237,7 @@ class EquipmentList(generics.ListCreateAPIView):
 
 class EquipmentDetail(APIView):
     serializer_class = EquipmentSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsProductionBrewery]
     def get_object(self, pk, request):
         try:
@@ -274,7 +274,7 @@ class EquipmentDetail(APIView):
 
 class EquipmentFiltered(APIView):
     serializer_class = EquipmentFilterParametersSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsContractBrewery]
 
     @extend_schema(
@@ -303,7 +303,7 @@ class EquipmentFiltered(APIView):
 
 class BreweryFiltered(APIView):
     serializer_class = BreweriesFilterParametersSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsContractBrewery]
 
     @extend_schema(
@@ -332,7 +332,7 @@ class BreweryFiltered(APIView):
 
 class BreweryList(generics.ListAPIView):
     serializer_class = BrewerySerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = BreweryFilter
@@ -348,7 +348,7 @@ class BreweryList(generics.ListAPIView):
 
 class BreweryDetail(APIView):
     serializer_class = BrewerySerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
     def get_object(self, pk):
         if self.request.user.role == get_user_model().AccountRoles.ADMIN.value:
@@ -370,7 +370,7 @@ class BreweryDetail(APIView):
 
 class ReservationRequestList(APIView):
     serializer_class = ReservationRequestSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsBrewery]
 
     def get(self, request, format=None):
@@ -399,7 +399,7 @@ class ReservationRequestList(APIView):
 
 class ReservationRequestDetail(APIView):
     serializer_class = ReservationRequestSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsBrewery]
 
     def get_object(self, pk):
@@ -423,7 +423,7 @@ class ReservationRequestDetail(APIView):
 
 
 class ReservationList(APIView):
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
 
     def get_permissions(self):
         self.permission_classes = [IsAuthenticated, IsBrewery]
@@ -478,7 +478,7 @@ class ReservationList(APIView):
 
 class ReservationDetail(APIView):
     serializer_class = ReservationSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsBrewery]
 
     def get_object(self, pk):
@@ -503,7 +503,7 @@ class ReservationDetail(APIView):
 
 class RecipeDetail(APIView):
     serializer_class = RecipeSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsContractBrewery]
 
     def get_object(self, pk):
@@ -527,7 +527,7 @@ class RecipeDetail(APIView):
 
 class RecipeList(generics.ListCreateAPIView):
     serializer_class = RecipeSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsContractBrewery]
 
     def get_queryset(self):
@@ -539,7 +539,7 @@ class RecipeList(generics.ListCreateAPIView):
 
 class ExecutionLogList(APIView):
     serializer_class = ExecutionLogSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsContractBrewery]
 
     def get(self, request, format=None):
@@ -557,7 +557,7 @@ class ExecutionLogList(APIView):
 
 class ExecutionLogDetail(APIView):
     serializer_class = ExecutionLogSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsContractBrewery]
 
     def get_object(self, pk):
@@ -586,7 +586,7 @@ class ExecutionLogDetail(APIView):
 
 class BeerTypeList(generics.ListAPIView):
     serializer_class = BeerTypeSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -595,14 +595,14 @@ class BeerTypeList(generics.ListAPIView):
 
 class BeerTypeDetail(generics.RetrieveAPIView):
     serializer_class = BeerTypeSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
     queryset = BeerType.objects.all()
 
 
 class CleanupCreate(APIView):
     serializer_class = CleanupSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsProductionBrewery]
 
     def post(self, request):
@@ -615,7 +615,7 @@ class CleanupCreate(APIView):
 
 class CleanupDelete(APIView):
     serializer_class = CleanupSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsProductionBrewery]
 
     def delete(self, request, pk):
@@ -631,7 +631,7 @@ class CleanupDelete(APIView):
 
 class EquipmentReservationList(generics.ListAPIView):
     serializer_class = EquipmentReservationSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsProductionBrewery]
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = EquipmentReservationFilter
@@ -644,7 +644,7 @@ class EquipmentReservationList(generics.ListAPIView):
 
 class StatisticsList(APIView):
     serializer_class = BreweryStatisticsSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsAdmin]
 
     def get(self, request):
@@ -655,7 +655,7 @@ class StatisticsList(APIView):
 
 class CombinedStatisticsList(APIView):
     serializer_class = CombinedStatisticsSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsAdmin]
 
     def get(self, request):

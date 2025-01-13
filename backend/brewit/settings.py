@@ -154,6 +154,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "brewit_api.Account"
 
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8080', 'http://localhost:8080']
+
 CSRF_COOKIE_SECURE = True  # Ciasteczka CSRF będą przesyłane tylko przez HTTPS
 SESSION_COOKIE_SECURE = True  # Ciasteczka sesji będą przesyłane tylko przez HTTPS
 CSRF_COOKIE_SAMESITE = 'None'  # Ciasteczka CSRF mogą być przesyłane cross-origin
