@@ -3,7 +3,6 @@ from django.contrib.auth import get_user_model
 from .models import Brewery, Sector, Equipment, Reservation, EquipmentReservation, Vatpackaging,\
     EqipmentReservationRequest, ReservationRequest, Recipe, ExecutionLog, BeerType, RegistrationRequest
 
-
 @admin.register(get_user_model())
 class AccountAdmin(admin.ModelAdmin):
     list_display = ['id', 'email', 'role', 'is_active']

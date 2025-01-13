@@ -1,45 +1,68 @@
-version: '3.8'
-
 services:
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    volumes:
-      - ./backend:/app
+  reverse-proxy:
+    image: nginx:1.27.3
+    restart: always
+    container_name: nginx
     ports:
-      - "8000:8000"
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx/templates
+      - ./certs:/etc/nginx/certs:ro
+      - .logs:/var/log/nginx
     depends_on:
-      - postgres
-    environment:
-      POSTGRES_DB: brewit_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres_admin
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-    command: sh -c "python manage.py migrate &&
-              python manage.py runserver_plus 0.0.0.0:8000 --cert-file localhost.crt --key-file localhost.key"
+      - backend
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    volumes:
-      - ./frontend:/app
+    container_name: flutter-frontend
+    command: [ "sh", "-c", "flutter pub get && flutter run -d web-server --web-port=8080 --web-hostname=0.0.0.0" ]
     ports:
       - "8080:8080"
-    command: [ "sh", "-c", "flutter pub get && flutter run -d web-server --web-port=8080 --web-hostname=0.0.0.0" ] # --web-browser-flag --disable-web-security
 
-  postgres:
-    image: postgres:latest
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: drf-backend
+    command: >
+      sh -c "./wait-for-it.sh db:5432 --
+      && python manage.py collectstatic --no-input
+      && python manage.py migrate
+      && gunicorn brewit.wsgi:application --bind 0.0.0.0:8000"
+
+    environment:
+      DATABASE_URL: postgres://postgres:postgres_admin@db:5432/brewit_db
+      POSTGRES_DB: brewit_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./backend:/app
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    expose:
+      - 8000
+
+  db:
+    image: postgres:17-alpine
+    container_name: postgres
     environment:
       POSTGRES_DB: brewit_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres_admin
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - db_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
 volumes:
-  postgres_data:
+  db_data:
+
+

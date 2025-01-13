@@ -11,7 +11,7 @@ void setup() {
 
 Dio _createDio() {
   final dio = Dio(BaseOptions(
-    baseUrl: "https://127.0.0.1:8000/api",
+    baseUrl: "https://localhost/api",
   ));
 
   dio.options.extra['withCredentials'] = true;
