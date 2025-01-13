@@ -61,7 +61,7 @@ class AccountDetail(APIView):
 
 
 class Login(APIView):
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
 
     def post(self, request, format=None):
         email = request.data.get('email')
@@ -79,7 +79,7 @@ class Login(APIView):
 
 class Register(APIView):
     serializer_class = RegistrationDataSerializer
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
 
     def post(self, request, format=None):
         serializer = RegistrationDataSerializer(data=request.data)
@@ -93,7 +93,7 @@ class Register(APIView):
 
 
 class Logout(APIView):
-    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
 
     def post(self, request, format=None):
         logout(request)
