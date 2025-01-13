@@ -43,9 +43,9 @@ class CommercialOffersFilterPage extends FilterPageTemplate {
     ],
     enumOptions: {
       "vat_package_type": [
-        {"display": "Kegs", "apiValue": "KEG"},
-        {"display": "Bottles", "apiValue": "BOTTLE"},
-        {"display": "Cans", "apiValue": "CAN"},
+        {"display": "Kegi", "apiValue": "KEG"},
+        {"display": "Butelki", "apiValue": "BOTTLE"},
+        {"display": "Puszki", "apiValue": "CAN"},
       ],
     },
     fieldEditable: [
