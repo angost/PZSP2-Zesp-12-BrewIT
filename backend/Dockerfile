@@ -1,13 +1,9 @@
-FROM python:3.11-alpine
-
+FROM python:3.11-slim
 WORKDIR /app
-
-COPY . /app
-
-RUN apk add --update libpq-dev python3-dev build-base
-
-RUN pip install --no-cache-dir -r requirements.txt
-
-EXPOSE 8000
-
-#CMD ["python", "manage.py", "runserver_plus", "--cert-file", "localhost.crt", "--key-file", "localhost.key"]
+COPY requirements.txt requirements.txt
+RUN apt-get update && apt-get install -y bash
+RUN apt-get update && apt-get install -y libpq-dev gcc
+RUN pip install -r requirements.txt
+RUN apt-get -y install gunicorn
+COPY . .
+RUN chmod +x wait-for-it.sh
