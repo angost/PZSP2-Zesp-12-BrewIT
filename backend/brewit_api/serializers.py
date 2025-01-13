@@ -23,18 +23,13 @@ class RegistrationRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = RegistrationRequest
         fields = '__all__'
-        extra_kwargs = {'password': {'write_only': True}}
+        extra_kwargs = {'password': {'write_only': True},
+                        'role': {'read_only': True},}
+
 
     def validate_email(self, value):
         if get_user_model().objects.filter(email=value).exists():
             raise serializers.ValidationError("Account with this email already exists")
-        return value
-
-    def validate_role(self, value):
-        if value not in [el for el in Account.AccountRoles.values]:
-            raise serializers.ValidationError("Invalid role")
-        elif value == Account.AccountRoles.ADMIN.value:
-            raise serializers.ValidationError("Cannot create register request for admin account")
         return value
 
     def validate_password(self, value):
@@ -44,28 +39,31 @@ class RegistrationRequestSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(str(e))
         return value
 
+    def validate_selector(self, value):
+        if value not in [el for el in Brewery.BrewerySelectors.values]:
+            raise serializers.ValidationError("Invalid selector")
+        return value
+
     def validate(self, attrs):
         print(attrs)
 
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError("Passwords do not match")
-        elif attrs['role'] == Account.AccountRoles.PRODUCTION.value and not attrs['water_ph']:
+        elif attrs['selector'] == Brewery.BrewerySelectors.PRODUCTION.value and not attrs['water_ph']:
             raise serializers.ValidationError("Production brewery must specify water_ph")
-        elif attrs['role'] != attrs['selector']:
-            raise serializers.ValidationError("Role and selector must be the same")
-        elif attrs['role'] == Account.AccountRoles.PRODUCTION.value and not attrs['nip']:
+        elif attrs['selector'] == Brewery.BrewerySelectors.PRODUCTION.value and not attrs['nip']:
             raise serializers.ValidationError("Production brewery must specify nip")
         return attrs
 
     def create(self, validated_data):
         password = make_password(validated_data['password'])
         return RegistrationRequest.objects.create(email=validated_data['email'],
-                                                   password=password,
-                                                   role=validated_data['role'],
-                                                   selector=validated_data['selector'],
-                                                   name=validated_data['name'],
-                                                   nip=validated_data['nip'],
-                                                   water_ph=validated_data['water_ph'])
+                                                  password=password,
+                                                  role=validated_data['selector'],
+                                                  selector=validated_data['selector'],
+                                                  name=validated_data['name'],
+                                                  nip=validated_data['nip'],
+                                                  water_ph=validated_data['water_ph'])
 
 
 class BreweryCreateSerializer(serializers.Serializer):

@@ -365,8 +365,8 @@ class RegistrationRequestsFieldNames extends StandardFieldNames {
           "Email",
           "Operacje",
         ], jsonFieldNamesTable: [
-          "account_id",
-          "role",
+          "id",
+          "selector",
           "name",
           "email"
         ]);
