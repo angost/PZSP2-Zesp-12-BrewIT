@@ -8,6 +8,8 @@ class AddEditPageTemplate extends DetailsAddEditPageTemplate {
       required String apiCall,
       required String apiCallType,
       required Function navigateToPageSave,
+      bool navigateToSaveIsTablePage = false,
+      bool navigateToCancelIsTablePage = false,
       required Function navigateToPageCancel,
       required List<String> fieldNames,
       required List<String> jsonFieldNames,
@@ -17,21 +19,19 @@ class AddEditPageTemplate extends DetailsAddEditPageTemplate {
       : super(
             title: title,
             buttons: [
-              MainButton(
-                "Zapisz",
-                type: "primary_small",
-                formKey: GlobalKey<FormState>(),
-                apiCall: apiCall,
-                apiCallType: apiCallType,
-                navigateToPage: navigateToPageSave,
-                dataForPage: elementData,
-              ),
-              MainButton(
-                "Anuluj",
-                type: "secondary_small",
-                navigateToPage: navigateToPageCancel,
-                dataForPage: elementData,
-              )
+              MainButton("Zapisz",
+                  type: "primary_small",
+                  formKey: GlobalKey<FormState>(),
+                  apiCall: apiCall,
+                  apiCallType: apiCallType,
+                  navigateToPage: navigateToPageSave,
+                  dataForPage: elementData,
+                  navigateIsTablePage: navigateToSaveIsTablePage),
+              MainButton("Anuluj",
+                  type: "secondary_small",
+                  navigateToPage: navigateToPageCancel,
+                  dataForPage: elementData,
+                  navigateIsTablePage: navigateToCancelIsTablePage)
             ],
             fieldNames: fieldNames,
             jsonFieldNames: jsonFieldNames,

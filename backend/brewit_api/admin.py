@@ -3,10 +3,10 @@ from django.contrib.auth import get_user_model
 from .models import Brewery, Sector, Equipment, Reservation, EquipmentReservation, Vatpackaging,\
     EqipmentReservationRequest, ReservationRequest, Recipe, ExecutionLog, BeerType
 
-# Register your models here.
 @admin.register(get_user_model())
 class AccountAdmin(admin.ModelAdmin):
-    list_display = ['id', 'email', 'role']
+    list_display = ['id', 'email', 'role', 'is_active']
+    list_editable = ['email', 'is_active', 'role']
 
 @admin.register(Brewery)
 class BreweryAdmin(admin.ModelAdmin):
@@ -89,5 +89,3 @@ class BeerTypeAdmin(admin.ModelAdmin):
     list_per_page = 20
     list_max_show_all = 50
     list_editable = ['name', 'uses_bacteria']
-
-

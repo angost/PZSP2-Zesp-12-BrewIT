@@ -10,10 +10,10 @@ class ProductionProcessesPage extends TablePageTemplate {
   ProductionProcessesPage({super.key})
       : super(
             title: "Twoje procesy wykonania piwa:",
-            button: MainButton("Dodaj proces", type: "secondary_small",
+            buttons: [MainButton("Dodaj proces", type: "secondary_small",
                 navigateToPage: () {
               return ProductionProcessAddPage({});
-            }),
+            })],
             headers: ProductionProcessesFieldNames().fieldNamesTable,
             options: [
               MyIconButton(
@@ -29,7 +29,6 @@ class ProductionProcessesPage extends TablePageTemplate {
                 },
               )
             ],
-            // MOCK - check names used in api
-            apiString: "/production_processes/",
+            apiString: "/execution-logs/",
             jsonFields: ProductionProcessesFieldNames().jsonFieldNamesTable);
 }

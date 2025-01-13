@@ -10,10 +10,10 @@ class SectorsPage extends TablePageTemplate {
   SectorsPage({super.key})
       : super(
             title: "Twoje sektory:",
-            button: MainButton("Dodaj sektor", type: "secondary_small",
+            buttons: [MainButton("Dodaj sektor", type: "secondary_small",
                 navigateToPage: () {
               return SectorAddPage({});
-            }),
+            })],
             headers: SectorsFieldNames().fieldNamesTable,
             options: [
               MyIconButton(
@@ -22,16 +22,22 @@ class SectorsPage extends TablePageTemplate {
                   return SectorDetailsPage(elementData);
                 },
               ),
-              MyIconButton(type: "link"),
+              // MyIconButton(type: "link"),
               MyIconButton(
                 type: "edit",
                 navigateToPage: (Map elementData) {
                   return SectorEditPage(elementData);
                 },
               ),
-              MyIconButton(type: "delete")
+              MyIconButton(
+                type: "delete",
+                apiCall: "/sectors/",
+                apiCallType: "delete",
+                navigateToPage: () {
+                  return SectorsPage();
+                },
+              ),
             ],
-            // MOCK - check names used in api
-            apiString: "/sector/",
+            apiString: "/sectors/",
             jsonFields: SectorsFieldNames().jsonFieldNamesTable);
 }

@@ -15,10 +15,24 @@ class ReservationRequestsPage extends TablePageTemplate {
                   return ReservationRequestDetailsPage(elementData);
                 },
               ),
-              MyIconButton(type: "accept"),
-              MyIconButton(type: "cancel"),
+              MyIconButton(
+                type: "accept",
+                apiCall: "/reservations/",
+                apiCallType: "post",
+                apiIdName: "reservation_request_id",
+                navigateToPage: () {
+                  return ReservationRequestsPage();
+                },
+              ),
+              MyIconButton(
+                type: "cancel",
+                apiCall: "/reservation-requests/",
+                apiCallType: "delete",
+                navigateToPage: () {
+                  return ReservationRequestsPage();
+                },
+              ),
             ],
-            // MOCK - check names used in api
-            apiString: "/reservation_requests/",
+            apiString: "/reservation-requests/",
             jsonFields: ReservationRequestsFieldNames().jsonFieldNamesTable);
 }

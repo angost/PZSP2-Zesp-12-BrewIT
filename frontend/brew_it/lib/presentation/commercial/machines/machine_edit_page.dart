@@ -6,8 +6,7 @@ class MachineEditPage extends AddEditPageTemplate {
   MachineEditPage(Map elementData, {super.key})
       : super(
             title: "Urządzenie - edytuj:",
-            apiCall:
-                "/equipment/" + elementData["equipment_id"].toString() + "/",
+            apiCall: "/equipment/${elementData["equipment_id"]}/",
             apiCallType: "put",
             navigateToPageSave: (Map elementData) {
               return MachineDetailsPage(elementData);
@@ -17,6 +16,16 @@ class MachineEditPage extends AddEditPageTemplate {
             },
             fieldNames: MachinesFieldNames().fieldNames,
             jsonFieldNames: MachinesFieldNames().jsonFieldNames,
-            fieldEditable: [false, true, true],
+            fieldEditable: [
+              false,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
             elementData: elementData);
 }

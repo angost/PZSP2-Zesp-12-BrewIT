@@ -6,7 +6,7 @@ class RecipeEditPage extends AddEditPageTemplate {
   RecipeEditPage(Map elementData, {super.key})
       : super(
             title: "Receptura - edytuj:",
-            apiCall: "/recipes/" + elementData["recipe_id"].toString() + "/",
+            apiCall: "/recipes/${elementData["recipe_id"]}/",
             apiCallType: "put",
             navigateToPageSave: (Map elementData) {
               return RecipeDetailsPage(elementData);
@@ -16,6 +16,6 @@ class RecipeEditPage extends AddEditPageTemplate {
             },
             fieldNames: RecipesFieldNames().fieldNames,
             jsonFieldNames: RecipesFieldNames().jsonFieldNames,
-            fieldEditable: [true, false, true],
+            fieldEditable: [false, false, true],
             elementData: elementData);
 }

@@ -81,6 +81,11 @@ class SectorSerializer(serializers.ModelSerializer):
         fields = ['sector_id', 'name', 'allows_bacteria', 'brewery']
         extra_kwargs = {'brewery': {'read_only': True}}
 
+class SectorEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sector
+        fields = ['name']
+
 
 class EquipmentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -94,6 +99,11 @@ class EquipmentSerializer(serializers.ModelSerializer):
         if sector.brewery != brewery:
             raise serializers.ValidationError("You cannot add equipment to a sector from another brewery")
         return attrs
+
+class EquipmentEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Equipment
+        fields = ['name', 'daily_price', 'description']
 
 
 class BrewerySerializer(serializers.ModelSerializer):
@@ -117,7 +127,7 @@ class EquipmentFilterParametersSerializer(serializers.Serializer):
 
     def validate_production_brewery(self, value):
         try:
-            brewery = Brewery.objects.get(value)
+            brewery = Brewery.objects.get(brewery_id=value)
             if brewery.selector != Brewery.BrewerySelectors.PRODUCTION.value:
                 raise serializers.ValidationError("Production brewery does not exist")
             return value
@@ -182,11 +192,11 @@ class ReservationRequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ReservationRequest
-        fields = ['brew_size', 'authorised_workers', 'production_brewery', 'price',
-                  'contract_brewery', 'equipment_reservation_requests', 'allows_sector_share']
+        fields = '__all__'
 
         extra_kwargs = {'price': {'read_only': True},
                         'contract_brewery': {'read_only': True},
+                        'id': {'read_only': True}
              }
 
     def validate(self, attrs):

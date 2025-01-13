@@ -101,9 +101,11 @@ class _DetailsAddEditPageTemplateState
 
                               return TextFormField(
                                 onSaved: (newValue) {
-                                  widget.elementData ??= {};
-                                  widget.elementData![
-                                      widget.jsonFieldNames[index]] = newValue;
+                                  if (editable) {
+                                    widget.elementData ??= {};
+                                    widget.elementData![widget
+                                        .jsonFieldNames[index]] = newValue;
+                                  }
                                 },
                                 decoration: editable
                                     ? InputDecoration(

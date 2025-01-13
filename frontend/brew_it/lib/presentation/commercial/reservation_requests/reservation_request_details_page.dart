@@ -18,15 +18,25 @@ class ReservationRequestDetailsPage extends DetailsAddEditPageTemplate {
               )
             ],
             options: [
-              // MOCK - api call required
               MyIconButton(
                 type: "accept",
+                apiCall: "/reservations/",
+                apiCallType: "post",
+                apiIdName: "reservation_request_id",
+                // elementId: elementData["id"],
+                elementId:
+                    1, // MOCK, change to elementData["id"], when api implements reservation request id
                 navigateToPage: () {
                   return ReservationRequestsPage();
                 },
               ),
               MyIconButton(
                 type: "cancel",
+                apiCall: "/reservation-requests/",
+                apiCallType: "delete",
+                // elementId: elementData["id"],
+                elementId:
+                    1, // MOCK, change to elementData["id"], when api implements reservation request id
                 navigateToPage: () {
                   return ReservationRequestsPage();
                 },
