@@ -67,92 +67,107 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
       buttonWidgets.addAll(widget.buttons!);
     }
 
+    final hasOperationsColumn = widget.headers.contains("Operacje");
+
     return Scaffold(
-        appBar: MyAppBar(context),
-        body: Padding(
-          padding: const EdgeInsets.all(50),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Expanded(
-                flex: 1,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                        Text(widget.title,
-                            style: Theme.of(context).textTheme.titleSmall),
-                        const Spacer()
-                      ] +
-                      buttonWidgets,
+      appBar: MyAppBar(context),
+      body: Padding(
+        padding: const EdgeInsets.all(50),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            // Nagłówek strony
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                    Text(widget.title,
+                        style: Theme.of(context).textTheme.titleSmall),
+                    const Spacer(),
+                  ] +
+                  buttonWidgets,
+            ),
+            const SizedBox(height: 16),
+            // Nagłówki tabeli
+            Row(
+              children: [
+                ...widget.headers.map(
+                  (header) => Expanded(
+                    flex: 6,
+                    child: Text(
+                      header,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ),
                 ),
+              ],
+            ),
+            const Divider(),
+            // Tabela z danymi
+            Expanded(
+              child: ListView.separated(
+                itemCount: elements.length,
+                separatorBuilder: (context, index) => const Divider(),
+                itemBuilder: (context, index) {
+                  final element = elements[index];
+                  List<Widget> fieldValues = [];
+
+                  // Generowanie wartości pól
+                  if (widget.jsonFields != null) {
+                    fieldValues = widget.jsonFields!.map((field) {
+                      return Expanded(
+                        flex: 6,
+                        child: Text(
+                          element[field]?.toString() ?? '',
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+                    }).toList();
+                  }
+
+                  // Obsługa kolumny "Operacje"
+                  Widget? operationButtons;
+                  if (hasOperationsColumn && widget.options != null) {
+                    operationButtons = Expanded(
+                      flex: 6,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: widget.options!.map((optionButton) {
+                          return MyIconButton(
+                            type: optionButton.type,
+                            navigateToPage: optionButton.navigateToPage,
+                            dataForPage: element,
+                            customOnPressed: optionButton.customOnPressed,
+                            apiCall: optionButton.apiCall,
+                            apiCallType: optionButton.apiCallType,
+                            apiIdName: optionButton.apiIdName,
+                            elementId: widget.headers.contains("Id")
+                                ? element[widget.jsonFields![
+                                    widget.headers.indexOf("Id")]]
+                                : 0,
+                            filtersData: optionButton.filtersData,
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  }
+
+                  // Zwracanie pełnego wiersza tabeli
+                  return Row(
+                    children: [
+                      ...fieldValues,
+                      if (hasOperationsColumn) operationButtons ?? const SizedBox(),
+                    ],
+                  );
+                },
               ),
-              Expanded(
-                  flex: 1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: List.generate(widget.headers.length,
-                        (index) => Text(widget.headers[index])),
-                  )),
-              const Divider(),
-              Expanded(
-                  flex: 8,
-                  child: ListView.separated(
-                      itemCount: elements.length,
-                      separatorBuilder: (context, index) {
-                        return const Divider();
-                      },
-                      itemBuilder: (context, index) {
-                        final element = elements[index];
-                        List<Text> fieldValues = [];
-
-                        if (widget.jsonFields != null) {
-                          fieldValues = List.generate(
-                              widget.jsonFields!.length,
-                              (index) => Text(element[widget.jsonFields![index]]
-                                  .toString()));
-                        }
-
-                        List<MyIconButton>? elementButtons;
-
-                        if (widget.options != null) {
-                          elementButtons = [];
-                          for (MyIconButton optionButton in widget.options!) {
-                            elementButtons.add(MyIconButton(
-                              type: optionButton.type,
-                              navigateToPage: optionButton.navigateToPage,
-                              dataForPage: elements[index],
-                              customOnPressed: optionButton.customOnPressed,
-                              apiCall: optionButton.apiCall,
-                              apiCallType: optionButton.apiCallType,
-                              apiIdName: optionButton.apiIdName,
-                              elementId: widget.headers.indexOf("Id") != -1
-                                  ? element[widget.jsonFields![
-                                      widget.headers.indexOf("Id")]]
-                                  : 0,
-                              filtersData: optionButton.filtersData,
-                            ));
-                          }
-                        }
-
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              flex: 8,
-                              child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: fieldValues),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Row(children: elementButtons ?? []),
-                            )
-                          ],
-                        );
-                      }))
-            ],
-          ),
-        ));
+            ),
+          ],
+        ),
+      ),
+    );
   }
+
+
+
 }
