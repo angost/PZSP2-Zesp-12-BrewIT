@@ -17,7 +17,6 @@ class MachineEditPage extends AddEditPageTemplate {
             fieldNames: MachinesFieldNames().fieldNames,
             jsonFieldNames: MachinesFieldNames().jsonFieldNames,
             fieldEditable: [
-              false,
               true,
               true,
               true,
@@ -27,5 +26,13 @@ class MachineEditPage extends AddEditPageTemplate {
               true,
               true
             ],
+            errorMessages: MachinesFieldNames().errorMessages,
+            fieldTypes: MachinesFieldNames().fieldTypes,
+            enumOptions: {
+              "selector": [
+                {"display": "Zestaw do warzenia", "apiValue": "BREWSET"},
+                {"display": "Zbiornik", "apiValue": "VAT"},
+              ]
+            },
             elementData: elementData);
 }
