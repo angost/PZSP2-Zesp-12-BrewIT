@@ -1,5 +1,6 @@
 import 'package:brew_it/presentation/_common/templates/details_add_edit_page_template.dart';
 import 'package:brew_it/presentation/_common/widgets/main_button.dart';
+import 'package:brew_it/presentation/_common/errors/error_handlers.dart';
 import 'package:flutter/material.dart';
 
 class AddEditPageTemplate extends DetailsAddEditPageTemplate {
@@ -15,6 +16,9 @@ class AddEditPageTemplate extends DetailsAddEditPageTemplate {
       required List<String> jsonFieldNames,
       required List<bool> fieldEditable,
       required Map elementData,
+        Map<String, String>? errorMessages,
+        List<String>? fieldTypes,
+        Map<String, List<Map<String, String>>>? enumOptions,
       super.key})
       : super(
             title: title,
@@ -26,7 +30,10 @@ class AddEditPageTemplate extends DetailsAddEditPageTemplate {
                   apiCallType: apiCallType,
                   navigateToPage: navigateToPageSave,
                   dataForPage: elementData,
-                  navigateIsTablePage: navigateToSaveIsTablePage),
+                  navigateIsTablePage: navigateToSaveIsTablePage,
+                  errorMessages: errorMessages,
+                  customErrorHandler: handleMultipleErrors
+              ),
               MainButton("Anuluj",
                   type: "secondary_small",
                   navigateToPage: navigateToPageCancel,
@@ -36,5 +43,7 @@ class AddEditPageTemplate extends DetailsAddEditPageTemplate {
             fieldNames: fieldNames,
             jsonFieldNames: jsonFieldNames,
             fieldEditable: fieldEditable,
+            fieldTypes: fieldTypes,
+            enumOptions: enumOptions,
             elementData: elementData);
 }

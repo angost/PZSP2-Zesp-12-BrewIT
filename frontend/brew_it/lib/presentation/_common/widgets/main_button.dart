@@ -1,5 +1,6 @@
 import 'package:brew_it/core/theme/button_themes.dart';
 import 'package:brew_it/injection_container.dart';
+import 'package:brew_it/presentation/_common/errors/error_handlers.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
@@ -29,7 +30,7 @@ class MainButton extends StatelessWidget {
   final bool pop;
   final bool navigateIsTablePage;
   final Map<String, String>? errorMessages;
-  final Function(BuildContext context, DioException e)? customErrorHandler;
+  final Function(BuildContext context, DioException e, Map<String, String>? errorMessages)? customErrorHandler;
 
   final typeToStyle = {
     "default": secondaryButtonTheme,
@@ -84,9 +85,9 @@ class MainButton extends StatelessWidget {
               }
             } on DioException catch (e) {
               if (customErrorHandler != null) {
-                customErrorHandler!(context, e);
+                customErrorHandler!(context, e, errorMessages);
               } else {
-                _handleApiError(context, e);
+                handleApiError(context, e, errorMessages);
               }
             }
           } else if (navigateToPage != null) {
@@ -113,30 +114,7 @@ class MainButton extends StatelessWidget {
         child: Text(content));
   }
 
-  void _handleApiError(BuildContext context, DioException e) {
-    final detail = e.response?.data['detail'];
-    if (errorMessages != null && detail != null && errorMessages!.containsKey(detail)) {
-      showErrorDialog(context, errorMessages![detail]!);
-    } else {
-      showErrorDialog(context, "An unknown error occurred. Please try again.");
-    }
-  }
+
 }
 
-void showErrorDialog(BuildContext context, String message) {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text("Error"),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("OK"),
-          ),
-        ],
-      );
-    },
-  );
-}
+

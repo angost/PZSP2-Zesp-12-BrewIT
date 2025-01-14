@@ -2,37 +2,8 @@ import 'package:brew_it/core/helper/field_names.dart';
 import 'package:brew_it/presentation/_common/templates/filter_page_template.dart';
 import 'package:brew_it/presentation/_common/widgets/main_button.dart';
 import 'package:brew_it/presentation/contract/commercial_offers/commercial_offers_page.dart';
+import 'package:brew_it/presentation/_common/errors/error_handlers.dart';
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
-
-void handleCustomApiErrors(BuildContext context, DioException e) {
-  final errorMessages = CommercialOffersFiltersFieldNames().errorMessages;
-
-  // Extract errors from the response
-  final errorData = e.response?.data as Map<String, dynamic>?;
-
-  if (errorData != null) {
-    // Collect all error messages
-    final List<String> aggregatedErrors = [];
-    errorData.forEach((field, messages) {
-      if (messages is List && messages.isNotEmpty) {
-        final translatedMessage = errorMessages[field];
-        if (translatedMessage != null) {
-          aggregatedErrors.add(translatedMessage);
-        } else {
-          aggregatedErrors.add("$field: ${messages.first}");
-        }
-      }
-    });
-
-    // Show all errors in a single dialog
-    if (aggregatedErrors.isNotEmpty) {
-      showErrorDialog(context, aggregatedErrors.join("\n"));
-    }
-  } else {
-    showErrorDialog(context, "An unknown error occurred. Please try again.");
-  }
-}
 
 class CommercialOffersFilterPage extends FilterPageTemplate {
   CommercialOffersFilterPage(Map elementData, {super.key})
@@ -48,7 +19,8 @@ class CommercialOffersFilterPage extends FilterPageTemplate {
             return CommercialOffersPage(elementData, filteredElements);
           },
           dataForPage: elementData,
-          customErrorHandler: handleCustomApiErrors),
+          errorMessages: CommercialOffersFiltersFieldNames().errorMessages,
+          customErrorHandler: handleMultipleErrors,),
       MainButton(
         "Anuluj",
         type: "secondary_small",

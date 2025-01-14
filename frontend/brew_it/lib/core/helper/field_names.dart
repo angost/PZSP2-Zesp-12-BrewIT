@@ -170,7 +170,6 @@ class ProductionProcessesFieldNames extends StandardFieldNames {
 class MachinesFieldNames extends StandardFieldNames {
   MachinesFieldNames()
       : super(fieldNames: [
-          "Id",
           "Typ",
           "Nazwa",
           "Opis",
@@ -180,7 +179,6 @@ class MachinesFieldNames extends StandardFieldNames {
           "Temperatura maksymalna",
           "Sektor",
         ], jsonFieldNames: [
-          "equipment_id",
           "selector",
           "name",
           "description",
@@ -202,7 +200,22 @@ class MachinesFieldNames extends StandardFieldNames {
           "name",
           "daily_price",
           "capacity",
-        ], fieldTypes: [], errorMessages: {});
+        ], fieldTypes: [
+          "EnumField",
+          "TextField",
+          "TextField",
+          "TextField",
+          "TextField",
+          "TextField",
+          "TextField",
+          "TextField",
+        ], errorMessages: {
+          "selector": "Typ jest wymagany.",
+          "capacity": "Pojemność musi być liczbą całkowitą.",
+          "name": "Nazwa nie może być pusta.",
+          "daily_price": "Cena musi być liczbą całkowitą.",
+          "sector": "Sektor musi być istniejącym id.",
+  });
 }
 
 class SectorsFieldNames extends StandardFieldNames {
