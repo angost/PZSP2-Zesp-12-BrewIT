@@ -375,48 +375,49 @@ class RegistrationRequestsFieldNames extends StandardFieldNames {
 class StatisticsFieldNames extends StandardFieldNames {
   StatisticsFieldNames()
       : super(fieldNames: [
+          "Id browaru",
           "Typ browaru",
           "Nazwa",
-          "Ilość produkowanego piwa",
-          "% Anulowanych rezerwacji",
+          "Ilość wyprodukowanego piwa",
           "% Nieudanego piwa",
+          "Ilość produkowanego teraz piwa",
         ], jsonFieldNames: [
-          "role",
+          "id",
+          "type",
           "name",
-          "amount",
-          "cancelled_reservations",
-          "failed_beer",
+          "produced_beer",
+          "failed_beer_percentage",
+          "beer_in_production",
         ], fieldNamesTable: [
-          "Id",
+          "Id browaru",
           "Typ browaru",
           "Nazwa",
-          "Ilość produkowanego piwa",
-          "% Anulowanych rezerwacji",
+          "Ilość wyprodukowanego piwa",
           "% Nieudanego piwa",
-          "Operacje"
+          "Ilość produkowanego teraz piwa",
         ], jsonFieldNamesTable: [
-          "brewery_id",
-          "role",
+          "id",
+          "type",
           "name",
-          "amount",
-          "cancelled_reservations",
-          "failed_beer",
+          "produced_beer",
+          "failed_beer_percentage",
+          "beer_in_production",
         ]);
 }
 
 class StatisticsSumFieldNames extends StandardFieldNames {
   StatisticsSumFieldNames()
       : super(fieldNames: [
-          "Liczba browarów komercyjnych",
           "Liczba browarów kontraktowych",
-          "Sumaryczna ilość produkowanego piwa",
-          "Sumaryczny % anulowanych rezerwacji",
-          "Sumaryczny % nieudanego piwa",
+          "Liczba browarów komercyjnych",
+          "Sumaryczna ilość wyprodukowanego piwa",
+          "Sumaryczna ilość piwa w produkcji",
+          "Sumaryczny % nieudanych prcoesów wykonywania piwa",
         ], jsonFieldNames: [
-          "commercial_number",
-          "contract_number",
-          "amount",
-          "sum_cancelled_reservations",
-          "sum_failed_beer",
+          "all_contract",
+          "all_production",
+          "total_beer_produced",
+          "total_beer_in_production",
+          "total_failed_percentage",
         ], fieldNamesTable: [], jsonFieldNamesTable: []);
 }
