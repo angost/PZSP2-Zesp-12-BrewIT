@@ -221,11 +221,9 @@ class MachinesFieldNames extends StandardFieldNames {
 class SectorsFieldNames extends StandardFieldNames {
   SectorsFieldNames()
       : super(fieldNames: [
-          "Id",
           "Nazwa",
           "Zezwala na bakterie",
         ], jsonFieldNames: [
-          "sector_id",
           "name",
           "allows_bacteria",
         ], fieldNamesTable: [
@@ -237,7 +235,13 @@ class SectorsFieldNames extends StandardFieldNames {
           "sector_id",
           "name",
           "allows_bacteria",
-        ], fieldTypes: [], errorMessages: {});
+        ], fieldTypes: [
+          "TextField",
+          "BooleanField",
+        ], errorMessages: {
+          "name": "Nazwa nie może być pusta.",
+          "allows_bacteria": "Wybrać opcję bakterii",
+  });
 }
 
 class ReservationRequestsFieldNames extends StandardFieldNames {
