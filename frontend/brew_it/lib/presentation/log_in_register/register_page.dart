@@ -28,7 +28,7 @@ class _RegisterPageState extends State<RegisterPage> {
       registerFieldNames = RegisterCommercialFieldNames();
     } else {
       registerData["selector"] = "CONTR";
-      registerData["water_ph"] = "0";
+      // registerData["water_ph"] = "0";
       registerFieldNames = RegisterContractFieldNames();
     }
   }
@@ -76,7 +76,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 formKey.currentState!.save();
                                 try {
                                   final response = await getIt<Dio>().post(
-                                    '/register/',
+                                    '/registration-requests/',
                                     data: registerData,
                                   );
                                   if (response.statusCode == 201) {
