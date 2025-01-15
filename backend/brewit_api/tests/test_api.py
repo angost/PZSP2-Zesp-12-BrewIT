@@ -1,12 +1,13 @@
 from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
 from ..models import (
-    Account, Brewery, Sector
+    Account, Brewery, Sector, Equipment
 )
 from ..serializers import (
-    SectorSerializer,
+    SectorSerializer
 )
 from django.test import override_settings
+
 
 @override_settings(SECURE_SSL_REDIRECT=False)
 class AccountAPITest(APITestCase):
@@ -188,3 +189,200 @@ class SectorDetailListTests(APITestCase):
         response = self.client.delete(f'{self.sectors_url}{self.sector1.pk}/')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Sector.objects.filter(pk=self.sector1.pk).exists())
+
+
+@override_settings(SECURE_SSL_REDIRECT=False)
+class BaseTestSetup(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.client = APIClient()
+
+        cls.contract_user = Account.objects.create_user(
+            email='contruser@example.com',
+            password='testpass',
+            role=Account.AccountRoles.CONTRACT
+        )
+        cls.production_user = Account.objects.create_user(
+            email='produser@example.com',
+            password='testpass',
+            role=Account.AccountRoles.PRODUCTION
+        )
+        cls.brewery = Brewery.objects.create(
+            selector=Brewery.BrewerySelectors.PRODUCTION,
+            name='Test Brewery',
+            account=cls.production_user
+        )
+        cls.sector = Sector.objects.create(
+            name='Sector 1',
+            allows_bacteria=False,
+            brewery=cls.brewery
+        )
+        cls.equipment1 = Equipment.objects.create(
+            selector=Equipment.EquipmentSelectors.VAT,
+            capacity=100,
+            name='Vat #1',
+            daily_price=50.00,
+            min_temperature=15,
+            max_temperature=35,
+            brewery=cls.brewery,
+            sector=cls.sector
+        )
+        cls.equipment2 = Equipment.objects.create(
+            selector=Equipment.EquipmentSelectors.BREWSET,
+            capacity=200,
+            name='Brewset #2',
+            daily_price=100.00,
+            brewery=cls.brewery,
+            sector=cls.sector
+        )
+
+@override_settings(SECURE_SSL_REDIRECT=False)
+class EquipmentListTests(APITestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+        self.contract_user = Account.objects.create_user(
+            email='contruser@example.com',
+            password='testpass',
+            role=Account.AccountRoles.CONTRACT
+        )
+        self.production_user = Account.objects.create_user(
+            email='produser@example.com',
+            password='testpass',
+            role=Account.AccountRoles.PRODUCTION
+        )
+        self.brewery = Brewery.objects.create(
+            selector=Brewery.BrewerySelectors.PRODUCTION,
+            name='Test Brewery',
+            account=self.production_user
+        )
+        self.sector = Sector.objects.create(
+            name='Sector 1',
+            allows_bacteria=False,
+            brewery=self.brewery
+        )
+        self.equipment1 = Equipment.objects.create(
+            selector=Equipment.EquipmentSelectors.VAT,
+            capacity=100,
+            name='Vat #1',
+            daily_price=50.00,
+            min_temperature=15,
+            max_temperature=35,
+            brewery=self.brewery,
+            sector=self.sector
+        )
+        self.equipment2 = Equipment.objects.create(
+            selector=Equipment.EquipmentSelectors.BREWSET,
+            capacity=200,
+            name='Brewset #2',
+            daily_price=100.00,
+            brewery=self.brewery,
+            sector=self.sector
+        )
+
+    def test_get_equipment_list(self):
+        self.client.force_authenticate(user=self.production_user)
+        response = self.client.get('/api/equipment/')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.data[0]['name'], 'Vat #1')
+        self.assertEqual(response.data[1]['name'], 'Brewset #2')
+
+    def test_post_equipment_as_contract_user(self):
+        data = {'name': 'New Equipment'}
+        self.client.force_authenticate(user=self.contract_user)
+        response = self.client.post('/api/equipment/', data)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_post_equipment_as_production_user(self):
+        data = {
+            'selector': 'VAT',
+            'capacity': 120,
+            'name' : 'vat',
+            'daily_price' : 100,
+            'min_temperature' : 10,
+            'max_temperature' : 40,
+            'brewery': self.brewery.brewery_id,
+            'sector': self.sector.sector_id
+        }
+        self.client.force_authenticate(user=self.production_user)
+        response = self.client.post('/api/equipment/', data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Equipment.objects.count(), 3)
+        self.assertEqual(Equipment.objects.all()[2].name, 'vat')
+
+@override_settings(SECURE_SSL_REDIRECT=False)
+class EquipmentDetailTests(APITestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+        self.contract_user = Account.objects.create_user(
+            email='contruser@example.com',
+            password='testpass',
+            role=Account.AccountRoles.CONTRACT
+        )
+        self.production_user = Account.objects.create_user(
+            email='produser@example.com',
+            password='testpass',
+            role=Account.AccountRoles.PRODUCTION
+        )
+        self.brewery = Brewery.objects.create(
+            selector=Brewery.BrewerySelectors.PRODUCTION,
+            name='Test Brewery',
+            account=self.production_user
+        )
+        self.sector = Sector.objects.create(
+            name='Sector 1',
+            allows_bacteria=False,
+            brewery=self.brewery
+        )
+        self.equipment1 = Equipment.objects.create(
+            selector=Equipment.EquipmentSelectors.VAT,
+            capacity=100,
+            name='Vat #1',
+            daily_price=50.00,
+            min_temperature=15,
+            max_temperature=35,
+            brewery=self.brewery,
+            sector=self.sector
+        )
+        self.equipment2 = Equipment.objects.create(
+            selector=Equipment.EquipmentSelectors.BREWSET,
+            capacity=200,
+            name='Brewset #2',
+            daily_price=100.00,
+            brewery=self.brewery,
+            sector=self.sector
+        )
+
+    def test_get_equipment_detail(self):
+        self.client.force_authenticate(user=self.production_user)
+        response = self.client.get('/api/equipment/1/')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['name'], self.equipment1.name)
+
+    def test_put_valid_equipment(self):
+        data = {
+            'name': 'Updated Equipment',
+            'daily_price': 20,
+        }
+        self.client.force_authenticate(user=self.production_user)
+        response = self.client.put(f'/api/equipment/{self.equipment1.equipment_id}/', data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.equipment1.refresh_from_db()
+        self.assertEqual(self.equipment1.name, 'Updated Equipment')
+        self.assertEqual(self.equipment1.daily_price, 20)
+
+    def test_put_invalid_equipment(self):
+        data = {'name': ''}
+        self.client.force_authenticate(user=self.production_user)
+        response = self.client.put(f'/api/equipment/{self.equipment1.equipment_id}/', data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('name', response.data)
+
