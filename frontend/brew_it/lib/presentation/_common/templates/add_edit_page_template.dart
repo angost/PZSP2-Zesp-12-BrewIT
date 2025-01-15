@@ -16,7 +16,7 @@ class AddEditPageTemplate extends DetailsAddEditPageTemplate {
       required List<String> jsonFieldNames,
       required List<bool> fieldEditable,
       required Map elementData,
-        Map<String, String>? errorMessages,
+        Map<String, dynamic>? errorMessages,
         List<String>? fieldTypes,
         Map<String, List<Map<String, String>>>? enumOptions,
       super.key})

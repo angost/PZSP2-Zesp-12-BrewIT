@@ -20,7 +20,7 @@ void showErrorDialog(BuildContext context, String message) {
   );
 }
 
-void handleApiError(BuildContext context, DioException e, Map<String, String>? errorMessages) {
+void handleApiError(BuildContext context, DioException e, Map<String, dynamic>? errorMessages) {
   final detail = e.response?.data['detail'];
   if (errorMessages != null && detail != null && errorMessages!.containsKey(detail)) {
     showErrorDialog(context, errorMessages![detail]!);
@@ -29,20 +29,36 @@ void handleApiError(BuildContext context, DioException e, Map<String, String>? e
   }
 }
 
-void handleMultipleErrors(BuildContext context, DioException e, Map<String, String>? errorMessages) {
+void handleMultipleErrors(
+    BuildContext context, DioException e, Map<String, dynamic>? errorMessages) {
   // Extract errors from the response
   final errorData = e.response?.data as Map<String, dynamic>?;
 
   if (errorData != null) {
-    // Collect all error messages
     final List<String> aggregatedErrors = [];
+
+    // Recursive lookup for messages
+    String? translateMessage(String field, dynamic message) {
+      final entry = errorMessages?[field];
+      if (entry is Map) {
+        for (final key in entry.keys) {
+          if (RegExp(key).hasMatch(message)) {
+            return entry[key];
+          }
+        }
+      } else if (entry is String) {
+        // Simple string: Return the translation
+        return entry;
+      }
+      return "$field: $message"; // Fallback: Use raw message
+    }
+
+    // Process each error field
     errorData.forEach((field, messages) {
       if (messages is List && messages.isNotEmpty) {
-        final translatedMessage = errorMessages![field];
-        if (translatedMessage != null) {
-          aggregatedErrors.add(translatedMessage);
-        } else {
-          aggregatedErrors.add("$field: ${messages.first}");
+        for (final message in messages) {
+          final translatedMessage = translateMessage(field, message);
+          aggregatedErrors.add(translatedMessage ?? message);
         }
       }
     });

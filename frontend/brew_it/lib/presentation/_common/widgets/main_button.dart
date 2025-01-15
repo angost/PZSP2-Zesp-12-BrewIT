@@ -29,8 +29,8 @@ class MainButton extends StatelessWidget {
   final String? apiCallType;
   final bool pop;
   final bool navigateIsTablePage;
-  final Map<String, String>? errorMessages;
-  final Function(BuildContext context, DioException e, Map<String, String>? errorMessages)? customErrorHandler;
+  final Map<String, dynamic>? errorMessages;
+  final Function(BuildContext context, DioException e, Map<String, dynamic>? errorMessages)? customErrorHandler;
 
   final typeToStyle = {
     "default": secondaryButtonTheme,
