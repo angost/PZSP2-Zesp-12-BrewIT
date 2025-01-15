@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 abstract class StandardFieldNames {
   StandardFieldNames(
       {required this.fieldNames,
@@ -12,7 +14,7 @@ abstract class StandardFieldNames {
   List<String> fieldNamesTable;
   List<String> jsonFieldNamesTable;
   List<String> fieldTypes;
-  Map<String, String> errorMessages;
+  Map<String, dynamic> errorMessages;
 }
 
 class RegisterCommercialFieldNames extends StandardFieldNames {
@@ -138,7 +140,6 @@ class CommercialOffersFiltersFieldNames extends StandardFieldNames {
 class ProductionProcessesFieldNames extends StandardFieldNames {
   ProductionProcessesFieldNames()
       : super(fieldNames: [
-          "Id",
           "Data początkowa",
           "Data końcowa",
           "Rezerwacja",
@@ -146,7 +147,6 @@ class ProductionProcessesFieldNames extends StandardFieldNames {
           "Opis",
           "Czy udany",
         ], jsonFieldNames: [
-          "log_id",
           "start_date",
           "end_date",
           "reservation",
@@ -164,7 +164,29 @@ class ProductionProcessesFieldNames extends StandardFieldNames {
           "start_date",
           "end_date",
           "is_successful"
-        ], fieldTypes: [], errorMessages: {});
+        ], fieldTypes: [
+          "DatePickerField",
+          "DatePickerField",
+          "TextField",
+          "TextField",
+          "TextField",
+          "BooleanField"
+        ], errorMessages: {
+        "start_date": "Data początkowa jest wymagana.",
+        "non_field_errors": {
+          "Execution log for this reservation already exists":
+            "Dziennik wykonania dla tej rezerwacji już istnieje.",
+          "Reservation does not exist": "Rezerwacja nie istnieje.",
+        },
+        "reservation": {
+          "This field may not be null" : "Rezerwacja nie może być pusta.",
+          r'Invalid pk "\d+" - object does not exist.': "Taka rezerwacja nie istnieje."
+        },
+        "recipe": {
+          "This field may not be null" : "Przepis nie może być pusty.",
+          r'Invalid pk "\d+" - object does not exist.': "Taki przepis nie istnieje."
+        }
+        });
 }
 
 class MachinesFieldNames extends StandardFieldNames {
@@ -385,11 +407,9 @@ class ReservationsContractFieldNames extends StandardFieldNames {
 class RecipesFieldNames extends StandardFieldNames {
   RecipesFieldNames()
       : super(fieldNames: [
-          "Id",
           "Typ piwa",
           "Treść",
         ], jsonFieldNames: [
-          "recipe_id",
           "beer_type",
           "recipe_body",
         ], fieldNamesTable: [
@@ -399,7 +419,17 @@ class RecipesFieldNames extends StandardFieldNames {
         ], jsonFieldNamesTable: [
           "recipe_id",
           "beer_type",
-        ], fieldTypes: [], errorMessages: {});
+        ], fieldTypes: [
+          "TextField",
+          "TextField"
+        ], errorMessages: {
+          "beer_type": {
+            "cannot be empty":
+            "Typ piwa nie może być pusty",
+            r'Invalid pk "\d+" - object does not exist.': r'Niewłaściwy klucz typu piwa',
+          },
+          "recipe_body": "Treść nie może mieć więcej niż 2048 znaków."
+        });
 }
 
 class RegistrationRequestsFieldNames extends StandardFieldNames {
