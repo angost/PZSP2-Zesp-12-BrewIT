@@ -16,3 +16,8 @@ class IsBrewery(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user.role == Account.AccountRoles.PRODUCTION.value\
                or request.user.role == Account.AccountRoles.CONTRACT.value
+
+class IsAdmin(permissions.BasePermission):
+    message = 'You must be an Administrator to access this endpoint.'
+    def has_permission(self, request, view):
+        return request.user.role == Account.AccountRoles.ADMIN.value

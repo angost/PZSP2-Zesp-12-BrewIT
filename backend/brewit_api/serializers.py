@@ -1,6 +1,6 @@
 from .models import Account, Brewery, Equipment, Sector, Vatpackaging,\
                     EqipmentReservationRequest, ReservationRequest, EquipmentReservation,\
-                    Reservation, Recipe, ExecutionLog, BeerType
+                    Reservation, Recipe, ExecutionLog, BeerType, RegistrationRequest
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -8,71 +8,101 @@ from django.db import transaction
 from django.db.models import Q
 from datetime import timedelta
 import math
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.password_validation import validate_password
+
 
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ['id', 'email', 'password']
-        extra_kwargs = {'password': {'write_only': True}}
-
-    def create(self, validated_data):
-        user = get_user_model().objects.create_user(email=validated_data['email'],
-                                                    password=validated_data['password'])
-        return user
+        fields = ['id', 'email', 'role']
 
 
-class RegistrationDataSerializer(serializers.Serializer):
-    email = serializers.EmailField(required=True)
-    password = serializers.CharField(required=True)
-    password2 = serializers.CharField(required=True)
-    role = serializers.CharField(required=True)
-    selector = serializers.CharField(required=True)
-    name = serializers.CharField(required=True)
-    nip = serializers.CharField(required=True)
-    water_ph = serializers.DecimalField(decimal_places=1,
-                                        max_digits=3,
-                                        required=False)
+class RegistrationRequestSerializer(serializers.ModelSerializer):
+    password2 = serializers.CharField(write_only=True, required=True)
+    class Meta:
+        model = RegistrationRequest
+        fields = '__all__'
+        extra_kwargs = {'password': {'write_only': True},
+                        'role': {'read_only': True},}
+
 
     def validate_email(self, value):
         if get_user_model().objects.filter(email=value).exists():
-            raise serializers.ValidationError("Email already exists")
+            raise serializers.ValidationError("Account with this email already exists")
+        return value
+
+    def validate_password(self, value):
+        try:
+            validate_password(value)
+        except Exception as e:
+            raise serializers.ValidationError(str(e))
         return value
 
     def validate_selector(self, value):
         if value not in [el for el in Brewery.BrewerySelectors.values]:
-            raise serializers.ValidationError("Invalid selectror")
+            raise serializers.ValidationError("Invalid selector")
         return value
 
-    def validate_role(self, value):
-        if value not in [el for el in Account.AccountRoles.values]:
-            raise serializers.ValidationError("Invalid role")
-        elif value == Account.AccountRoles.ADMIN.value:
-            raise serializers.ValidationError("Cannot create admin account")
-        return value
+    def validate(self, attrs):
+        print(attrs)
 
-    def validate(self, data):
-        if data['password'] != data['password2']:
+        if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError("Passwords do not match")
-        elif data['role'] == Account.AccountRoles.PRODUCTION.value and not data['water_ph']:
+        elif attrs['selector'] == Brewery.BrewerySelectors.PRODUCTION.value and not attrs['water_ph']:
             raise serializers.ValidationError("Production brewery must specify water_ph")
-        elif data['role'] != data['selector']:
-            raise serializers.ValidationError("Role and selector must be the same")
-        return data
+        elif attrs['selector'] == Brewery.BrewerySelectors.PRODUCTION.value and not attrs['nip']:
+            raise serializers.ValidationError("Production brewery must specify nip")
+        return attrs
+
+    def create(self, validated_data):
+        password = make_password(validated_data['password'])
+        return RegistrationRequest.objects.create(email=validated_data['email'],
+                                                  password=password,
+                                                  role=validated_data['selector'],
+                                                  selector=validated_data['selector'],
+                                                  name=validated_data['name'],
+                                                  nip=validated_data['nip'],
+                                                  water_ph=validated_data['water_ph'])
+
+
+class BreweryCreateSerializer(serializers.Serializer):
+    registration_request_id = serializers.IntegerField(required=True)
+
+    def validate(self, attrs):
+        try:
+            registration_request = RegistrationRequest.objects.get(id=attrs['registration_request_id'])
+        except RegistrationRequest.DoesNotExist:
+            raise serializers.ValidationError("Registration request does not exist")
+        email = registration_request.email
+        if get_user_model().objects.filter(email=email).exists():
+            raise serializers.ValidationError("Account with this email already exists")
+        return attrs
 
     def create(self, validated_data):
         try:
             with transaction.atomic():
-                account = get_user_model().objects.create_user(email=validated_data['email'],
-                                            password=validated_data['password'],
-                                            role=validated_data['role'])
-                brewery = Brewery.objects.create(selector=validated_data['selector'],
-                                                 name=validated_data['name'],
-                                                 nip=validated_data['nip'],
-                                                 water_ph=validated_data['water_ph'],
+                registration_request = RegistrationRequest.objects.get(id=validated_data['registration_request_id'])
+                account = get_user_model().objects.create(email=registration_request.email,
+                                                          password=registration_request.password,
+                                                          role=registration_request.role)
+
+                brewery = Brewery.objects.create(selector=registration_request.selector,
+                                                 name=registration_request.name,
+                                                 nip=registration_request.nip,
+                                                 water_ph=registration_request.water_ph,
                                                  account=account)
-                return (account, brewery)
+                registration_request.delete()
+                return brewery
         except Exception as e:
-            raise serializers.ValidationError(str(e)) # Change later
+            raise serializers.ValidationError(str(e))
+
+
+class BreweryWithAccountSerializer(serializers.ModelSerializer):
+    account = AccountSerializer()
+    class Meta:
+        model = Brewery
+        fields = '__all__'
 
 
 class SectorSerializer(serializers.ModelSerializer):
@@ -365,6 +395,23 @@ class CleanupSerializer(serializers.ModelSerializer):
 
             raise serializers.ValidationError("Equipment is already reserved for that period")
         return attrs
+
+
+class BreweryStatisticsSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    type = serializers.ChoiceField(choices=[el for el in Brewery.BrewerySelectors.values])
+    name = serializers.CharField()
+    produced_beer = serializers.FloatField()
+    failed_beer_percentage = serializers.FloatField()
+    beer_in_production = serializers.FloatField()
+
+
+class CombinedStatisticsSerializer(serializers.Serializer):
+    all_contract = serializers.IntegerField()
+    all_production = serializers.IntegerField()
+    total_beer_produced = serializers.FloatField()
+    total_beer_in_production = serializers.FloatField()
+    total_failed_percentage = serializers.FloatField()
 
 
 

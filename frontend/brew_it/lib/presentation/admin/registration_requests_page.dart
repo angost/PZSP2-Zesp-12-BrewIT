@@ -5,13 +5,28 @@ import 'package:brew_it/presentation/_common/widgets/my_icon_button.dart';
 class RegistrationRequestsPage extends TablePageTemplate {
   RegistrationRequestsPage({super.key})
       : super(
-            title: "Prośby o rejestrację:",
-            headers: RegistrationRequestsFieldNames().fieldNamesTable,
-            options: [
-              MyIconButton(type: "accept"),
-              MyIconButton(type: "cancel"),
-            ],
-            // MOCK - check names used in api
-            apiString: "/registration_requests/",
-            jsonFields: RegistrationRequestsFieldNames().jsonFieldNamesTable);
+          title: "Prośby o rejestrację:",
+          headers: RegistrationRequestsFieldNames().fieldNamesTable,
+          options: [
+            MyIconButton(
+              type: "accept",
+              apiCall: "/registration-requests/accept/",
+              apiCallType: "post",
+              apiIdName: "registration_request_id",
+              navigateToPage: () {
+                return RegistrationRequestsPage();
+              },
+            ),
+            MyIconButton(
+              type: "cancel",
+              apiCall: "/registration-requests/",
+              apiCallType: "delete",
+              navigateToPage: () {
+                return RegistrationRequestsPage();
+              },
+            ),
+          ],
+          apiString: "/registration-requests/",
+          jsonFields: RegistrationRequestsFieldNames().jsonFieldNamesTable,
+        );
 }

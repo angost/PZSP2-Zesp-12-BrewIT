@@ -11,7 +11,6 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from .managers import CustomUserManager
 
-
 class Account(AbstractUser):
     class AccountRoles(models.TextChoices):
         PRODUCTION = 'PROD', _('Production Brewery')
@@ -27,7 +26,7 @@ class Account(AbstractUser):
     )
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ['role']
+    REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
 
@@ -69,6 +68,21 @@ class Brewery(models.Model):
         managed = True
         db_table = 'brewery'
 
+
+class RegistrationRequest(models.Model):
+    email = models.EmailField(_("email address"))
+    role = models.CharField(
+        max_length=5,
+        choices=Account.AccountRoles.choices,
+        blank=False
+    )
+    password = models.CharField()
+    selector = models.CharField(max_length=10,
+                                choices=Brewery.BrewerySelectors.choices,
+                                blank=False)
+    name = models.CharField(max_length=128)
+    nip = models.CharField(max_length=10, blank=True, null=True)
+    water_ph = models.DecimalField(max_digits=3, decimal_places=1, blank=True, null=True)
 
 class Sector(models.Model):
     sector_id = models.AutoField(primary_key=True)
@@ -136,8 +150,8 @@ class Reservation(models.Model):
     price = models.IntegerField()
     brew_size = models.IntegerField()
     authorised_workers = models.CharField(max_length=512, blank=True, null=True)
-    production_brewery = models.ForeignKey(Brewery, models.DO_NOTHING)
-    contract_brewery = models.ForeignKey(Brewery, models.DO_NOTHING, related_name='reservation_contract_brewery_set')
+    production_brewery = models.ForeignKey(Brewery, models.DO_NOTHING, related_name='reservation_production_brewery')
+    contract_brewery = models.ForeignKey(Brewery, models.DO_NOTHING, related_name='reservation_contract_brewery')
     allows_sector_share = models.BooleanField()
 
     class Meta:
@@ -169,7 +183,7 @@ class ExecutionLog(models.Model):
     is_successful = models.BooleanField(blank=True, null=True)
     log = models.CharField(max_length=2048, blank=True, null=True)
     recipe = models.ForeignKey('Recipe', models.DO_NOTHING)
-    reservation = models.ForeignKey('Reservation', models.DO_NOTHING)
+    reservation = models.ForeignKey('Reservation', models.DO_NOTHING, related_name='execution_logs')
 
     class Meta:
         managed = True
