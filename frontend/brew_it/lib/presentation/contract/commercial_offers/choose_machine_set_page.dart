@@ -43,7 +43,7 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
         "end_date": widget.filtersData!["vat_end_date"],
         "capacity": widget.filtersData!["vat_capacity"],
         "min_temperature": widget.filtersData!["vat_min_temperature"],
-        "max_temperature": widget.filtersData!["vat_min_temperature"],
+        "max_temperature": widget.filtersData!["vat_max_temperature"],
         "package_type": widget.filtersData!["vat_package_type"],
         "uses_bacteria": widget.filtersData!["uses_bacteria"],
         "allows_sector_share": widget.filtersData!["allows_sector_share"],

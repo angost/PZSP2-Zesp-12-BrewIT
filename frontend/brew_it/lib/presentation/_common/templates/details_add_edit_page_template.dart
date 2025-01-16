@@ -3,18 +3,22 @@ import 'package:brew_it/core/theme/text_themes.dart';
 import 'package:brew_it/presentation/_common/widgets/main_button.dart';
 import 'package:brew_it/presentation/_common/widgets/my_app_bar.dart';
 import 'package:brew_it/presentation/_common/widgets/my_icon_button.dart';
+import 'package:brew_it/presentation/_common/widgets/form_fields.dart';
 import 'package:flutter/material.dart';
+
 
 class DetailsAddEditPageTemplate extends StatefulWidget {
   DetailsAddEditPageTemplate(
       {required this.title,
-      this.buttons,
-      this.options,
-      required this.fieldNames,
-      required this.jsonFieldNames,
-      this.fieldEditable,
-      this.elementData,
-      super.key});
+        this.buttons,
+        this.options,
+        required this.fieldNames,
+        required this.jsonFieldNames,
+        this.fieldEditable,
+        this.fieldTypes,
+        this.elementData,
+        this.enumOptions,
+        super.key});
 
   final String title;
   final List<MainButton>? buttons;
@@ -22,6 +26,8 @@ class DetailsAddEditPageTemplate extends StatefulWidget {
   final List<String> fieldNames;
   final List<String> jsonFieldNames;
   final List<bool>? fieldEditable;
+  final List<String>? fieldTypes;
+  final Map<String, List<Map<String, String>>>? enumOptions;
   Map? elementData;
 
   @override
@@ -39,7 +45,7 @@ class _DetailsAddEditPageTemplateState
     if (widget.elementData != null && widget.elementData!.isNotEmpty) {
       fieldValues = List.generate(
           widget.jsonFieldNames.length,
-          (index) => widget.elementData![widget.jsonFieldNames[index]] != null
+              (index) => widget.elementData![widget.jsonFieldNames[index]] != null
               ? widget.elementData![widget.jsonFieldNames[index]].toString()
               : "");
     }
@@ -94,37 +100,99 @@ class _DetailsAddEditPageTemplateState
                           key: formKey,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: List.generate(widget.fieldNames.length,
-                                (index) {
-                              bool editable = widget.fieldEditable != null &&
-                                  widget.fieldEditable![index];
+                            children: List.generate(widget.fieldNames.length, (index) {
+                              bool editable = widget.fieldEditable != null && widget.fieldEditable![index];
+                              String fieldType = widget.fieldTypes != null ? widget.fieldTypes![index] : "TextField";
+                              String jsonFieldName = widget.jsonFieldNames[index];
 
-                              return TextFormField(
-                                onSaved: (newValue) {
-                                  if (editable) {
-                                    widget.elementData ??= {};
-                                    widget.elementData![widget
-                                        .jsonFieldNames[index]] = newValue;
-                                  }
-                                },
-                                decoration: editable
-                                    ? InputDecoration(
-                                        labelText: widget.fieldNames[index])
-                                    : InputDecoration(
+                              switch (fieldType) {
+                                case "DatePickerField":
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                    child: DatePickerField(
+                                      label: widget.fieldNames[index],
+                                      jsonFieldName: jsonFieldName,
+                                      initialValue: fieldValues != null && fieldValues[index].isNotEmpty
+                                          ? fieldValues[index]
+                                          : "",
+                                      editable: editable,
+                                      onSaved: (newValue) {
+                                        if (editable) {
+                                          widget.elementData ??= {};
+                                          widget.elementData![jsonFieldName] = newValue;
+                                        }
+                                      },
+                                    ),
+                                  );
+                                case "EnumField":
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                    child: EnumField(
+                                      label: widget.fieldNames[index],
+                                      jsonFieldName: jsonFieldName,
+                                      options: widget.enumOptions?[jsonFieldName] ?? [],
+                                      selectedValue: fieldValues != null
+                                          ? fieldValues[index]
+                                          : "",
+                                      editable: editable,
+                                      onChanged: (newValue) {
+                                        if (editable) {
+                                          widget.elementData ??= {};
+                                          widget.elementData![jsonFieldName] = newValue;
+                                        }
+                                      },
+                                    ),
+                                  );
+                                case "BooleanField":
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                    child: BooleanField(
+                                      label: widget.fieldNames[index],
+                                      jsonFieldName: jsonFieldName,
+                                      value: fieldValues != null
+                                          ? (fieldValues[index] == "true") // Convert to boolean
+                                          : false,
+                                      editable: editable,
+                                      onChanged: (newValue) {
+                                        if (editable) {
+                                          widget.elementData ??= {};
+                                          widget.elementData![jsonFieldName] = newValue.toString();
+                                          fieldValues != null ? fieldValues[index] = newValue.toString() : false; // Update fieldValues
+                                          setState(() {}); // Trigger rebuild
+                                        }
+                                      },
+                                    ),
+                                  );
+                                default: // TextField
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                    child: TextFormField(
+                                      onSaved: (newValue) {
+                                        if (editable) {
+                                          widget.elementData ??= {};
+                                          widget.elementData![jsonFieldName] = newValue;
+                                        }
+                                      },
+                                      decoration: InputDecoration(
                                         labelText: widget.fieldNames[index],
-                                        border:
-                                            disabledTextFormFieldTheme.border,
-                                        fillColor: disabledTextFormFieldTheme
-                                            .fillColor,
+                                        border: editable
+                                            ? null
+                                            : disabledTextFormFieldTheme.border,
+                                        fillColor: editable
+                                            ? null
+                                            : disabledTextFormFieldTheme.fillColor,
                                       ),
-                                initialValue: fieldValues != null
-                                    ? fieldValues[index]
-                                    : "",
-                                enabled: editable,
-                                style: baseTextTheme.bodyLarge,
-                              );
+                                      initialValue: fieldValues != null
+                                          ? fieldValues[index]
+                                          : "",
+                                      enabled: editable,
+                                      style: baseTextTheme.bodyLarge,
+                                    ),
+                                  );
+                              }
                             }),
-                          )))
+                          ),
+                      ))
                 ],
               ),
             ],

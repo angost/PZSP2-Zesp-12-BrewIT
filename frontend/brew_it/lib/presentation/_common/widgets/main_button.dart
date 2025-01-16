@@ -1,20 +1,23 @@
 import 'package:brew_it/core/theme/button_themes.dart';
 import 'package:brew_it/injection_container.dart';
+import 'package:brew_it/presentation/_common/errors/error_handlers.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class MainButton extends StatelessWidget {
   MainButton(this.content,
       {this.type = "default",
-      this.navigateToPage,
-      this.dataForPage,
-      this.customOnPressed,
-      this.formKey,
-      this.apiCall,
-      this.apiCallType,
-      this.pop = false,
-      this.navigateIsTablePage = false,
-      super.key});
+        this.navigateToPage,
+        this.dataForPage,
+        this.customOnPressed,
+        this.formKey,
+        this.apiCall,
+        this.apiCallType,
+        this.errorMessages,
+        this.customErrorHandler,
+        this.pop = false,
+        this.navigateIsTablePage = false,
+        super.key});
 
   final String content;
   final String type;
@@ -26,6 +29,8 @@ class MainButton extends StatelessWidget {
   final String? apiCallType;
   final bool pop;
   final bool navigateIsTablePage;
+  final Map<String, dynamic>? errorMessages;
+  final Function(BuildContext context, DioException e, Map<String, dynamic>? errorMessages)? customErrorHandler;
 
   final typeToStyle = {
     "default": secondaryButtonTheme,
@@ -79,7 +84,11 @@ class MainButton extends StatelessWidget {
                 print("An error occured");
               }
             } on DioException catch (e) {
-              print("An error occured");
+              if (customErrorHandler != null) {
+                customErrorHandler!(context, e, errorMessages);
+              } else {
+                handleApiError(context, e, errorMessages);
+              }
             }
           } else if (navigateToPage != null) {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -104,4 +113,8 @@ class MainButton extends StatelessWidget {
             : typeToStyle["default"]!.style,
         child: Text(content));
   }
+
+
 }
+
+
