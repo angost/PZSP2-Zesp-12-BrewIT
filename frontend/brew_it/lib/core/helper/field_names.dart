@@ -7,7 +7,9 @@ abstract class StandardFieldNames {
       required this.fieldNamesTable,
       required this.jsonFieldNamesTable,
       required this.fieldTypes,
-      required this.errorMessages});
+      required this.errorMessages,
+      this.fetchOptions
+      });
 
   List<String> fieldNames;
   List<String> jsonFieldNames;
@@ -15,6 +17,7 @@ abstract class StandardFieldNames {
   List<String> jsonFieldNamesTable;
   List<String> fieldTypes;
   Map<String, dynamic> errorMessages;
+  List<Map<String, String>>? fetchOptions;
 }
 
 class RegisterCommercialFieldNames extends StandardFieldNames {
@@ -230,14 +233,21 @@ class MachinesFieldNames extends StandardFieldNames {
           "TextField",
           "TextField",
           "TextField",
-          "TextField",
+          "EnumField",
         ], errorMessages: {
           "selector": "Typ jest wymagany.",
           "capacity": "Pojemność musi być liczbą całkowitą.",
           "name": "Nazwa nie może być pusta.",
           "daily_price": "Cena musi być liczbą całkowitą.",
-          "sector": "Sektor musi być istniejącym id.",
-  });
+          "sector": "Sektor jest wymagany.",
+        }, fetchOptions: [
+          {
+            "endpoint": "/sectors/",
+            "displayField": "name",
+            "apiValueField": "sector_id",
+            "enumKey": "sector",
+          }
+        ]);
 }
 
 class SectorsFieldNames extends StandardFieldNames {

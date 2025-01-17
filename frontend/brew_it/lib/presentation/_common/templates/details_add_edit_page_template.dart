@@ -4,6 +4,8 @@ import 'package:brew_it/presentation/_common/widgets/main_button.dart';
 import 'package:brew_it/presentation/_common/widgets/my_app_bar.dart';
 import 'package:brew_it/presentation/_common/widgets/my_icon_button.dart';
 import 'package:brew_it/presentation/_common/widgets/form_fields.dart';
+import 'package:brew_it/injection_container.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 
@@ -18,6 +20,7 @@ class DetailsAddEditPageTemplate extends StatefulWidget {
         this.fieldTypes,
         this.elementData,
         this.enumOptions,
+        this.fetchOptions,
         super.key});
 
   final String title;
@@ -28,6 +31,7 @@ class DetailsAddEditPageTemplate extends StatefulWidget {
   final List<bool>? fieldEditable;
   final List<String>? fieldTypes;
   final Map<String, List<Map<String, String>>>? enumOptions;
+  final List<Map<String, String>>? fetchOptions;
   Map? elementData;
 
   @override
@@ -37,6 +41,15 @@ class DetailsAddEditPageTemplate extends StatefulWidget {
 
 class _DetailsAddEditPageTemplateState
     extends State<DetailsAddEditPageTemplate> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.fetchOptions != null) {
+      for (Map<String, String> fetchMap in widget.fetchOptions!) {
+        fetchObjectOptions(fetchMap);
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
     List<String>? fieldValues;
@@ -198,5 +211,23 @@ class _DetailsAddEditPageTemplateState
             ],
           ),
         ));
+  }
+  Future<void> fetchObjectOptions(Map<String, String> config) async {
+    try {
+      final response = await getIt<Dio>().get(config['endpoint']!);
+      if (response.statusCode == 200) {
+        final options = (response.data as List)
+            .map((item) => {
+          "display": item[config['displayField']!].toString(),
+          "apiValue": item[config['apiValueField']!].toString(),
+        })
+            .toList();
+        setState(() {
+          widget.enumOptions?[config['enumKey']!] = options;
+        });
+      }
+    } catch (e) {
+      print('Error fetching ${config['enumKey']} options from ${config['endpoint']}: $e');
+    }
   }
 }

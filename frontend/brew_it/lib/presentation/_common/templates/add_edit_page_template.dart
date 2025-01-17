@@ -19,6 +19,7 @@ class AddEditPageTemplate extends DetailsAddEditPageTemplate {
         Map<String, dynamic>? errorMessages,
         List<String>? fieldTypes,
         Map<String, List<Map<String, String>>>? enumOptions,
+        List<Map<String, String>>? fetchOptions,
       super.key})
       : super(
             title: title,
@@ -45,5 +46,6 @@ class AddEditPageTemplate extends DetailsAddEditPageTemplate {
             fieldEditable: fieldEditable,
             fieldTypes: fieldTypes,
             enumOptions: enumOptions,
+            fetchOptions: fetchOptions,
             elementData: elementData);
 }

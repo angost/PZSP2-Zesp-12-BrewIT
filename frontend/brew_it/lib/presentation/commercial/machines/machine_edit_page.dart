@@ -34,5 +34,6 @@ class MachineEditPage extends AddEditPageTemplate {
                 {"display": "Zbiornik", "apiValue": "VAT"},
               ]
             },
+            fetchOptions: MachinesFieldNames().fetchOptions,
             elementData: elementData);
 }
