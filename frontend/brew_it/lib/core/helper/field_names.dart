@@ -40,7 +40,27 @@ class RegisterCommercialFieldNames extends StandardFieldNames {
       fieldNamesTable: [],
       jsonFieldNamesTable: [],
       fieldTypes: [],
-      errorMessages: {});
+      errorMessages: {
+        "email": {
+          "This field may not be blank.": "Email nie może być pusty.",
+          "Enter a valid email address.": "Wprowadź poprawny adres email.",
+          "Account with this email already exists": "Istnieje już konto z tym adresem email."
+        },
+        "password": {
+          "This field may not be blank.": "Hasło nie może być puste",
+          "This password is too short. It must contain at least 8 characters.": "Hasło musi mieć co najmniej 8 znaków.",
+          "This password is too common.": "Zbyt popularne hasło."
+        },
+        "password2": {"This field may not be blank.": "Należy powtórzyć hasło."},
+        "name": {"This field may not be blank.": "Nazwa firmy nie może być pusta."},
+        "water_ph": {
+          "Ensure that there are no more than 2 digits before the decimal point.": "Ph wody powinno mieć format XX.X.",
+        },
+        "non_field_errors": {
+          "Passwords do not match": "Powtórzone hasło nie jest identyczne.",
+          "Production brewery must specify water_ph": "Wymagane jest ph wody w browarze",
+        },
+      });
 }
 
 class RegisterContractFieldNames extends StandardFieldNames {
@@ -61,7 +81,24 @@ class RegisterContractFieldNames extends StandardFieldNames {
       fieldNamesTable: [],
       jsonFieldNamesTable: [],
       fieldTypes: [],
-      errorMessages: {});
+      errorMessages: {
+        "email": {
+          "This field may not be blank.": "Email nie może być pusty.",
+          "Enter a valid email address.": "Wprowadź poprawny adres email.",
+          "Account with this email already exists": "Istnieje już konto z tym adresem email."
+        },
+        "password": {
+          "This field may not be blank.": "Hasło nie może być puste",
+          "This password is too short. It must contain at least 8 characters.": "Hasło musi mieć co najmniej 8 znaków.",
+          "This password is too common.": "Zbyt popularne hasło."
+        },
+        "password2": {"This field may not be blank.": "Należy powtórzyć hasło."},
+        "name": {"This field may not be blank.": "Nazwa firmy nie może być pusta."},
+        "non_field_errors": {
+          "Passwords do not match": "Powtórzone hasło nie jest identyczne.",
+          "Production brewery must specify water_ph": "Wymagane jest ph wody w browarze",
+        },
+      });
 }
 
 class CommercialOffersFieldNames extends StandardFieldNames {
