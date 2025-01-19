@@ -127,10 +127,6 @@ class EnumField extends StatelessWidget {
         ? selectedValue
         : null;
 
-    // Debug output
-    print("Selected Value: $selectedValue");
-    print("Options: $options");
-
     return DropdownButtonFormField<String>(
       decoration: decoration ?? InputDecoration(
         labelText: label,
@@ -150,7 +146,7 @@ class EnumField extends StatelessWidget {
         );
       }).toList()
           : [
-        DropdownMenuItem<String>(
+        const DropdownMenuItem<String>(
           value: null,
           child: Text('No options available'),
         ),
