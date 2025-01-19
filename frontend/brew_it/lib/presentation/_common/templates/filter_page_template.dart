@@ -37,6 +37,14 @@ class FilterPageTemplate extends StatefulWidget {
 
 class _DetailsAddEditPageTemplateState
     extends State<FilterPageTemplate> {
+  late Map<dynamic, dynamic> elementData;
+
+  @override
+  void initState() {
+    super.initState();
+    elementData = widget.elementData ?? {};
+  }
+
   @override
   Widget build(BuildContext context) {
     List<String>? fieldValues;
@@ -127,6 +135,7 @@ class _DetailsAddEditPageTemplateState
                             ),
                           );
                         case "BooleanField":
+                          widget.elementData![jsonFieldName] = fieldValues != null ? (fieldValues[index]) : "false";
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
                             child: BooleanField(

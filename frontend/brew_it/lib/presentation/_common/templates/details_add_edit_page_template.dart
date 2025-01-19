@@ -41,6 +41,8 @@ class DetailsAddEditPageTemplate extends StatefulWidget {
 
 class _DetailsAddEditPageTemplateState
     extends State<DetailsAddEditPageTemplate> {
+  late Map<dynamic, dynamic> elementData;
+
   @override
   void initState() {
     super.initState();
@@ -49,6 +51,7 @@ class _DetailsAddEditPageTemplateState
         fetchObjectOptions(fetchMap);
       }
     }
+    elementData = widget.elementData ?? {};
   }
   @override
   Widget build(BuildContext context) {
@@ -157,6 +160,7 @@ class _DetailsAddEditPageTemplateState
                                     ),
                                   );
                                 case "BooleanField":
+                                  widget.elementData![jsonFieldName] = fieldValues != null ? (fieldValues[index]) : "false";
                                   return Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                                     child: BooleanField(
@@ -231,3 +235,5 @@ class _DetailsAddEditPageTemplateState
     }
   }
 }
+
+
