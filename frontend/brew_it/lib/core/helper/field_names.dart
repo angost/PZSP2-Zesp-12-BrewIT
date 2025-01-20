@@ -432,7 +432,6 @@ class MachineScheduleFieldNames extends StandardFieldNames {
           "Data początkowa",
           "Data końcowa",
           "Rezerwacja",
-          "Operacje",
         ], jsonFieldNamesTable: [
           "id",
           "selector",

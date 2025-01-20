@@ -152,8 +152,6 @@ class _DetailsAddEditPageTemplateState
                                     ),
                                   );
                                 case "EnumField":
-                                  print(jsonFieldName);
-                                  print(widget.enumOptions?[jsonFieldName]);
                                   return Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                                     child: EnumField(
@@ -245,7 +243,6 @@ class _DetailsAddEditPageTemplateState
     try {
       final response = await getIt<Dio>().get(config['endpoint']!);
       if (response.statusCode == 200) {
-        print(response.data as List);
         final options = (response.data as List)
             .map((item) => {
           "display": item[config['displayField']!].toString(),
