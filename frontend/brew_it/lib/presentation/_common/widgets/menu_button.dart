@@ -87,6 +87,7 @@ class _MenuButtonState extends State<MenuButton> {
           child: Container(
             decoration: BoxDecoration(
               color: isHover ? hoverColor : Colors.white,
+              border: Border.all(color: Colors.black),
               borderRadius: const BorderRadius.all(
                 Radius.circular(12.0),
               ),
