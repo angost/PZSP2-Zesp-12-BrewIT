@@ -144,15 +144,15 @@ class BrewerySerializer(serializers.ModelSerializer):
 
 
 class EquipmentFilterParametersSerializer(serializers.Serializer):
-    start_date = serializers.DateTimeField(required=True)
-    end_date = serializers.DateTimeField(required=True)
-    capacity = serializers.IntegerField(required=True)
+    start_date = serializers.DateTimeField(required=False)
+    end_date = serializers.DateTimeField(required=False)
+    capacity = serializers.IntegerField(required=False)
     min_temperature = serializers.DecimalField(decimal_places=2, max_digits=5, required=False)
     max_temperature = serializers.DecimalField(decimal_places=2, max_digits=5, required=False)
-    production_brewery = serializers.IntegerField(required=True)
-    uses_bacteria = serializers.BooleanField(required=True)
-    selector = serializers.CharField(required=True)
-    allows_sector_share = serializers.BooleanField(required=True)
+    production_brewery = serializers.IntegerField(required=False)
+    uses_bacteria = serializers.BooleanField(required=False)
+    selector = serializers.CharField(required=False)
+    allows_sector_share = serializers.BooleanField(required=False)
     package_type = serializers.CharField(required=False)
 
     def validate_production_brewery(self, value):
@@ -181,19 +181,19 @@ class EquipmentFilterParametersSerializer(serializers.Serializer):
 
 
 class BreweriesFilterParametersSerializer(serializers.Serializer):
-    vat_start_date = serializers.DateTimeField(required=True)
-    vat_end_date = serializers.DateTimeField(required=True)
-    vat_capacity = serializers.IntegerField(required=True)
-    vat_min_temperature = serializers.DecimalField(decimal_places=2, max_digits=5, required=True)
-    vat_max_temperature = serializers.DecimalField(decimal_places=2, max_digits=5, required=True)
-    vat_package_type = serializers.CharField(required=True)
-    brewset_start_date = serializers.DateTimeField(required=True)
-    brewset_end_date = serializers.DateTimeField(required=True)
-    brewset_capacity = serializers.IntegerField(required=True)
-    uses_bacteria = serializers.BooleanField(required=True)
-    allows_sector_share = serializers.BooleanField(required=True)
-    water_ph_min = serializers.DecimalField(decimal_places=1, max_digits=3, required=True)
-    water_ph_max = serializers.DecimalField(decimal_places=1, max_digits=3, required=True)
+    vat_start_date = serializers.DateTimeField(required=False)
+    vat_end_date = serializers.DateTimeField(required=False)
+    vat_capacity = serializers.IntegerField(required=False)
+    vat_min_temperature = serializers.DecimalField(decimal_places=2, max_digits=5, required=False)
+    vat_max_temperature = serializers.DecimalField(decimal_places=2, max_digits=5, required=False)
+    vat_package_type = serializers.CharField(required=False)
+    brewset_start_date = serializers.DateTimeField(required=False)
+    brewset_end_date = serializers.DateTimeField(required=False)
+    brewset_capacity = serializers.IntegerField(required=False)
+    uses_bacteria = serializers.BooleanField(required=False)
+    allows_sector_share = serializers.BooleanField(required=False)
+    water_ph_min = serializers.DecimalField(decimal_places=1, max_digits=3, required=False)
+    water_ph_max = serializers.DecimalField(decimal_places=1, max_digits=3, required=False)
 
     def validate_vat_package_type(self, value):
         if value not in [el for el in Vatpackaging.PackagingTypes.values]:
