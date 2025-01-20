@@ -138,6 +138,7 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
                         "production_brewery": widget.commercialId,
                         "allows_sector_share":
                         widget.filtersData!["allows_sector_share"],
+                        "price": (chosenBrewsetPrice * brewsetDays) + (chosenVatPrice * vatDays),
                         "equipment_reservation_requests": [
                           {
                             "start_date": widget.filtersData!["vat_start_date"],

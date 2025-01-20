@@ -38,9 +38,10 @@ class AddEditPageTemplate extends DetailsAddEditPageTemplate {
               ),
               MainButton("Anuluj",
                   type: "secondary_small",
-                  navigateToPage: navigateToPageCancel,
-                  dataForPage: elementData,
-                  navigateIsTablePage: navigateToCancelIsTablePage)
+                  // navigateToPage: navigateToPageCancel,
+                  // dataForPage: elementData,
+                  // navigateIsTablePage: navigateToCancelIsTablePage
+                  pop: true)
             ],
             fieldNames: fieldNames,
             jsonFieldNames: jsonFieldNames,
