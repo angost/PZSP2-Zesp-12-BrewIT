@@ -207,8 +207,8 @@ class ProductionProcessesFieldNames extends StandardFieldNames {
         ], fieldTypes: [
           "DatePickerField",
           "DatePickerField",
-          "TextField",
-          "TextField",
+          "EnumField",
+          "EnumField",
           "TextField",
           "BooleanField"
         ], errorMessages: {
@@ -226,7 +226,20 @@ class ProductionProcessesFieldNames extends StandardFieldNames {
           "This field may not be null" : "Przepis nie może być pusty.",
           r'Invalid pk "\d+" - object does not exist.': "Taki przepis nie istnieje."
         }
-        });
+        }, fetchOptions: [
+          {
+            "endpoint": "/reservations/",
+            "displayField": "reservation_id",
+            "apiValueField": "reservation_id",
+            "enumKey": "reservation",
+          },
+          {
+            "endpoint": "/recipes/",
+            "displayField": "recipe_id",
+            "apiValueField": "recipe_id",
+            "enumKey": "recipe",
+          }
+        ]);
 }
 
 class MachinesFieldNames extends StandardFieldNames {
