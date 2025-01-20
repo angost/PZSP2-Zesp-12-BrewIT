@@ -16,6 +16,7 @@ class TablePageTemplate extends StatefulWidget {
       this.passedElements,
         this.fetchDisplay,
         this.hideFirstField = false,
+        this.linkedFields = const {},
       super.key});
 
   final String title;
@@ -27,6 +28,7 @@ class TablePageTemplate extends StatefulWidget {
   final List? passedElements;
   final List<Map<String, String>>? fetchDisplay;
   final bool hideFirstField;
+  final Map<String, Function(Map elementData)>? linkedFields;
 
   @override
   State<TablePageTemplate> createState() => _TablePageTemplateState();
@@ -123,6 +125,7 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
                     fieldValues = widget.jsonFields!
                         .skip(widget.hideFirstField ? 1 : 0)
                         .map((field) {
+                      final isLinkedField = widget.linkedFields!.containsKey(field);
                       final value = element[field]?.toString() ?? '';
 
                       final displayValue = fetchedFieldValues.containsKey(field) && fetchedFieldValues[field]!.containsKey(value)
@@ -135,11 +138,34 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
 
                       return Expanded(
                         flex: 6,
-                        child: Text(
+                        child: isLinkedField
+                            ? GestureDetector(
+                          onTap: () {
+                            final navigateToPage = widget.linkedFields![field];
+                            if (navigateToPage != null) {
+                              fetchAndNavigate(
+                                "/${field}s", // Example API endpoint
+                                formattedValue,
+                                context,
+                                (data) => navigateToPage(data),
+                              );
+                            }
+                          },
+                          child: Text(
+                            "szczegóły",
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.blue,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        )
+                            : Text(
                           formattedValue,
                           textAlign: TextAlign.center,
                         ),
                       );
+
                     }).toList();
                   }
 
@@ -229,6 +255,24 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
     }
   }
 
+  Future<void> fetchAndNavigate(String endpoint, String id, BuildContext context, Function(Map<String, dynamic>) navigateToPage) async {
+    try {
+      final response = await getIt<Dio>().get("$endpoint/$id");
 
+      if (response.statusCode == 200) {
+        final data = response.data;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => navigateToPage(data),
+          ),
+        );
+      } else {
+        print("Failed to fetch data from $endpoint/$id");
+      }
+    } catch (e) {
+      print("Error fetching data: $e");
+    }
+  }
 
 }
