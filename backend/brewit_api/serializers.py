@@ -63,7 +63,7 @@ class RegistrationRequestSerializer(serializers.ModelSerializer):
                                                   selector=validated_data['selector'],
                                                   name=validated_data['name'],
                                                   nip=validated_data['nip'],
-                                                  water_ph=validated_data['water_ph'])
+                                                  water_ph=validated_data.get('water_ph'))
 
 
 class BreweryCreateSerializer(serializers.Serializer):
