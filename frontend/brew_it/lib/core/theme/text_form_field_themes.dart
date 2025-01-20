@@ -14,8 +14,6 @@ InputDecorationTheme baseTextFormFieldTheme = InputDecorationTheme(
     labelStyle: baseTextTheme.titleLarge);
 
 InputDecorationTheme disabledTextFormFieldTheme = InputDecorationTheme(
-  border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(15),
-      borderSide: BorderSide(color: greyLightColor)),
+  border: UnderlineInputBorder(borderSide: BorderSide(color: textDarkColor)),
   fillColor: Colors.transparent,
 );

@@ -169,22 +169,22 @@ class _DetailsAddEditPageTemplateState
       switch (fieldType) {
         case "DatePickerField":
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: DatePickerField(
-              label: widget.fieldNames[index],
-              jsonFieldName: jsonFieldName,
-              initialValue: fieldValues != null && fieldValues[index].isNotEmpty
-                  ? fieldValues[index]
-                  : "",
-              editable: editable,
-              onSaved: (newValue) {
-                if (editable) {
-                  widget.elementData ??= {};
-                  widget.elementData![jsonFieldName] = newValue;
-                }
-              },
-            ),
-          );
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: DatePickerField(
+                label: widget.fieldNames[index],
+                jsonFieldName: jsonFieldName,
+                initialValue:
+                    fieldValues != null && fieldValues[index].isNotEmpty
+                        ? fieldValues[index]
+                        : "",
+                editable: editable,
+                onSaved: (newValue) {
+                  if (editable) {
+                    widget.elementData ??= {};
+                    widget.elementData![jsonFieldName] = newValue;
+                  }
+                },
+              ));
         case "EnumField":
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
