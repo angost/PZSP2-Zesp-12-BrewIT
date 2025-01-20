@@ -11,19 +11,22 @@ class HomePageCommercial extends HomePageTemplate {
       : super(
             title: "Twoje konto - Browar komercyjny - Browar Wierzbowice",
             buttons: [
-              MenuButton("Zarządzanie urządzeniami",
-                  type: "important", navigateToPage: MachinesPage()),
-              MenuButton("Twoje sektory", navigateToPage: SectorsPage()),
+              MenuButton(type: "machines", navigateToPage: MachinesPage()),
+              MenuButton(type: "sectors", navigateToPage: SectorsPage()),
               MenuButton(
-                "Twoje rezerwacje",
+                type: "reservations",
                 navigateToPage: ReservationsPage(),
               ),
-              MenuButton("Prośby o rezerwację od browarów kontraktowych",
+              MenuButton(
+                  type: "reservation_requests",
                   navigateToPage: ReservationRequestsPage()),
               // MenuButton(
               //   "Uprawnieni do wstępu do browaru",
               //   navigateToPage: AllowedPeoplePage(),
               // ),
+              MenuButton(
+                type: "logout",
+              ),
               MenuLogoutButton(),
             ]);
 }

@@ -8,13 +8,15 @@ class HomePageAdmin extends HomePageTemplate {
   HomePageAdmin({super.key})
       : super(title: "Panel administratora", buttons: [
           MenuButton(
-            "Prośby o rejestrację",
-            type: "important",
+            type: "registration_requests",
             navigateToPage: RegistrationRequestsPage(),
           ),
           MenuButton(
-            "Statystyki",
+            type: "stats",
             navigateToPage: StatisticsPage(),
+          ),
+          MenuButton(
+            type: "logout",
           ),
           MenuLogoutButton(),
         ]);

@@ -12,21 +12,23 @@ class HomePageContract extends HomePageTemplate {
             title: "Twoje konto - Browar kontraktowy - Browar Stary Kamień",
             buttons: [
               MenuButton(
-                "Oferta browarów komercyjnych",
-                type: "important",
+                type: "commercial_offers",
                 navigateToPage: CommercialOffersPage(),
               ),
               MenuButton(
-                "Twoje rezerwacje",
+                type: "reservations",
                 navigateToPage: ReservationsPage(),
               ),
               MenuButton(
-                "Procesy wykonania piwa",
+                type: "production_processes",
                 navigateToPage: ProductionProcessesPage(),
               ),
               MenuButton(
-                "Twoje receptury",
+                type: "recipes",
                 navigateToPage: RecipesPage(),
+              ),
+              MenuButton(
+                type: "logout",
               ),
               MenuLogoutButton(),
             ]);
