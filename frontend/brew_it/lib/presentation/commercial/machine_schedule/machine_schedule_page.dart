@@ -25,5 +25,6 @@ class MachineSchedulePage extends TablePageTemplate {
             // ],
             apiString:
                 "/equipment-reservations/?equipment=${elementData["equipment_id"]}",
+            hideFirstField: true,
             jsonFields: MachineScheduleFieldNames().jsonFieldNamesTable);
 }
