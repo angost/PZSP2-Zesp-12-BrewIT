@@ -9,7 +9,7 @@ import 'package:brew_it/presentation/contract/reservations/reservations_page.dar
 class HomePageContract extends HomePageTemplate {
   HomePageContract({super.key})
       : super(
-            title: "Twoje konto - Browar kontraktowy - Browar Stary Kamień",
+            title: "Twoje konto - Browar kontraktowy",
             buttons: [
               MenuButton(
                 type: "commercial_offers",

@@ -9,7 +9,7 @@ import 'package:brew_it/presentation/commercial/sectors/sectors_page.dart';
 class HomePageCommercial extends HomePageTemplate {
   HomePageCommercial({super.key})
       : super(
-            title: "Twoje konto - Browar komercyjny - Browar Wierzbowice",
+            title: "Twoje konto - Browar komercyjny",
             buttons: [
               MenuButton(type: "machines", navigateToPage: MachinesPage()),
               MenuButton(type: "sectors", navigateToPage: SectorsPage()),
