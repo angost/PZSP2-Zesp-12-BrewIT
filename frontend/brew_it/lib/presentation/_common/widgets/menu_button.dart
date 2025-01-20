@@ -72,7 +72,7 @@ class _MenuButtonState extends State<MenuButton> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 widget.typeToIcon[widget.type]!,
-                Center(child: Text(widget.typeToContent[widget.type]!))
+                Center(child: Text(widget.typeToContent[widget.type]!, textAlign: TextAlign.center,))
               ],
             ),
           ),
