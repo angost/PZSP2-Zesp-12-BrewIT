@@ -14,6 +14,7 @@ class TablePageTemplate extends StatefulWidget {
       this.apiString,
       this.jsonFields,
       this.passedElements,
+        this.fetchDisplay,
       super.key});
 
   final String title;
@@ -23,6 +24,7 @@ class TablePageTemplate extends StatefulWidget {
   final String? apiString;
   final List<String>? jsonFields;
   final List? passedElements;
+  final List<Map<String, String>>? fetchDisplay;
 
   @override
   State<TablePageTemplate> createState() => _TablePageTemplateState();
@@ -30,6 +32,7 @@ class TablePageTemplate extends StatefulWidget {
 
 class _TablePageTemplateState extends State<TablePageTemplate> {
   List elements = [];
+  Map<String, Map<String, String>> fetchedFieldValues = {};
 
   @override
   void initState() {
@@ -41,6 +44,7 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
     } else if (widget.apiString != null && widget.apiString != "") {
       fetchData();
     }
+    fetchFieldValues();
   }
 
   Future<void> fetchData() async {
@@ -115,10 +119,18 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
                   // Generowanie wartości pól
                   if (widget.jsonFields != null) {
                     fieldValues = widget.jsonFields!.map((field) {
+                    fieldValues = widget.jsonFields!
+                        .map((field) {
                       final value = element[field]?.toString() ?? '';
+
+                      final displayValue = fetchedFieldValues.containsKey(field) && fetchedFieldValues[field]!.containsKey(value)
+                          ? fetchedFieldValues[field]![value]!
+                          : value;
+
                       final formattedValue = _isIso8601Date(value)
                           ? _formatDateForDisplay(value)
-                          : value;
+                          : displayValue;
+
                       return Expanded(
                         flex: 6,
                         child: Text(
@@ -190,6 +202,30 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
     }
   }
 
+  Future<void> fetchFieldValues() async {
+    if (widget.fetchDisplay == null) return;
+
+    for (final fieldConfig in widget.fetchDisplay!) {
+      try {
+        final response = await getIt<Dio>().get(fieldConfig["endpoint"]!);
+
+        if (response.statusCode == 200) {
+          final data = response.data as List;
+
+          // Map IDs to display values
+          final fieldValues = {
+            for (var item in data) item[fieldConfig["idField"]!].toString(): item[fieldConfig["displayField"]!].toString(),
+          };
+
+          setState(() {
+            fetchedFieldValues[fieldConfig["fieldKey"]!] = fieldValues;
+          });
+        }
+      } catch (e) {
+        print('Error fetching ${fieldConfig["fieldKey"]} values: $e');
+      }
+    }
+  }
 
 
 
