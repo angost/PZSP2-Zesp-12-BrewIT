@@ -17,8 +17,9 @@ class ReservationRequestAddPage extends AddEditPageTemplate {
               return CommercialOffersPage();
             },
             navigateToCancelIsTablePage: true,
-            fieldNames: ReservationRequestsFieldNames().fieldNames,
-            jsonFieldNames: ReservationRequestsFieldNames().jsonFieldNames,
-            fieldEditable: [false, false, false, true, false, false, true],
+            fieldNames: ReservationRequestsContractFieldNames().fieldNames,
+            jsonFieldNames: ReservationRequestsContractFieldNames().jsonFieldNames,
+            fieldTypes: ReservationRequestsContractFieldNames().fieldTypes,
+            fieldEditable: [false, true, false, false, true],
             elementData: elementData);
 }

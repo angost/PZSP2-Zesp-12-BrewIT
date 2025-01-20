@@ -15,14 +15,14 @@ class ReservationsPage extends TablePageTemplate {
                   return ReservationDetailsPage(elementData);
                 },
               ),
-              MyIconButton(
-                type: "delete",
-                apiCall: "/reservations/",
-                apiCallType: "delete",
-                navigateToPage: () {
-                  return ReservationsPage();
-                },
-              ),
+              // MyIconButton(
+              //   type: "delete",
+              //   apiCall: "/reservations/",
+              //   apiCallType: "delete",
+              //   navigateToPage: () {
+              //     return ReservationsPage();
+              //   },
+              // ),
             ],
             apiString: "/reservations/",
             jsonFields: ReservationsContractFieldNames().jsonFieldNamesTable);

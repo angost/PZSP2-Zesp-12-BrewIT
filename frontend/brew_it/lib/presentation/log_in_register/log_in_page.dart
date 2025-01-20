@@ -8,6 +8,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:brew_it/presentation/commercial/home_page_commercial.dart';
 import 'package:brew_it/core/helper/user_data.dart' as user_data;
+import 'package:brew_it/presentation/_common/errors/error_handlers.dart';
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
@@ -17,6 +18,11 @@ class LogInPage extends StatefulWidget {
 }
 
 class _LogInPageState extends State<LogInPage> {
+  Map<String, dynamic> errorMessages = {
+    "detail": {
+      "Email or Password is incorrect.": "Nieprawidłowy email lub hasło."
+    }
+  };
   Map logInData = {"email": "", "password": ""};
   final formKey = GlobalKey<FormState>();
 
@@ -102,6 +108,7 @@ class _LogInPageState extends State<LogInPage> {
                                 }
                               } on DioException catch (e) {
                                 print("Log in failed");
+                                handleMultipleErrors(context, e, errorMessages);
                               }
                             },
                           )

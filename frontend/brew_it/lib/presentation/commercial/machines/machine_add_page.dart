@@ -29,11 +29,13 @@ class MachineAddPage extends AddEditPageTemplate {
               true
             ],
             fieldTypes: MachinesFieldNames().fieldTypes,
+            fetchOptions: MachinesFieldNames().fetchOptions,
             enumOptions: {
               "selector": [
                 {"display": "Zestaw do warzenia", "apiValue": "BREWSET"},
                 {"display": "Zbiornik", "apiValue": "VAT"},
-              ]
+              ],
+              "sector": []
             },
             elementData: elementData);
 }

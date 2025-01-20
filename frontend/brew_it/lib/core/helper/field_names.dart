@@ -7,7 +7,9 @@ abstract class StandardFieldNames {
       required this.fieldNamesTable,
       required this.jsonFieldNamesTable,
       required this.fieldTypes,
-      required this.errorMessages});
+      required this.errorMessages,
+      this.fetchOptions
+      });
 
   List<String> fieldNames;
   List<String> jsonFieldNames;
@@ -15,6 +17,7 @@ abstract class StandardFieldNames {
   List<String> jsonFieldNamesTable;
   List<String> fieldTypes;
   Map<String, dynamic> errorMessages;
+  List<Map<String, String>>? fetchOptions;
 }
 
 class RegisterCommercialFieldNames extends StandardFieldNames {
@@ -37,7 +40,27 @@ class RegisterCommercialFieldNames extends StandardFieldNames {
       fieldNamesTable: [],
       jsonFieldNamesTable: [],
       fieldTypes: [],
-      errorMessages: {});
+      errorMessages: {
+        "email": {
+          "This field may not be blank.": "Email nie może być pusty.",
+          "Enter a valid email address.": "Wprowadź poprawny adres email.",
+          "Account with this email already exists": "Istnieje już konto z tym adresem email."
+        },
+        "password": {
+          "This field may not be blank.": "Hasło nie może być puste",
+          "This password is too short. It must contain at least 8 characters.": "Hasło musi mieć co najmniej 8 znaków.",
+          "This password is too common.": "Zbyt popularne hasło."
+        },
+        "password2": {"This field may not be blank.": "Należy powtórzyć hasło."},
+        "name": {"This field may not be blank.": "Nazwa firmy nie może być pusta."},
+        "water_ph": {
+          "Ensure that there are no more than 2 digits before the decimal point.": "Ph wody powinno mieć format XX.X.",
+        },
+        "non_field_errors": {
+          "Passwords do not match": "Powtórzone hasło nie jest identyczne.",
+          "Production brewery must specify water_ph": "Wymagane jest ph wody w browarze",
+        },
+      });
 }
 
 class RegisterContractFieldNames extends StandardFieldNames {
@@ -58,7 +81,24 @@ class RegisterContractFieldNames extends StandardFieldNames {
       fieldNamesTable: [],
       jsonFieldNamesTable: [],
       fieldTypes: [],
-      errorMessages: {});
+      errorMessages: {
+        "email": {
+          "This field may not be blank.": "Email nie może być pusty.",
+          "Enter a valid email address.": "Wprowadź poprawny adres email.",
+          "Account with this email already exists": "Istnieje już konto z tym adresem email."
+        },
+        "password": {
+          "This field may not be blank.": "Hasło nie może być puste",
+          "This password is too short. It must contain at least 8 characters.": "Hasło musi mieć co najmniej 8 znaków.",
+          "This password is too common.": "Zbyt popularne hasło."
+        },
+        "password2": {"This field may not be blank.": "Należy powtórzyć hasło."},
+        "name": {"This field may not be blank.": "Nazwa firmy nie może być pusta."},
+        "non_field_errors": {
+          "Passwords do not match": "Powtórzone hasło nie jest identyczne.",
+          "Production brewery must specify water_ph": "Wymagane jest ph wody w browarze",
+        },
+      });
 }
 
 class CommercialOffersFieldNames extends StandardFieldNames {
@@ -167,8 +207,8 @@ class ProductionProcessesFieldNames extends StandardFieldNames {
         ], fieldTypes: [
           "DatePickerField",
           "DatePickerField",
-          "TextField",
-          "TextField",
+          "EnumField",
+          "EnumField",
           "TextField",
           "BooleanField"
         ], errorMessages: {
@@ -186,7 +226,20 @@ class ProductionProcessesFieldNames extends StandardFieldNames {
           "This field may not be null" : "Przepis nie może być pusty.",
           r'Invalid pk "\d+" - object does not exist.': "Taki przepis nie istnieje."
         }
-        });
+        }, fetchOptions: [
+          {
+            "endpoint": "/reservations/",
+            "displayField": "reservation_id",
+            "apiValueField": "reservation_id",
+            "enumKey": "reservation",
+          },
+          {
+            "endpoint": "/recipes/",
+            "displayField": "recipe_id",
+            "apiValueField": "recipe_id",
+            "enumKey": "recipe",
+          }
+        ]);
 }
 
 class MachinesFieldNames extends StandardFieldNames {
@@ -230,14 +283,21 @@ class MachinesFieldNames extends StandardFieldNames {
           "TextField",
           "TextField",
           "TextField",
-          "TextField",
+          "EnumField",
         ], errorMessages: {
           "selector": "Typ jest wymagany.",
           "capacity": "Pojemność musi być liczbą całkowitą.",
           "name": "Nazwa nie może być pusta.",
           "daily_price": "Cena musi być liczbą całkowitą.",
-          "sector": "Sektor musi być istniejącym id.",
-  });
+          "sector": "Sektor jest wymagany.",
+        }, fetchOptions: [
+          {
+            "endpoint": "/sectors/",
+            "displayField": "name",
+            "apiValueField": "sector_id",
+            "enumKey": "sector",
+          }
+        ]);
 }
 
 class SectorsFieldNames extends StandardFieldNames {
@@ -299,7 +359,53 @@ class ReservationRequestsFieldNames extends StandardFieldNames {
           "brew_size",
           "price",
           "allows_sector_share",
-        ], fieldTypes: [], errorMessages: {});
+        ], fieldTypes: [
+          "TextField",
+          "TextField",
+          "TextField",
+          "TextField",
+          "TextField",
+          "BooleanField",
+          "TextField",
+        ], errorMessages: {});
+}
+
+class ReservationRequestsContractFieldNames extends StandardFieldNames {
+  ReservationRequestsContractFieldNames()
+      : super(fieldNames: [
+    "Browar komercyjny",
+    "Ilość produkowanego piwa",
+    "Cena",
+    "Pozwala na dzielenie sektorów",
+    "Osoby upoważnione do wstępu",
+    // "Maszyny"
+  ], jsonFieldNames: [
+    "production_brewery",
+    "brew_size",
+    "price",
+    "allows_sector_share",
+    "authorised_workers",
+    // "equipment_reservation_requests",
+  ], fieldNamesTable: [
+    "Id",
+    "Browar kontraktowy",
+    "Ilość produkowanego piwa",
+    "Cena",
+    "Pozwala na dzielenie sektorów",
+    "Operacje",
+  ], jsonFieldNamesTable: [
+    "id",
+    "contract_brewery",
+    "brew_size",
+    "price",
+    "allows_sector_share",
+  ], fieldTypes: [
+    "TextField",
+    "TextField",
+    "TextField",
+    "BooleanField",
+    "TextField",
+  ], errorMessages: {});
 }
 
 class AllowedPeopleFieldNames extends StandardFieldNames {
@@ -326,7 +432,6 @@ class MachineScheduleFieldNames extends StandardFieldNames {
           "Data początkowa",
           "Data końcowa",
           "Rezerwacja",
-          "Operacje",
         ], jsonFieldNamesTable: [
           "id",
           "selector",
@@ -401,7 +506,14 @@ class ReservationsContractFieldNames extends StandardFieldNames {
           "brew_size",
           "price",
           "allows_sector_share",
-        ], fieldTypes: [], errorMessages: {});
+        ], fieldTypes: [
+          "TextField",
+          "TextField",
+          "TextField",
+          "TextField",
+          "BooleanField",
+          "TextField",
+        ], errorMessages: {});
 }
 
 class RecipesFieldNames extends StandardFieldNames {
@@ -420,7 +532,7 @@ class RecipesFieldNames extends StandardFieldNames {
           "recipe_id",
           "beer_type",
         ], fieldTypes: [
-          "TextField",
+          "EnumField",
           "TextField"
         ], errorMessages: {
           "beer_type": {
@@ -429,7 +541,14 @@ class RecipesFieldNames extends StandardFieldNames {
             r'Invalid pk "\d+" - object does not exist.': r'Niewłaściwy klucz typu piwa',
           },
           "recipe_body": "Treść nie może mieć więcej niż 2048 znaków."
-        });
+        }, fetchOptions: [
+          {
+            "endpoint": "/beer-types/",
+            "displayField": "name",
+            "apiValueField": "beer_type_id",
+            "enumKey": "beer_type",
+          }]
+  );
 }
 
 class RegistrationRequestsFieldNames extends StandardFieldNames {

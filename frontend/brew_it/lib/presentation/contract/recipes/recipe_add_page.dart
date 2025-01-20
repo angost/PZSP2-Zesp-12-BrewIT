@@ -20,5 +20,6 @@ class RecipeAddPage extends AddEditPageTemplate {
             fieldEditable: [true, true],
             fieldTypes: RecipesFieldNames().fieldTypes,
             errorMessages: RecipesFieldNames().errorMessages,
+            fetchOptions: RecipesFieldNames().fetchOptions,
             elementData: elementData);
 }

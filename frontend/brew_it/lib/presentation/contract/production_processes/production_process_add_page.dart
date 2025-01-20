@@ -20,5 +20,6 @@ class ProductionProcessAddPage extends AddEditPageTemplate {
             fieldEditable: [true, true, true, true, true, true],
             fieldTypes: ProductionProcessesFieldNames().fieldTypes,
             errorMessages: ProductionProcessesFieldNames().errorMessages,
+            fetchOptions: ProductionProcessesFieldNames().fetchOptions,
             elementData: elementData);
 }

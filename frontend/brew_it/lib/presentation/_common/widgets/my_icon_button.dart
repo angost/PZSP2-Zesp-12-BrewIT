@@ -55,20 +55,40 @@ class MyIconButton extends StatelessWidget {
       onPressed: () async {
         try {
           if (apiCall != null && (apiCallType == "post" || apiCallType == "delete")) {
-            final response = await _performApiCall();
+            final response;
+            if (apiCallType == "post") {
+              response = await getIt<Dio>().post(
+                apiCall!,
+                data: {apiIdName: elementId},
+              );
+            } else {
+              response = await getIt<Dio>().delete(
+                "${apiCall!}$elementId/",
+              );
+            }
             if (response.statusCode == 201 || response.statusCode == 204) {
               // Successful API call, navigate to the page
-              _navigateToPage(context);
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return navigateToPage!();
+              }));
             } else {
               // Handle unexpected status codes
               _showErrorDialog(context, "Unexpected response from the server.");
             }
           } else if (navigateToPage != null && filtersData != null) {
-            // Navigate with filters
-            _navigateToPageWithFilters(context);
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return navigateToPage!(dataForPage, filtersData);
+            }));
+
           } else if (navigateToPage != null) {
-            // Navigate without API
-            _navigateToPage(context);
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              if (dataForPage != null) {
+                return navigateToPage!(dataForPage);
+              } else {
+                return navigateToPage!();
+              }
+            }));
+
           } else if (customOnPressed != null) {
             // Custom button action
             customOnPressed!();

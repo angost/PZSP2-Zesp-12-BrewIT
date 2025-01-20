@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:brew_it/core/theme/text_form_field_themes.dart';
 
 class DatePickerField extends StatelessWidget {
   final String label;
@@ -6,6 +7,7 @@ class DatePickerField extends StatelessWidget {
   final String initialValue;
   final bool editable;
   final void Function(String?) onSaved;
+  final InputDecoration? decoration;
 
   const DatePickerField({
     required this.label,
@@ -13,6 +15,7 @@ class DatePickerField extends StatelessWidget {
     required this.initialValue,
     required this.editable,
     required this.onSaved,
+    this.decoration,
     Key? key,
   }) : super(key: key);
 
@@ -30,7 +33,15 @@ class DatePickerField extends StatelessWidget {
 
     return TextFormField(
       controller: controller,
-      decoration: InputDecoration(labelText: label),
+      decoration: decoration ?? InputDecoration(
+        labelText: label,
+        border: editable
+            ? null
+            : disabledTextFormFieldTheme.border,
+        fillColor: editable
+            ? null
+            : disabledTextFormFieldTheme.fillColor,
+      ),
       readOnly: true,
       enabled: editable,
       onTap: () async {
@@ -52,8 +63,6 @@ class DatePickerField extends StatelessWidget {
       },
     );
   }
-
-
 }
 
 class BooleanField extends StatelessWidget {
@@ -62,6 +71,7 @@ class BooleanField extends StatelessWidget {
   final bool value;
   final bool editable;
   final void Function(bool?) onChanged;
+  final InputDecoration? decoration;
 
   const BooleanField({
     required this.label,
@@ -69,6 +79,7 @@ class BooleanField extends StatelessWidget {
     required this.value,
     required this.editable,
     required this.onChanged,
+    this.decoration,
     Key? key,
   }) : super(key: key);
 
@@ -94,6 +105,7 @@ class EnumField extends StatelessWidget {
   final String selectedValue;
   final bool editable;
   final void Function(String?) onChanged;
+  final InputDecoration? decoration;
 
   const EnumField({
     required this.label,
@@ -102,20 +114,41 @@ class EnumField extends StatelessWidget {
     required this.selectedValue,
     required this.editable,
     required this.onChanged,
+    this.decoration,
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // Ensure selectedValue matches an option or is null
+    final currentValue = options.any((option) => option['apiValue'] == selectedValue)
+        ? selectedValue
+        : null;
+
     return DropdownButtonFormField<String>(
-      decoration: InputDecoration(labelText: label),
-      value: selectedValue.isNotEmpty ? selectedValue : null,
-      items: options.map((option) {
+      decoration: decoration ?? InputDecoration(
+        labelText: label,
+        border: editable
+            ? null
+            : disabledTextFormFieldTheme.border,
+        fillColor: editable
+            ? null
+            : disabledTextFormFieldTheme.fillColor,
+      ),
+      value: currentValue,
+      items: options.isNotEmpty
+          ? options.map((option) {
         return DropdownMenuItem<String>(
           value: option['apiValue'],
           child: Text(option['display']!),
         );
-      }).toList(),
+      }).toList()
+          : [
+        const DropdownMenuItem<String>(
+          value: null,
+          child: Text('No options available'),
+        ),
+      ],
       onChanged: editable
           ? (newValue) {
         // When an option is selected, pass the API value (not the display value)
@@ -125,3 +158,38 @@ class EnumField extends StatelessWidget {
     );
   }
 }
+
+class DisplayField extends StatelessWidget {
+  final String label;
+  final String displayValue;
+  final String formValue;
+  final InputDecoration? decoration;
+
+  const DisplayField({
+    required this.label,
+    required this.displayValue,
+    required this.formValue,
+    this.decoration,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final TextEditingController controller =
+    TextEditingController(text: displayValue);
+
+    return TextFormField(
+      controller: controller,
+      decoration: decoration ??
+          InputDecoration(
+            labelText: label,
+            border: disabledTextFormFieldTheme.border, // Mimics the DatePickerField
+            fillColor: disabledTextFormFieldTheme.fillColor, // Background color for read-only
+          ),
+      readOnly: true,
+      enabled: false, // Prevents user interaction
+      style: Theme.of(context).textTheme.bodyMedium, // Styling the text
+    );
+  }
+}
+

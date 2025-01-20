@@ -115,10 +115,14 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
                   // Generowanie wartości pól
                   if (widget.jsonFields != null) {
                     fieldValues = widget.jsonFields!.map((field) {
+                      final value = element[field]?.toString() ?? '';
+                      final formattedValue = _isIso8601Date(value)
+                          ? _formatDateForDisplay(value)
+                          : value;
                       return Expanded(
                         flex: 6,
                         child: Text(
-                          element[field]?.toString() ?? '',
+                          formattedValue,
                           textAlign: TextAlign.center,
                         ),
                       );
@@ -167,6 +171,25 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
       ),
     );
   }
+
+  bool _isIso8601Date(String value) {
+    try {
+      DateTime.parse(value);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  String _formatDateForDisplay(String isoDate) {
+    try {
+      final parsedDate = DateTime.parse(isoDate);
+      return "${parsedDate.day}/${parsedDate.month}/${parsedDate.year}";
+    } catch (_) {
+      return isoDate; // Return the original value if parsing fails
+    }
+  }
+
 
 
 
