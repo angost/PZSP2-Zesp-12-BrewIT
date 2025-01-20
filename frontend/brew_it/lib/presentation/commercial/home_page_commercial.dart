@@ -1,4 +1,3 @@
-import 'package:brew_it/presentation/_common/widgets/menu_logout_button.dart';
 import 'package:brew_it/presentation/commercial/machines/machines_page.dart';
 import 'package:brew_it/presentation/_common/widgets/menu_button.dart';
 import 'package:brew_it/presentation/_common/templates/home_page_template.dart';
@@ -27,6 +26,5 @@ class HomePageCommercial extends HomePageTemplate {
               MenuButton(
                 type: "logout",
               ),
-              MenuLogoutButton(),
             ]);
 }

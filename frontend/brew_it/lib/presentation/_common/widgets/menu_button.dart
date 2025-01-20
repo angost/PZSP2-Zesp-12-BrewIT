@@ -1,6 +1,9 @@
-import 'package:brew_it/core/theme/button_themes.dart';
 import 'package:brew_it/core/theme/colors.dart';
+import 'package:brew_it/injection_container.dart';
+import 'package:brew_it/presentation/log_in_register/log_in_page.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:brew_it/core/helper/user_data.dart' as user_data;
 
 class MenuButton extends StatefulWidget {
   MenuButton({required this.type, this.navigateToPage, super.key});
@@ -43,14 +46,35 @@ class _MenuButtonState extends State<MenuButton> {
 
   @override
   Widget build(BuildContext context) {
+    Color hoverColor = widget.type == "logout"
+        ? errorTransparentColor
+        : secondaryTransparentColor;
+
     return InkWell(
         onHover: (val) {
           setState(() {
             isHover = val;
           });
         },
-        onTap: () {
-          if (widget.navigateToPage != null) {
+        onTap: () async {
+          if (widget.type == "logout") {
+            try {
+              final response = await getIt<Dio>().post(
+                "/logout/",
+              );
+
+              if (response.statusCode == 200) {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return const LogInPage();
+                }));
+                user_data.userRole = "";
+              } else {
+                print("An error occured");
+              }
+            } on DioException catch (e) {
+              print("An error occured");
+            }
+          } else if (widget.navigateToPage != null) {
             Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -62,7 +86,7 @@ class _MenuButtonState extends State<MenuButton> {
           height: 150,
           child: Container(
             decoration: BoxDecoration(
-              color: isHover ? secondaryTransparentColor : Colors.white,
+              color: isHover ? hoverColor : Colors.white,
               borderRadius: const BorderRadius.all(
                 Radius.circular(12.0),
               ),
@@ -72,7 +96,11 @@ class _MenuButtonState extends State<MenuButton> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 widget.typeToIcon[widget.type]!,
-                Center(child: Text(widget.typeToContent[widget.type]!, textAlign: TextAlign.center,))
+                Center(
+                    child: Text(
+                  widget.typeToContent[widget.type]!,
+                  textAlign: TextAlign.center,
+                ))
               ],
             ),
           ),
