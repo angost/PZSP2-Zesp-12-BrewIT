@@ -2,7 +2,7 @@ import 'package:brew_it/core/theme/button_themes.dart';
 import 'package:brew_it/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 
-class MenuButton extends StatelessWidget {
+class MenuButton extends StatefulWidget {
   MenuButton({required this.type, this.navigateToPage, super.key});
 
   final String type;
@@ -25,7 +25,7 @@ class MenuButton extends StatelessWidget {
     "machines": "Zarządzanie urządzeniami",
     "sectors": "Twoje sektory",
     "reservations": "Twoje rezerwacje",
-    "reservation_requests": "Prośby o rezerwację od browarów kontraktowych",
+    "reservation_requests": "Prośby o rezerwację",
     "commercial_offers": "Oferta browarów komercyjnych",
     "production_processes": "Procesy wykonania piwa",
     "recipes": "Twoje receptury",
@@ -35,32 +35,47 @@ class MenuButton extends StatelessWidget {
   };
 
   @override
+  State<MenuButton> createState() => _MenuButtonState();
+}
+
+class _MenuButtonState extends State<MenuButton> {
+  bool isHover = false;
+
+  @override
   Widget build(BuildContext context) {
     return InkWell(
-        hoverColor: Colors.red,
+        onHover: (val) {
+          setState(() {
+            isHover = val;
+          });
+        },
+        onTap: () {
+          if (widget.navigateToPage != null) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => widget.navigateToPage!));
+          }
+        },
         child: SizedBox(
-          width: 300,
-          height: 300,
+          width: 150,
+          height: 150,
           child: Container(
-            color: Colors.white,
+            decoration: BoxDecoration(
+              color: isHover ? secondaryTransparentColor : Colors.white,
+              borderRadius: const BorderRadius.all(
+                Radius.circular(12.0),
+              ),
+            ),
             child: Column(
-              children: [typeToIcon[type]!, Text(typeToContent[type]!)],
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                widget.typeToIcon[widget.type]!,
+                Center(child: Text(widget.typeToContent[widget.type]!))
+              ],
             ),
           ),
         ));
-
-    // ElevatedButton(
-    //     onPressed: () {
-    //       if (navigateToPage != null) {
-    //         Navigator.push(context,
-    //             MaterialPageRoute(builder: (context) => navigateToPage!));
-    //       }
-    //     },
-    //     style: tertiaryButtonTheme.style!.copyWith(
-    //         backgroundColor: WidgetStateProperty.all(
-    //             typeToColor.containsKey(type)
-    //                 ? typeToColor[type]
-    //                 : typeToColor["default"])),
-    //     child: Text(content));
   }
 }
