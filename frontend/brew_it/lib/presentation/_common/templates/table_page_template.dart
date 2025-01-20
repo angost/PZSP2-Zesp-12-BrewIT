@@ -15,6 +15,7 @@ class TablePageTemplate extends StatefulWidget {
       this.jsonFields,
       this.passedElements,
         this.fetchDisplay,
+        this.hideFirstField = false,
       super.key});
 
   final String title;
@@ -25,6 +26,7 @@ class TablePageTemplate extends StatefulWidget {
   final List<String>? jsonFields;
   final List? passedElements;
   final List<Map<String, String>>? fetchDisplay;
+  final bool hideFirstField;
 
   @override
   State<TablePageTemplate> createState() => _TablePageTemplateState();
@@ -94,7 +96,7 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
             // Nagłówki tabeli
             Row(
               children: [
-                ...widget.headers.map(
+                ...widget.headers.skip(widget.hideFirstField ? 1 : 0).map(
                   (header) => Expanded(
                     flex: 6,
                     child: Text(
@@ -118,8 +120,8 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
 
                   // Generowanie wartości pól
                   if (widget.jsonFields != null) {
-                    fieldValues = widget.jsonFields!.map((field) {
                     fieldValues = widget.jsonFields!
+                        .skip(widget.hideFirstField ? 1 : 0)
                         .map((field) {
                       final value = element[field]?.toString() ?? '';
 
