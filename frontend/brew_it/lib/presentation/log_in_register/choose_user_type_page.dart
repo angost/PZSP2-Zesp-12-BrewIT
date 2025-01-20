@@ -9,7 +9,7 @@ class ChooseUserTypePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: MyAppBar(context, hasHomeButtom: false),
+        appBar: MyAppBar(context),
         body:
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           Text(
@@ -21,48 +21,42 @@ class ChooseUserTypePage extends StatelessWidget {
             children: [
               Container(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 120),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const RegisterPage("commercial")));
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: secondaryColor,
-                      ),
-                      child: Text(
-                          "Browar komercyjny",
-                          style: TextStyle(color: textLightColor)
-
-                      ),
-                    ),
-                  )),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 120),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const RegisterPage("commercial")));
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: secondaryColor,
+                  ),
+                  child: Text("Browar komercyjny",
+                      style: TextStyle(color: textLightColor)),
+                ),
+              )),
               Container(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 120),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const RegisterPage("contract")));
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: secondaryColor,
-                        ),
-                      child: Text(
-                        "Browar kontraktowy",
-                        style: TextStyle(color: textLightColor)
-
-                      ),
-                    ),
-                  )),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 120),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const RegisterPage("contract")));
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: secondaryColor,
+                  ),
+                  child: Text("Browar kontraktowy",
+                      style: TextStyle(color: textLightColor)),
+                ),
+              )),
             ],
           ),
         ]));

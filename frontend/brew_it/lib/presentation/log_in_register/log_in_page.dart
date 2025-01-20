@@ -29,7 +29,7 @@ class _LogInPageState extends State<LogInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: MyAppBar(context, hasHomeButtom: false),
+        appBar: MyAppBar(context, hasHomeButton: false),
         body: Padding(
           padding: const EdgeInsets.all(50),
           child: Stack(

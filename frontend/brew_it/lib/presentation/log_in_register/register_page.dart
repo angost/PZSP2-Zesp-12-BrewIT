@@ -37,7 +37,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: MyAppBar(context, hasHomeButtom: false),
+        appBar: MyAppBar(context),
         body: Padding(
           padding: const EdgeInsets.all(50),
           child: Stack(
@@ -65,7 +65,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                               newValue;
                                         },
                                         obscureText: registerFieldNames
-                                                  .jsonFieldNames[index].contains("password"),
+                                            .jsonFieldNames[index]
+                                            .contains("password"),
                                         decoration: InputDecoration(
                                             labelText: registerFieldNames
                                                 .fieldNames[index]),
@@ -91,7 +92,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                   }
                                 } on DioException catch (e) {
                                   print("Register failed");
-                                  handleMultipleErrors(context, e, registerFieldNames.errorMessages);
+                                  handleMultipleErrors(context, e,
+                                      registerFieldNames.errorMessages);
                                 }
                               })
                             ])),
