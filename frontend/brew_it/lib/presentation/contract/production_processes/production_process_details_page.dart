@@ -29,5 +29,6 @@ class ProductionProcessDetailsPage extends DetailsAddEditPageTemplate {
             ],
             fieldNames: ProductionProcessesFieldNames().fieldNames,
             jsonFieldNames: ProductionProcessesFieldNames().jsonFieldNames,
+            fieldTypes: ProductionProcessesFieldNames().fieldTypes,
             elementData: elementData);
 }

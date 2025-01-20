@@ -39,5 +39,6 @@ class SectorDetailsPage extends DetailsAddEditPageTemplate {
             ],
             fieldNames: SectorsFieldNames().fieldNames,
             jsonFieldNames: SectorsFieldNames().jsonFieldNames,
+            fieldTypes: SectorsFieldNames().fieldTypes,
             elementData: elementData);
 }

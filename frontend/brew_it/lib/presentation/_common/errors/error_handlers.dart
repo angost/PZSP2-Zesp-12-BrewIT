@@ -60,6 +60,9 @@ void handleMultipleErrors(
           final translatedMessage = translateMessage(field, message);
           aggregatedErrors.add(translatedMessage ?? message);
         }
+      } else if (messages.isNotEmpty) {
+          final translatedMessage = translateMessage(field, messages);
+          aggregatedErrors.add(translatedMessage ?? messages);
       }
     });
 

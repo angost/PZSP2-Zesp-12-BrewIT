@@ -4,6 +4,8 @@ import 'package:brew_it/presentation/_common/widgets/main_button.dart';
 import 'package:brew_it/presentation/_common/widgets/my_app_bar.dart';
 import 'package:brew_it/presentation/_common/widgets/my_icon_button.dart';
 import 'package:brew_it/presentation/_common/widgets/form_fields.dart';
+import 'package:brew_it/injection_container.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 
@@ -18,6 +20,9 @@ class DetailsAddEditPageTemplate extends StatefulWidget {
         this.fieldTypes,
         this.elementData,
         this.enumOptions,
+        this.fetchOptions,
+        this.fetchDisplay,
+        this.displayValues,
         super.key});
 
   final String title;
@@ -27,7 +32,10 @@ class DetailsAddEditPageTemplate extends StatefulWidget {
   final List<String> jsonFieldNames;
   final List<bool>? fieldEditable;
   final List<String>? fieldTypes;
-  final Map<String, List<Map<String, String>>>? enumOptions;
+  Map<String, List<Map<String, String>>>? enumOptions;
+  final List<Map<String, String>>? fetchOptions;
+  final List<Map<String, String>>? fetchDisplay;
+  Map<String, String>? displayValues;
   Map? elementData;
 
   @override
@@ -37,6 +45,25 @@ class DetailsAddEditPageTemplate extends StatefulWidget {
 
 class _DetailsAddEditPageTemplateState
     extends State<DetailsAddEditPageTemplate> {
+  late Map<dynamic, dynamic> elementData;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.enumOptions ??= {};
+    widget.displayValues ??= {};
+    if (widget.fetchOptions != null) {
+      for (Map<String, String> fetchMap in widget.fetchOptions!) {
+        fetchObjectOptions(fetchMap);
+      }
+    }
+    if (widget.fetchDisplay != null) {
+      for (Map<String, String> fetchMap in widget.fetchDisplay!) {
+        fetchFieldDisplayValue(config: fetchMap);
+      }
+    }
+    elementData = widget.elementData ?? {};
+  }
   @override
   Widget build(BuildContext context) {
     List<String>? fieldValues;
@@ -144,6 +171,7 @@ class _DetailsAddEditPageTemplateState
                                     ),
                                   );
                                 case "BooleanField":
+                                  widget.elementData![jsonFieldName] = fieldValues != null ? (fieldValues[index]) : "false";
                                   return Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                                     child: BooleanField(
@@ -163,6 +191,18 @@ class _DetailsAddEditPageTemplateState
                                       },
                                     ),
                                   );
+                                case "DisplayField":
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                    child: DisplayField(
+                                      label: widget.fieldNames[index],
+                                      displayValue: widget.displayValues?[jsonFieldName] ?? "",
+                                      formValue: fieldValues != null
+                                          ? fieldValues[index]
+                                          : "",
+                                    ),
+                                  );
+
                                 default: // TextField
                                   return Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -199,4 +239,53 @@ class _DetailsAddEditPageTemplateState
           ),
         ));
   }
+  Future<void> fetchObjectOptions(Map<String, String> config) async {
+    try {
+      final response = await getIt<Dio>().get(config['endpoint']!);
+      if (response.statusCode == 200) {
+        final options = (response.data as List)
+            .map((item) => {
+          "display": item[config['displayField']!].toString(),
+          "apiValue": item[config['apiValueField']!].toString(),
+        })
+            .toList();
+        setState(() {
+          widget.enumOptions?[config['enumKey']!] = options;
+        });
+      }
+    } catch (e) {
+      print('Error fetching ${config['enumKey']} options from ${config['endpoint']}: $e');
+    }
+  }
+
+  Future<void> fetchFieldDisplayValue({
+    required Map<String, String> config
+  }) async {
+    String endpoint = config['endpoint']!;
+    String fieldKey = config['fieldKey']!;
+    String apiValue = config['apiValue']!;
+    String displayField = config['displayField']!;
+    try {
+      // Construct the API endpoint with the brewery ID
+      final response = await getIt<Dio>().get('$endpoint/$apiValue');
+      if (response.statusCode == 200) {
+        // Extract the display field value
+        final displayValue = response.data[displayField];
+        if (displayValue != null) {
+          setState(() {
+            widget.displayValues?[fieldKey] = displayValue.toString();
+          });
+        } else {
+          print("Display field '$displayField' not found in response data.");
+        }
+      } else {
+        print('Failed to fetch display value for $fieldKey. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching display value for $fieldKey: $e');
+    }
+  }
+
 }
+
+

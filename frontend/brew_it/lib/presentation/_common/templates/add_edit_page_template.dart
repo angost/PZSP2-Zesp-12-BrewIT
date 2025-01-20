@@ -19,6 +19,8 @@ class AddEditPageTemplate extends DetailsAddEditPageTemplate {
         Map<String, dynamic>? errorMessages,
         List<String>? fieldTypes,
         Map<String, List<Map<String, String>>>? enumOptions,
+        List<Map<String, String>>? fetchOptions,
+        List<Map<String, String>>? fetchDisplay,
       super.key})
       : super(
             title: title,
@@ -36,14 +38,17 @@ class AddEditPageTemplate extends DetailsAddEditPageTemplate {
               ),
               MainButton("Anuluj",
                   type: "secondary_small",
-                  navigateToPage: navigateToPageCancel,
-                  dataForPage: elementData,
-                  navigateIsTablePage: navigateToCancelIsTablePage)
+                  // navigateToPage: navigateToPageCancel,
+                  // dataForPage: elementData,
+                  // navigateIsTablePage: navigateToCancelIsTablePage
+                  pop: true)
             ],
             fieldNames: fieldNames,
             jsonFieldNames: jsonFieldNames,
             fieldEditable: fieldEditable,
             fieldTypes: fieldTypes,
             enumOptions: enumOptions,
+            fetchOptions: fetchOptions,
+            fetchDisplay: fetchDisplay,
             elementData: elementData);
 }

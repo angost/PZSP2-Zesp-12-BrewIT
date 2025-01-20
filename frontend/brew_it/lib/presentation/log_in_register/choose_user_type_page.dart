@@ -1,5 +1,6 @@
 import 'package:brew_it/presentation/_common/widgets/my_app_bar.dart';
 import 'package:brew_it/presentation/log_in_register/register_page.dart';
+import 'package:brew_it/core/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 class ChooseUserTypePage extends StatelessWidget {
@@ -19,7 +20,6 @@ class ChooseUserTypePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Container(
-                  color: Colors.grey.shade600,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 120),
@@ -31,13 +31,17 @@ class ChooseUserTypePage extends StatelessWidget {
                                 builder: (context) =>
                                     const RegisterPage("commercial")));
                       },
-                      child: const Text(
-                        "Browar komercyjny",
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: secondaryColor,
+                      ),
+                      child: Text(
+                          "Browar komercyjny",
+                          style: TextStyle(color: textLightColor)
+
                       ),
                     ),
                   )),
               Container(
-                  color: Colors.grey.shade600,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 120),
@@ -49,8 +53,13 @@ class ChooseUserTypePage extends StatelessWidget {
                                 builder: (context) =>
                                     const RegisterPage("contract")));
                       },
-                      child: const Text(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: secondaryColor,
+                        ),
+                      child: Text(
                         "Browar kontraktowy",
+                        style: TextStyle(color: textLightColor)
+
                       ),
                     ),
                   )),

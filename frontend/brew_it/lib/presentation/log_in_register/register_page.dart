@@ -3,6 +3,7 @@ import 'package:brew_it/injection_container.dart';
 import 'package:brew_it/presentation/_common/widgets/main_button.dart';
 import 'package:brew_it/presentation/_common/widgets/my_app_bar.dart';
 import 'package:brew_it/presentation/log_in_register/log_in_page.dart';
+import 'package:brew_it/presentation/_common/errors/error_handlers.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
@@ -90,6 +91,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   }
                                 } on DioException catch (e) {
                                   print("Register failed");
+                                  handleMultipleErrors(context, e, registerFieldNames.errorMessages);
                                 }
                               })
                             ])),

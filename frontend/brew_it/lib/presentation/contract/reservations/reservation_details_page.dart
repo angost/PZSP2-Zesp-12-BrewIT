@@ -17,18 +17,27 @@ class ReservationDetailsPage extends DetailsAddEditPageTemplate {
                 },
               )
             ],
-            options: [
-              MyIconButton(
-                type: "delete",
-                apiCall: "/reservations/",
-                apiCallType: "delete",
-                elementId: elementData["reservation_id"],
-                navigateToPage: () {
-                  return ReservationsPage();
-                },
-              ),
-            ],
+            // options: [
+            //   MyIconButton(
+            //     type: "delete",
+            //     apiCall: "/reservations/",
+            //     apiCallType: "delete",
+            //     elementId: elementData["reservation_id"],
+            //     navigateToPage: () {
+            //       return ReservationsPage();
+            //     },
+            //   ),
+            // ],
             fieldNames: ReservationsContractFieldNames().fieldNames,
             jsonFieldNames: ReservationsContractFieldNames().jsonFieldNames,
+            fieldTypes: ReservationsContractFieldNames().fieldTypes,
+            fetchDisplay: [
+              {
+                'endpoint': '/breweries/',
+                'fieldKey': 'production_brewery',
+                'apiValue': elementData['production_brewery']!.toString(),
+                'displayField': 'name',
+              }
+            ],
             elementData: elementData);
 }

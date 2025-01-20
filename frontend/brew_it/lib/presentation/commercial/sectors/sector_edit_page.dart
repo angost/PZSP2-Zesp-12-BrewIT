@@ -16,7 +16,7 @@ class SectorEditPage extends AddEditPageTemplate {
             },
             fieldNames: SectorsFieldNames().fieldNames,
             jsonFieldNames: SectorsFieldNames().jsonFieldNames,
-            fieldEditable: [true, true],
+            fieldEditable: [true, false],
             fieldTypes: SectorsFieldNames().fieldTypes,
             errorMessages: SectorsFieldNames().errorMessages,
             elementData: elementData);

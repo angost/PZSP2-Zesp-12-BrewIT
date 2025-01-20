@@ -14,15 +14,15 @@ class MachineSchedulePage extends TablePageTemplate {
               return MachineDetailsPage(elementData);
             }, dataForPage: elementData)],
             headers: MachineScheduleFieldNames().fieldNamesTable,
-            options: [
-              MyIconButton(
-                type: "link",
-                navigateToPage: () {
-                  // MOCK - navigate to reservation details page
-                  return ReservationsPage();
-                },
-              ),
-            ],
+            // options: [
+            //   MyIconButton(
+            //     type: "link",
+            //     navigateToPage: () {
+            //       // MOCK - navigate to reservation details page
+            //       return ReservationsPage();
+            //     },
+            //   ),
+            // ],
             apiString:
                 "/equipment-reservations/?equipment=${elementData["equipment_id"]}",
             jsonFields: MachineScheduleFieldNames().jsonFieldNamesTable);

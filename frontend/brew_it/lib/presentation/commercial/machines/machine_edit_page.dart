@@ -17,14 +17,14 @@ class MachineEditPage extends AddEditPageTemplate {
             fieldNames: MachinesFieldNames().fieldNames,
             jsonFieldNames: MachinesFieldNames().jsonFieldNames,
             fieldEditable: [
+              false,
               true,
               true,
               true,
-              true,
-              true,
-              true,
-              true,
-              true
+              false,
+              false,
+              false,
+              false
             ],
             errorMessages: MachinesFieldNames().errorMessages,
             fieldTypes: MachinesFieldNames().fieldTypes,
@@ -34,5 +34,6 @@ class MachineEditPage extends AddEditPageTemplate {
                 {"display": "Zbiornik", "apiValue": "VAT"},
               ]
             },
+            fetchOptions: MachinesFieldNames().fetchOptions,
             elementData: elementData);
 }
