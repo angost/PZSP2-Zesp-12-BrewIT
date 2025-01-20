@@ -32,7 +32,7 @@ class DetailsAddEditPageTemplate extends StatefulWidget {
   final List<String> jsonFieldNames;
   final List<bool>? fieldEditable;
   final List<String>? fieldTypes;
-  final Map<String, List<Map<String, String>>>? enumOptions;
+  Map<String, List<Map<String, String>>>? enumOptions;
   final List<Map<String, String>>? fetchOptions;
   final List<Map<String, String>>? fetchDisplay;
   Map<String, String>? displayValues;
@@ -50,6 +50,7 @@ class _DetailsAddEditPageTemplateState
   @override
   void initState() {
     super.initState();
+    widget.enumOptions ??= {};
     widget.displayValues ??= {};
     if (widget.fetchOptions != null) {
       for (Map<String, String> fetchMap in widget.fetchOptions!) {
@@ -151,6 +152,8 @@ class _DetailsAddEditPageTemplateState
                                     ),
                                   );
                                 case "EnumField":
+                                  print(jsonFieldName);
+                                  print(widget.enumOptions?[jsonFieldName]);
                                   return Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                                     child: EnumField(
@@ -242,6 +245,7 @@ class _DetailsAddEditPageTemplateState
     try {
       final response = await getIt<Dio>().get(config['endpoint']!);
       if (response.statusCode == 200) {
+        print(response.data as List);
         final options = (response.data as List)
             .map((item) => {
           "display": item[config['displayField']!].toString(),

@@ -520,7 +520,7 @@ class RecipesFieldNames extends StandardFieldNames {
           "recipe_id",
           "beer_type",
         ], fieldTypes: [
-          "TextField",
+          "EnumField",
           "TextField"
         ], errorMessages: {
           "beer_type": {
@@ -529,7 +529,14 @@ class RecipesFieldNames extends StandardFieldNames {
             r'Invalid pk "\d+" - object does not exist.': r'Niewłaściwy klucz typu piwa',
           },
           "recipe_body": "Treść nie może mieć więcej niż 2048 znaków."
-        });
+        }, fetchOptions: [
+          {
+            "endpoint": "/beer-types/",
+            "displayField": "name",
+            "apiValueField": "beer_type_id",
+            "enumKey": "beer_type",
+          }]
+  );
 }
 
 class RegistrationRequestsFieldNames extends StandardFieldNames {
