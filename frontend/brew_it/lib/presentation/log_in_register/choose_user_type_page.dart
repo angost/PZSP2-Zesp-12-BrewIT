@@ -1,6 +1,5 @@
 import 'package:brew_it/presentation/_common/widgets/my_app_bar.dart';
-import 'package:brew_it/presentation/log_in_register/register_page.dart';
-import 'package:brew_it/core/theme/colors.dart';
+import 'package:brew_it/presentation/log_in_register/user_type_button.dart';
 import 'package:flutter/material.dart';
 
 class ChooseUserTypePage extends StatelessWidget {
@@ -9,7 +8,11 @@ class ChooseUserTypePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: MyAppBar(context, hasHomeButtom: false),
+        appBar: MyAppBar(
+          context,
+          hasHomeButton: false,
+          hasBackButton: true,
+        ),
         body:
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           Text(
@@ -19,50 +22,8 @@ class ChooseUserTypePage extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Container(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 120),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const RegisterPage("commercial")));
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: secondaryColor,
-                      ),
-                      child: Text(
-                          "Browar komercyjny",
-                          style: TextStyle(color: textLightColor)
-
-                      ),
-                    ),
-                  )),
-              Container(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 120),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const RegisterPage("contract")));
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: secondaryColor,
-                        ),
-                      child: Text(
-                        "Browar kontraktowy",
-                        style: TextStyle(color: textLightColor)
-
-                      ),
-                    ),
-                  )),
+              UserTypeButton("commercial"),
+              UserTypeButton("contract"),
             ],
           ),
         ]));

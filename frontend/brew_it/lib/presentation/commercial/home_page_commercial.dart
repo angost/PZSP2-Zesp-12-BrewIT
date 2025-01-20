@@ -1,4 +1,3 @@
-import 'package:brew_it/presentation/_common/widgets/menu_logout_button.dart';
 import 'package:brew_it/presentation/commercial/machines/machines_page.dart';
 import 'package:brew_it/presentation/_common/widgets/menu_button.dart';
 import 'package:brew_it/presentation/_common/templates/home_page_template.dart';
@@ -9,21 +8,23 @@ import 'package:brew_it/presentation/commercial/sectors/sectors_page.dart';
 class HomePageCommercial extends HomePageTemplate {
   HomePageCommercial({super.key})
       : super(
-            title: "Twoje konto - Browar komercyjny - Browar Wierzbowice",
+            title: "Twoje konto - Browar komercyjny",
             buttons: [
-              MenuButton("Zarządzanie urządzeniami",
-                  type: "important", navigateToPage: MachinesPage()),
-              MenuButton("Twoje sektory", navigateToPage: SectorsPage()),
+              MenuButton(type: "machines", navigateToPage: MachinesPage()),
+              MenuButton(type: "sectors", navigateToPage: SectorsPage()),
               MenuButton(
-                "Twoje rezerwacje",
+                type: "reservations",
                 navigateToPage: ReservationsPage(),
               ),
-              MenuButton("Prośby o rezerwację od browarów kontraktowych",
+              MenuButton(
+                  type: "reservation_requests",
                   navigateToPage: ReservationRequestsPage()),
               // MenuButton(
               //   "Uprawnieni do wstępu do browaru",
               //   navigateToPage: AllowedPeoplePage(),
               // ),
-              MenuLogoutButton(),
+              MenuButton(
+                type: "logout",
+              ),
             ]);
 }

@@ -14,23 +14,18 @@ class HomePageTemplate extends StatelessWidget {
         appBar: MyAppBar(context),
         body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Expanded(flex: 2, child: Container()),
-          Expanded(
-            flex: 6,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 60),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                      Text(
-                        title,
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                    ] +
-                    buttons,
-              ),
+          Center(
+            child: Text(
+              title,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
+          Expanded(
+              flex: 6,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: buttons,
+              )),
           Expanded(flex: 2, child: Container())
         ]));
   }

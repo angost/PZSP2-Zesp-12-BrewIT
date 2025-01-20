@@ -8,9 +8,13 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class RegisterPage extends StatefulWidget {
-  const RegisterPage(this.userType, {super.key});
+  RegisterPage(this.userType, {super.key});
 
   final String userType;
+  final Map typeToText = {
+    "commercial": "Browar komercyjny",
+    "contract": "Browar kontraktowy"
+  };
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -37,7 +41,11 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: MyAppBar(context, hasHomeButtom: false),
+        appBar: MyAppBar(
+          context,
+          hasHomeButton: false,
+          hasBackButton: true,
+        ),
         body: Padding(
           padding: const EdgeInsets.all(50),
           child: Stack(
@@ -50,7 +58,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                               Text(
-                                "Zarejestruj się",
+                                "Zarejestruj się - ${widget.typeToText[widget.userType]}",
                                 style: Theme.of(context).textTheme.titleLarge,
                               )
                             ] +
@@ -65,7 +73,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                               newValue;
                                         },
                                         obscureText: registerFieldNames
-                                                  .jsonFieldNames[index].contains("password"),
+                                            .jsonFieldNames[index]
+                                            .contains("password"),
                                         decoration: InputDecoration(
                                             labelText: registerFieldNames
                                                 .fieldNames[index]),
@@ -91,7 +100,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                   }
                                 } on DioException catch (e) {
                                   print("Register failed");
-                                  handleMultipleErrors(context, e, registerFieldNames.errorMessages);
+                                  handleMultipleErrors(context, e,
+                                      registerFieldNames.errorMessages);
                                 }
                               })
                             ])),

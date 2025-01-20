@@ -1,4 +1,3 @@
-import 'package:brew_it/core/helper/field_names.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
@@ -7,12 +6,16 @@ void showErrorDialog(BuildContext context, String message) {
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Text("Error"),
+        title: const Text("Uwaga!"),
         content: Text(message),
         actions: [
-          TextButton(
+          ElevatedButton(
             onPressed: () => Navigator.pop(context),
-            child: Text("OK"),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              shadowColor: Colors.transparent,
+            ),
+            child: const Text("OK"),
           ),
         ],
       );
@@ -20,9 +23,12 @@ void showErrorDialog(BuildContext context, String message) {
   );
 }
 
-void handleApiError(BuildContext context, DioException e, Map<String, dynamic>? errorMessages) {
+void handleApiError(
+    BuildContext context, DioException e, Map<String, dynamic>? errorMessages) {
   final detail = e.response?.data['detail'];
-  if (errorMessages != null && detail != null && errorMessages!.containsKey(detail)) {
+  if (errorMessages != null &&
+      detail != null &&
+      errorMessages!.containsKey(detail)) {
     showErrorDialog(context, errorMessages![detail]!);
   } else {
     showErrorDialog(context, "An unknown error occurred. Please try again.");
@@ -61,8 +67,8 @@ void handleMultipleErrors(
           aggregatedErrors.add(translatedMessage ?? message);
         }
       } else if (messages.isNotEmpty) {
-          final translatedMessage = translateMessage(field, messages);
-          aggregatedErrors.add(translatedMessage ?? messages);
+        final translatedMessage = translateMessage(field, messages);
+        aggregatedErrors.add(translatedMessage ?? messages);
       }
     });
 
