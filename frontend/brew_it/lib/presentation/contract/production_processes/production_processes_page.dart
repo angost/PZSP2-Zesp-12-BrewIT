@@ -30,5 +30,6 @@ class ProductionProcessesPage extends TablePageTemplate {
               )
             ],
             apiString: "/execution-logs/",
+            hideFirstField: true,
             jsonFields: ProductionProcessesFieldNames().jsonFieldNamesTable);
 }

@@ -508,7 +508,7 @@ class ReservationsContractFieldNames extends StandardFieldNames {
           "allows_sector_share",
         ], fieldTypes: [
           "TextField",
-          "TextField",
+          "DisplayField",
           "TextField",
           "TextField",
           "BooleanField",

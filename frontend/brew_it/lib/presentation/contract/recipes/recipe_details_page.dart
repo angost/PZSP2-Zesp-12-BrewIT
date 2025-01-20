@@ -37,5 +37,7 @@ class RecipeDetailsPage extends DetailsAddEditPageTemplate {
             ],
             fieldNames: RecipesFieldNames().fieldNames,
             jsonFieldNames: RecipesFieldNames().jsonFieldNames,
+            fieldTypes: RecipesFieldNames().fieldTypes,
+            fetchOptions: RecipesFieldNames().fetchOptions,
             elementData: elementData);
 }
