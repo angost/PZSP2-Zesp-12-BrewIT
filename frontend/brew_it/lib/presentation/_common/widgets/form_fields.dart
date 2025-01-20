@@ -63,8 +63,6 @@ class DatePickerField extends StatelessWidget {
       },
     );
   }
-
-
 }
 
 class BooleanField extends StatelessWidget {
@@ -160,3 +158,38 @@ class EnumField extends StatelessWidget {
     );
   }
 }
+
+class DisplayField extends StatelessWidget {
+  final String label;
+  final String displayValue;
+  final String formValue;
+  final InputDecoration? decoration;
+
+  const DisplayField({
+    required this.label,
+    required this.displayValue,
+    required this.formValue,
+    this.decoration,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final TextEditingController controller =
+    TextEditingController(text: displayValue);
+
+    return TextFormField(
+      controller: controller,
+      decoration: decoration ??
+          InputDecoration(
+            labelText: label,
+            border: disabledTextFormFieldTheme.border, // Mimics the DatePickerField
+            fillColor: disabledTextFormFieldTheme.fillColor, // Background color for read-only
+          ),
+      readOnly: true,
+      enabled: false, // Prevents user interaction
+      style: Theme.of(context).textTheme.bodyMedium, // Styling the text
+    );
+  }
+}
+

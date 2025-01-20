@@ -20,6 +20,7 @@ class AddEditPageTemplate extends DetailsAddEditPageTemplate {
         List<String>? fieldTypes,
         Map<String, List<Map<String, String>>>? enumOptions,
         List<Map<String, String>>? fetchOptions,
+        List<Map<String, String>>? fetchDisplay,
       super.key})
       : super(
             title: title,
@@ -47,5 +48,6 @@ class AddEditPageTemplate extends DetailsAddEditPageTemplate {
             fieldTypes: fieldTypes,
             enumOptions: enumOptions,
             fetchOptions: fetchOptions,
+            fetchDisplay: fetchDisplay,
             elementData: elementData);
 }

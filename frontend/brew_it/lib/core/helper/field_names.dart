@@ -448,7 +448,14 @@ class ReservationsContractFieldNames extends StandardFieldNames {
           "brew_size",
           "price",
           "allows_sector_share",
-        ], fieldTypes: [], errorMessages: {});
+        ], fieldTypes: [
+          "TextField",
+          "DisplayField",
+          "TextField",
+          "TextField",
+          "BooleanField",
+          "TextField",
+  ], errorMessages: {});
 }
 
 class RecipesFieldNames extends StandardFieldNames {
