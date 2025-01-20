@@ -41,7 +41,11 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: MyAppBar(context),
+        appBar: MyAppBar(
+          context,
+          hasHomeButton: false,
+          hasBackButton: true,
+        ),
         body: Padding(
           padding: const EdgeInsets.all(50),
           child: Stack(

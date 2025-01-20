@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:brew_it/core/helper/user_data.dart' as user_data;
 
 class MyAppBar extends AppBar {
-  MyAppBar(BuildContext context, {bool hasHomeButton = true, super.key})
+  MyAppBar(BuildContext context,
+      {bool hasHomeButton = true, bool hasBackButton = false, super.key})
       : super(
             leading: hasHomeButton
                 ? IconButton(
@@ -26,6 +27,12 @@ class MyAppBar extends AppBar {
                       }));
                     },
                     icon: const Icon(Icons.home))
-                : Container(),
+                : (hasBackButton
+                    ? IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: const Icon(Icons.undo))
+                    : Container()),
             automaticallyImplyLeading: false);
 }

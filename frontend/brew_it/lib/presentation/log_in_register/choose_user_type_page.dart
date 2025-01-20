@@ -8,7 +8,11 @@ class ChooseUserTypePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: MyAppBar(context),
+        appBar: MyAppBar(
+          context,
+          hasHomeButton: false,
+          hasBackButton: true,
+        ),
         body:
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           Text(
