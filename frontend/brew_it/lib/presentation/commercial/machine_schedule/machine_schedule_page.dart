@@ -4,6 +4,7 @@ import 'package:brew_it/presentation/_common/widgets/main_button.dart';
 import 'package:brew_it/presentation/_common/widgets/my_icon_button.dart';
 import 'package:brew_it/presentation/commercial/machines/machine_details_page.dart';
 import 'package:brew_it/presentation/commercial/reservations/reservations_page.dart';
+import 'package:brew_it/presentation/commercial/reservations/reservation_details_page.dart';
 
 class MachineSchedulePage extends TablePageTemplate {
   MachineSchedulePage(Map elementData, {super.key})
@@ -26,5 +27,8 @@ class MachineSchedulePage extends TablePageTemplate {
             apiString:
                 "/equipment-reservations/?equipment=${elementData["equipment_id"]}",
             hideFirstField: true,
+            linkedFields : {
+                "reservation_id" : (elementData) => ReservationDetailsPage(elementData),
+            },
             jsonFields: MachineScheduleFieldNames().jsonFieldNamesTable);
 }

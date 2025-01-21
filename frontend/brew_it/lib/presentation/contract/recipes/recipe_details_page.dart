@@ -12,9 +12,7 @@ class RecipeDetailsPage extends DetailsAddEditPageTemplate {
               MainButton(
                 "Powrót",
                 type: "primary_small",
-                navigateToPage: () {
-                  return RecipesPage();
-                },
+                pop: true,
               )
             ],
             options: [

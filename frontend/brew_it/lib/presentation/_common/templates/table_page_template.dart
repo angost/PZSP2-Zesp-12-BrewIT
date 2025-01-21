@@ -143,8 +143,8 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
                           onTap: () {
                             final navigateToPage = widget.linkedFields![field];
                             if (navigateToPage != null) {
-                              fetchAndNavigate(
-                                "/${field}s", // Example API endpoint
+                              await fetchAndNavigate(
+                                field == "reservation_id" ? "/reservations" : "/${field}s",
                                 formattedValue,
                                 context,
                                 (data) => navigateToPage(data),

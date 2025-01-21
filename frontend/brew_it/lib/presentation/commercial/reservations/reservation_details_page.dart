@@ -12,9 +12,7 @@ class ReservationDetailsPage extends DetailsAddEditPageTemplate {
               MainButton(
                 "Powrót",
                 type: "primary_small",
-                navigateToPage: () {
-                  return ReservationsPage();
-                },
+                pop: true,
               )
             ],
             options: [
