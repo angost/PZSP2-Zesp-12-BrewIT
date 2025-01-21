@@ -28,7 +28,7 @@ class RegisterCommercialFieldNames extends StandardFieldNames {
           "Powtórz hasło",
           "Nazwa firmy",
           "NIP",
-          "Ph wody",
+          "Ph wody (wymagane do wypożyczania, można później)",
         ], jsonFieldNames: [
           "email",
           "password",
@@ -184,15 +184,23 @@ class ProductionProcessesFieldNames extends StandardFieldNames {
           "Data końcowa",
           "Rezerwacja",
           "Przepis",
-          "Opis",
           "Czy udany",
+          "Zacieranie",
+          "Filtracja",
+          "Gotowanie",
+          "Fermentacja",
+          "Leżakowanie",
         ], jsonFieldNames: [
           "start_date",
           "end_date",
           "reservation",
           "recipe",
-          "log",
           "is_successful",
+          "mashing_log",
+          "lautering_log",
+          "boiling_log",
+          "fermentation_log",
+          "lagerring_log"
         ], fieldNamesTable: [
           "Id",
           "Data początkowa",
@@ -213,8 +221,12 @@ class ProductionProcessesFieldNames extends StandardFieldNames {
           "DatePickerField",
           "EnumField",
           "EnumField",
+          "BooleanField",
           "TextField",
-          "BooleanField"
+          "TextField",
+          "TextField",
+          "TextField",
+          "TextField",
         ], errorMessages: {
         "start_date": "Data początkowa jest wymagana.",
         "non_field_errors": {
@@ -223,11 +235,11 @@ class ProductionProcessesFieldNames extends StandardFieldNames {
           "Reservation does not exist": "Rezerwacja nie istnieje.",
         },
         "reservation": {
-          "This field may not be null" : "Rezerwacja nie może być pusta.",
+          "This field is required." : "Rezerwacja nie może być pusta.",
           r'Invalid pk "\d+" - object does not exist.': "Taka rezerwacja nie istnieje."
         },
         "recipe": {
-          "This field may not be null" : "Przepis nie może być pusty.",
+          "This field is required." : "Przepis nie może być pusty.",
           r'Invalid pk "\d+" - object does not exist.': "Taki przepis nie istnieje."
         }
         }, fetchOptions: [
@@ -239,7 +251,7 @@ class ProductionProcessesFieldNames extends StandardFieldNames {
           },
           {
             "endpoint": "/recipes/",
-            "displayField": "recipe_id",
+            "displayField": "name",
             "apiValueField": "recipe_id",
             "enumKey": "recipe",
           }
@@ -523,11 +535,21 @@ class ReservationsContractFieldNames extends StandardFieldNames {
 class RecipesFieldNames extends StandardFieldNames {
   RecipesFieldNames()
       : super(fieldNames: [
+          "Nazwa",
           "Typ piwa",
-          "Treść",
+          "Zacieranie",
+          "Filtracja",
+          "Gotowanie",
+          "Fermentacja",
+          "Leżakowanie",
         ], jsonFieldNames: [
+          "name",
           "beer_type",
-          "recipe_body",
+          "mashing_body",
+          "lautering_body",
+          "boiling_body",
+          "fermentation_body",
+          "lagerring_body"
         ], fieldNamesTable: [
           "Id",
           "Typ piwa",
@@ -536,15 +558,24 @@ class RecipesFieldNames extends StandardFieldNames {
           "recipe_id",
           "beer_type",
         ], fieldTypes: [
+          "TextField",
           "EnumField",
-          "TextField"
+          "TextField",
+          "TextField",
+          "TextField",
+          "TextField",
+          "TextField",
         ], errorMessages: {
-          "beer_type": {
-            "cannot be empty":
-            "Typ piwa nie może być pusty",
-            r'Invalid pk "\d+" - object does not exist.': r'Niewłaściwy klucz typu piwa',
+          "name": {
+            "This field is required.":
+            "Nazwa nie może być pusta",
           },
-          "recipe_body": "Treść nie może mieć więcej niż 2048 znaków."
+          "beer_type": {
+            "This field is required.":
+              "Typ piwa nie może być pusty",
+            r'Invalid pk "\d+" - object does not exist.':
+              r'Niewłaściwy klucz typu piwa',
+          },
         }, fetchOptions: [
           {
             "endpoint": "/beer-types/",

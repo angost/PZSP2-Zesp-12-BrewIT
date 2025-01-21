@@ -54,7 +54,7 @@ class DatePickerField extends StatelessWidget {
         );
         if (pickedDate != null) {
           // Format the date for API and display
-          String formattedDateForApi = pickedDate.toIso8601String();
+          String formattedDateForApi = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
           String formattedDateForDisplay =
               "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
           controller.text = formattedDateForDisplay;
