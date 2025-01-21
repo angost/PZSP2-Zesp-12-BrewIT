@@ -9,7 +9,7 @@ from brewit_api.serializers import AccountSerializer, RegistrationRequestSeriali
      ExecutionLogSerializer, ExecutionLogEditSerializer, BeerTypeSerializer, CleanupSerializer,\
      EquipmentReservationSerializer, SectorEditSerializer, EquipmentEditSerializer, BreweryStatisticsSerializer,\
      CombinedStatisticsSerializer, BreweryCreateSerializer, BreweryWithAccountSerializer, WorkerSerializer,\
-     ReservationRequestSerializer, EquipmentWithReservationsSerializer
+     ReservationRequestSerializer, EquipmentWithReservationsSerializer, BreweryEditSerializer
 from rest_framework.reverse import reverse
 from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate, login, logout
@@ -40,6 +40,8 @@ def api_root(request, format=None):
 
 class AccountList(APIView):
     serializer_class = AccountSerializer
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAdmin]
 
     def get(self, request, format=None):
         users = get_user_model().objects.all()
@@ -49,6 +51,8 @@ class AccountList(APIView):
 
 class AccountDetail(APIView):
     serializer_class = AccountSerializer
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAdmin]
 
     def get_object(self, pk):
         try:
@@ -152,6 +156,27 @@ class RegistrationRequestAccept(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class MyBreweryDetail(APIView):
+    serializer_class = BreweryWithAccountSerializer
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsBrewery]
+
+    def get(self, request, format=None):
+        brewery = request.user.get_brewery()
+        serializer = BreweryWithAccountSerializer(brewery, context={'request': request})
+        return Response(serializer.data)
+
+    @extend_schema(
+        request=BreweryEditSerializer,
+        responses=BreweryEditSerializer,
+    )
+    def put(self, request, format=None):
+        brewery = request.user.get_brewery()
+        serializer = BreweryEditSerializer(brewery, data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class Logout(APIView):

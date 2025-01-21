@@ -26,7 +26,9 @@ class RegistrationRequestSerializer(serializers.ModelSerializer):
         model = RegistrationRequest
         fields = '__all__'
         extra_kwargs = {'password': {'write_only': True},
-                        'role': {'read_only': True},}
+                        'role': {'read_only': True},
+                        'water_ph': {'read_only': True},
+                        }
 
 
     def validate_email(self, value):
@@ -51,9 +53,7 @@ class RegistrationRequestSerializer(serializers.ModelSerializer):
 
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError("Passwords do not match")
-        elif attrs['selector'] == Brewery.BrewerySelectors.PRODUCTION.value and not attrs['water_ph']:
-            raise serializers.ValidationError("Production brewery must specify water_ph")
-        elif attrs['selector'] == Brewery.BrewerySelectors.PRODUCTION.value and not attrs['nip']:
+        if attrs['selector'] == Brewery.BrewerySelectors.PRODUCTION.value and not attrs.get('nip'):
             raise serializers.ValidationError("Production brewery must specify nip")
         return attrs
 
@@ -64,8 +64,8 @@ class RegistrationRequestSerializer(serializers.ModelSerializer):
                                                   role=validated_data['selector'],
                                                   selector=validated_data['selector'],
                                                   name=validated_data['name'],
-                                                  nip=validated_data['nip'],
-                                                  water_ph=validated_data.get('water_ph'))
+                                                  nip=validated_data['nip'])
+
 
 
 class BreweryCreateSerializer(serializers.Serializer):
@@ -144,6 +144,17 @@ class BrewerySerializer(serializers.ModelSerializer):
         model = Brewery
         fields = '__all__'
         extra_kwargs = {'account': {'read_only': True}}
+
+class BreweryEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Brewery
+        fields = ['name', 'nip', 'water_ph']
+
+    def validate(self, attrs):
+        selector = getattr(self.instance, 'selector', None)
+        if selector == Brewery.BrewerySelectors.CONTRACT.value and attrs.get('water_ph'):
+            raise serializers.ValidationError("Contract brewery cannot have water_ph")
+        return attrs
 
 
 class WorkerSerializer(serializers.ModelSerializer):
