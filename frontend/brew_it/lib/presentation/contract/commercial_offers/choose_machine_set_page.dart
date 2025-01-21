@@ -171,7 +171,7 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Text(
-                        "Wybierz kocioł:",
+                        "Wybierz kocioł",
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                       Text(

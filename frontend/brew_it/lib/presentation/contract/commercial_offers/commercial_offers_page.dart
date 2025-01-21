@@ -4,6 +4,7 @@ import 'package:brew_it/presentation/_common/widgets/main_button.dart';
 import 'package:brew_it/presentation/_common/widgets/my_icon_button.dart';
 import 'package:brew_it/presentation/contract/commercial_offers/choose_machine_set_page.dart';
 import 'package:brew_it/presentation/contract/commercial_offers/commercial_offers_filter_page.dart';
+import 'package:flutter/material.dart';
 
 class CommercialOffersPage extends TablePageTemplate {
   CommercialOffersPage([Map? filtersData, List? filteredElements])
@@ -41,5 +42,55 @@ class CommercialOffersPage extends TablePageTemplate {
             ],
             apiString: "/breweries/",
             jsonFields: CommercialOffersFieldNames().jsonFieldNamesTable,
-            passedElements: filteredElements);
+            passedElements: filteredElements,
+            filtersPanel: const FiltersPanel());
+}
+
+class FiltersPanel extends StatefulWidget {
+  const FiltersPanel({super.key});
+
+  @override
+  State<FiltersPanel> createState() => _FiltersPanelState();
+}
+
+class _FiltersPanelState extends State<FiltersPanel> {
+  bool isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return ExpansionPanelList(
+      expansionCallback: (int index, bool currentIsExpanded) {
+        setState(() {
+          isExpanded = !isExpanded;
+        });
+      },
+      children: [
+        ExpansionPanel(
+            headerBuilder: (BuildContext context, bool isExpanded) {
+              return Container(color: Colors.green);
+            },
+            isExpanded: isExpanded,
+            body: const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Column(
+                  children: [
+                    Text('Ogólne'),
+                  ],
+                ),
+                Column(
+                  children: [
+                    Text('Zbiornik'),
+                  ],
+                ),
+                Column(
+                  children: [
+                    Text('Zestaw do warzenia'),
+                  ],
+                ),
+              ],
+            ))
+      ],
+    );
+  }
 }
