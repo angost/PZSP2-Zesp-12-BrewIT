@@ -5,10 +5,11 @@ from rest_framework.response import Response
 from django.http import Http404
 from brewit_api.serializers import AccountSerializer, RegistrationRequestSerializer, EquipmentSerializer,\
      SectorSerializer, BrewerySerializer, EquipmentFilterParametersSerializer, BreweriesFilterParametersSerializer,\
-     ReservationRequestSerializer, ReservationCreateSerializer, ReservationSerializer, RecipeSerializer,\
+     ReservationRequestCreateSerializer, ReservationCreateSerializer, ReservationSerializer, RecipeSerializer,\
      ExecutionLogSerializer, ExecutionLogEditSerializer, BeerTypeSerializer, CleanupSerializer,\
      EquipmentReservationSerializer, SectorEditSerializer, EquipmentEditSerializer, BreweryStatisticsSerializer,\
-     CombinedStatisticsSerializer, BreweryCreateSerializer, BreweryWithAccountSerializer
+     CombinedStatisticsSerializer, BreweryCreateSerializer, BreweryWithAccountSerializer, WorkerSerializer,\
+     ReservationRequestSerializer, EquipmentWithReservationsSerializer
 from rest_framework.reverse import reverse
 from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate, login, logout
@@ -16,7 +17,8 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsProductionBrewery, IsBrewery, IsContractBrewery, IsAdmin
 from .models import Equipment, Sector, Brewery, ReservationRequest, EquipmentReservation, Reservation,\
-                    EqipmentReservationRequest, Recipe, ExecutionLog, BeerType, RegistrationRequest
+                    EqipmentReservationRequest, Recipe, ExecutionLog, BeerType, RegistrationRequest,\
+                    Worker
 # from .auth_class import CsrfExemptSessionAuthentication
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from .filters import BreweryFilter, EquipmentFilter, EquipmentReservationFilter
@@ -281,7 +283,7 @@ class EquipmentFiltered(APIView):
         request=EquipmentFilterParametersSerializer,
         responses={
             200: OpenApiResponse(
-                response=EquipmentSerializer(many=True),
+                response=EquipmentWithReservationsSerializer(many=True),
                 description="List of filtered equipment"
             ),
             400: OpenApiResponse(
@@ -296,7 +298,7 @@ class EquipmentFiltered(APIView):
             data = serializer.validated_data
             data['contract_brewery'] = request.user.get_brewery().brewery_id
             equipment = filter_equipment(data)
-            serializer = EquipmentSerializer(equipment, many=True, context={'request': request})
+            serializer = EquipmentWithReservationsSerializer(equipment, many=True, context={'request': request})
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -369,10 +371,13 @@ class BreweryDetail(APIView):
 
 
 class ReservationRequestList(APIView):
-    serializer_class = ReservationRequestSerializer
+    serializer_class = ReservationRequestCreateSerializer
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated, IsBrewery]
 
+    @extend_schema(
+        responses=ReservationRequestSerializer
+    )
     def get(self, request, format=None):
         if request.user.role == get_user_model().AccountRoles.PRODUCTION.value:
             reservations = ReservationRequest.objects.filter(production_brewery=request.user.get_brewery())
@@ -382,7 +387,7 @@ class ReservationRequestList(APIView):
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = ReservationRequestSerializer(data=request.data,
+        serializer = ReservationRequestCreateSerializer(data=request.data,
                                                   context={'request': request,
                                                            'contract_brewery': request.user.get_brewery()})
         if serializer.is_valid():
@@ -662,3 +667,51 @@ class CombinedStatisticsList(APIView):
         stats = get_combined_statistics()
         serializer = CombinedStatisticsSerializer(stats, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class WorkerList(APIView):
+    serializer_class = WorkerSerializer
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsContractBrewery]
+
+    def get(self, request):
+        workers = Worker.objects.filter(brewery=request.user.get_brewery())
+        serializer = WorkerSerializer(workers, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = WorkerSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class WorkerDetail(APIView):
+    serializer_class = WorkerSerializer
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsContractBrewery]
+
+    def get_object(self, pk):
+        try:
+            return Worker.objects.get(brewery=self.request.user.get_brewery(), pk=pk)
+        except Worker.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk):
+        worker = self.get_object(pk)
+        serializer = WorkerSerializer(worker)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, pk):
+        worker = self.get_object(pk)
+        serializer = WorkerSerializer(worker, data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        worker = self.get_object(pk)
+        worker.delete()
+        return Response({'detail':'Worker deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
