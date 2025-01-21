@@ -34,5 +34,6 @@ class ReservationRequestsPage extends TablePageTemplate {
               ),
             ],
             apiString: "/reservation-requests/",
+            hideFirstField: true,
             jsonFields: ReservationRequestsFieldNames().jsonFieldNamesTable);
 }

@@ -37,5 +37,14 @@ class RecipesPage extends TablePageTemplate {
               ),
             ],
             apiString: "/recipes/",
+            fetchDisplay: [
+              {
+                "fieldKey": "beer_type",
+                "endpoint": "/beer-types/",
+                "idField": "beer_type_id",
+                "displayField": "name",
+              },
+            ],
+            hideFirstField: true,
             jsonFields: RecipesFieldNames().jsonFieldNamesTable);
 }

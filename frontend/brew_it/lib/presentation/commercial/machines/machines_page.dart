@@ -45,5 +45,6 @@ class MachinesPage extends TablePageTemplate {
               ),
             ],
             apiString: "/equipment/",
+            hideFirstField: true,
             jsonFields: MachinesFieldNames().jsonFieldNamesTable);
 }

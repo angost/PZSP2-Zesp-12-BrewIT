@@ -39,5 +39,6 @@ class SectorsPage extends TablePageTemplate {
               ),
             ],
             apiString: "/sectors/",
+            hideFirstField: true,
             jsonFields: SectorsFieldNames().jsonFieldNamesTable);
 }
