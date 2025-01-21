@@ -1,4 +1,5 @@
 import 'package:brew_it/core/helper/field_names.dart';
+import 'package:brew_it/presentation/_common/errors/error_handlers.dart';
 import 'package:brew_it/presentation/_common/templates/table_page_template.dart';
 import 'package:brew_it/presentation/_common/widgets/main_button.dart';
 import 'package:brew_it/presentation/_common/widgets/my_icon_button.dart';
@@ -43,11 +44,13 @@ class CommercialOffersPage extends TablePageTemplate {
             apiString: "/breweries/",
             jsonFields: CommercialOffersFieldNames().jsonFieldNamesTable,
             passedElements: filteredElements,
-            filtersPanel: const FiltersPanel());
+            filtersPanel: FiltersPanel({}));
 }
 
 class FiltersPanel extends StatefulWidget {
-  const FiltersPanel({super.key});
+  FiltersPanel(this.elementData, {super.key});
+
+  Map elementData;
 
   @override
   State<FiltersPanel> createState() => _FiltersPanelState();
@@ -58,38 +61,58 @@ class _FiltersPanelState extends State<FiltersPanel> {
 
   @override
   Widget build(BuildContext context) {
-    return ExpansionPanelList(
-      expansionCallback: (int index, bool currentIsExpanded) {
+    return ExpansionTile(
+      leading: const Icon(Icons.filter_alt),
+      title: const Text("Filtruj"),
+      onExpansionChanged: (bool currentIsExpanded) {
         setState(() {
-          isExpanded = !isExpanded;
+          isExpanded = currentIsExpanded;
         });
       },
+      // trailing: Row(
+      //   children: [
+      //     MainButton(
+      //       "Aplikuj filtry",
+      //       type: "primary_small",
+      //       apiCall: "/breweries/filtered/",
+      //       apiCallType: "post_use_response_data",
+      //       formKey: GlobalKey<FormState>(),
+      //       navigateToPage: (Map elementData, List filteredElements) {
+      //         return CommercialOffersPage(elementData, filteredElements);
+      //       },
+      //       dataForPage: widget.elementData,
+      //       errorMessages: CommercialOffersFiltersFieldNames().errorMessages,
+      //       customErrorHandler: handleMultipleErrors,
+      //     ),
+      //     MainButton(
+      //       "Anuluj",
+      //       type: "secondary_small",
+      //       // pop: true,
+      //     )
+      //   ],
+      // ),
       children: [
-        ExpansionPanel(
-            headerBuilder: (BuildContext context, bool isExpanded) {
-              return Container(color: Colors.green);
-            },
-            isExpanded: isExpanded,
-            body: const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Column(
-                  children: [
-                    Text('Ogólne'),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Text('Zbiornik'),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Text('Zestaw do warzenia'),
-                  ],
-                ),
-              ],
-            ))
+        SizedBox(height: 300, child: CommercialOffersFilterPage({}))
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        //   children: [
+        //     Column(
+        //       children: [
+        //         Text('Ogólne'),
+        //       ],
+        //     ),
+        //     Column(
+        //       children: [
+        //         Text('Zbiornik'),
+        //       ],
+        //     ),
+        //     Column(
+        //       children: [
+        //         Text('Zestaw do warzenia'),
+        //       ],
+        //     ),
+        //   ],
+        // )
       ],
     );
   }
