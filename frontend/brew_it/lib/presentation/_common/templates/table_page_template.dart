@@ -136,12 +136,21 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
                           ? _formatDateForDisplay(value)
                           : displayValue;
 
-                      return Expanded(
-                        flex: 6,
-                        child: isLinkedField
-                            ? GestureDetector(
-                          onTap: () {
-                            final navigateToPage = widget.linkedFields![field];
+                      bool isBooleanField = ((formattedValue == "true") || (formattedValue == "false")) ? true : false;
+                      Widget fieldWidget;
+
+                      if (isBooleanField) {
+                        // Render as a checkbox or empty box
+                        final boolValue = formattedValue.toLowerCase() == "true";
+                        fieldWidget = Icon(
+                          boolValue ? Icons.check_box : Icons.check_box_outline_blank,
+                          color: boolValue ? Colors.green : Colors.grey,
+                        );
+                      } else if (isLinkedField) {
+                        // Render as a clickable link
+                        fieldWidget = GestureDetector(
+                          onTap: () async {
+                            final navigateToPage = widget.linkedFields?[field];
                             if (navigateToPage != null) {
                               await fetchAndNavigate(
                                 field == "reservation_id" ? "/reservations" : "/${field}s",
@@ -159,13 +168,18 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
                               decoration: TextDecoration.underline,
                             ),
                           ),
-                        )
-                            : Text(
+                        );
+                      } else {
+                        // Render as plain text
+                        fieldWidget = Text(
                           formattedValue,
                           textAlign: TextAlign.center,
-                        ),
+                        );
+                      }
+                      return Expanded(
+                        flex: 6,
+                        child: fieldWidget,
                       );
-
                     }).toList();
                   }
 
