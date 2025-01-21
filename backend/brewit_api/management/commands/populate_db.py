@@ -5,7 +5,8 @@ from django.contrib.auth.hashers import make_password
 
 from brewit_api.models import (
     Account, BeerType, Brewery, Sector, Equipment,
-    EquipmentReservation, Recipe, Reservation, ExecutionLog, Vatpackaging
+    EquipmentReservation, Recipe, Reservation, ExecutionLog, Vatpackaging,
+    Worker
 )
 
 class Command(BaseCommand):
@@ -15,6 +16,7 @@ class Command(BaseCommand):
         self.create_accounts()
         self.create_beer_types()
         self.create_breweries()
+        self.create_workers()
         self.create_sectors()
         self.create_equipment()
         self.create_reservations()
@@ -81,6 +83,21 @@ class Command(BaseCommand):
         ])
         print('Breweries created.')
 
+    def create_workers(self):
+        if Worker.objects.exists():
+            return
+
+        breweries = Brewery.objects.filter(selector="CONTR").all()
+        Worker.objects.bulk_create([
+            Worker(first_name='Alice', last_name='Smith', identificator='1234567890', brewery=breweries[0]),
+            Worker(first_name='Bob', last_name='Johnson', identificator='0987654321', brewery=breweries[0]),
+            Worker(first_name='Charlie', last_name='Brown', identificator='12781377231', brewery=breweries[1]),
+            Worker(first_name='David', last_name='White', identificator='1261377231', brewery=breweries[1]),
+            Worker(first_name='Eve', last_name='Black', identificator='1221471231', brewery=breweries[2]),
+            Worker(first_name='Frank', last_name='Green', identificator='1214847231', brewery=breweries[2]),
+        ])
+        print('Workers created.')
+
     def create_sectors(self):
         if Sector.objects.exists():
             return
@@ -123,10 +140,16 @@ class Command(BaseCommand):
             return
 
         breweries = Brewery.objects.all()
+        workers = Worker.objects.all()
         Reservation.objects.bulk_create([
-            Reservation(price=5000, brew_size=1000, authorised_workers='Alice, Bob', production_brewery=breweries[0], contract_brewery=breweries[3], allows_sector_share=True),
-            Reservation(price=7000, brew_size=700, authorised_workers='Alice, Bob', production_brewery=breweries[0], contract_brewery=breweries[4], allows_sector_share=True),
+            Reservation(price=5000, brew_size=1000, production_brewery=breweries[0],
+                        contract_brewery=breweries[3], allows_sector_share=True),
+            Reservation(price=7000, brew_size=700, production_brewery=breweries[0],
+                        contract_brewery=breweries[4], allows_sector_share=True),
         ])
+        reservations = Reservation.objects.all()
+        reservations[0].authorised_workers.set([workers[0], workers[1]])
+        reservations[1].authorised_workers.set([workers[2], workers[3]])
         print('Reservations created.')
 
     def create_equipment_reservations(self):
@@ -135,7 +158,7 @@ class Command(BaseCommand):
 
         equipment = Equipment.objects.all()
         reservations = Reservation.objects.all()
-        start_date = datetime(2025, 2, 1, 12, 0, 0)
+        start_date = datetime(2025, 2, 1, 12, 0, 0).date()
         EquipmentReservation.objects.bulk_create([
             EquipmentReservation(selector=EquipmentReservation.EquipmentSelectors.BREW,
                                  start_date=start_date, end_date=start_date + timedelta(days=1),
@@ -172,7 +195,9 @@ class Command(BaseCommand):
         beer_types = BeerType.objects.all()
         breweries = Brewery.objects.all()
         Recipe.objects.bulk_create([
-            Recipe(recipe_body='Add hops and yeast. Ferment for 2 weeks.', beer_type=beer_types[0], contract_brewery=breweries[3]),
+            Recipe(name='Recipe 1', mashing_body='Mashing body 1', lautering_body='Lautering body 1',
+                   boiling_body='Boiling body 1', fermentation_body='Fermentation body 1',
+                   lagerring_body='Lagerring body 1', beer_type=beer_types[0], contract_brewery=breweries[3]),
         ])
         print('Recipes created.')
 
@@ -183,7 +208,11 @@ class Command(BaseCommand):
         recipes = Recipe.objects.all()
         reservations = Reservation.objects.all()
         ExecutionLog.objects.bulk_create([
-            ExecutionLog(start_date=timezone.now(), end_date=timezone.now() + timedelta(days=2), is_successful=True, log='Batch completed.', recipe=recipes[0], reservation=reservations[0]),
+            ExecutionLog(start_date=timezone.now().date(), end_date=timezone.now().date() + timedelta(days=2),
+                         is_successful=True, recipe=recipes[0], reservation=reservations[0],
+                         mashing_log='Mashing log', lautering_log='Lautering log',
+                         boiling_log='Boiling log', fermentation_log='Fermentation log',
+                         lagerring_log='Lagerring log'),
         ])
         print('Execution logs created.')
 

@@ -1,6 +1,7 @@
 from .models import Account, Brewery, Equipment, Sector, Vatpackaging,\
                     EqipmentReservationRequest, ReservationRequest, EquipmentReservation,\
-                    Reservation, Recipe, ExecutionLog, BeerType, RegistrationRequest
+                    Reservation, Recipe, ExecutionLog, BeerType, RegistrationRequest,\
+                    Worker
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -10,6 +11,7 @@ from datetime import timedelta
 import math
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.password_validation import validate_password
+from secrets import token_hex
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -24,7 +26,9 @@ class RegistrationRequestSerializer(serializers.ModelSerializer):
         model = RegistrationRequest
         fields = '__all__'
         extra_kwargs = {'password': {'write_only': True},
-                        'role': {'read_only': True},}
+                        'role': {'read_only': True},
+                        'water_ph': {'read_only': True},
+                        }
 
 
     def validate_email(self, value):
@@ -49,9 +53,7 @@ class RegistrationRequestSerializer(serializers.ModelSerializer):
 
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError("Passwords do not match")
-        elif attrs['selector'] == Brewery.BrewerySelectors.PRODUCTION.value and not attrs['water_ph']:
-            raise serializers.ValidationError("Production brewery must specify water_ph")
-        elif attrs['selector'] == Brewery.BrewerySelectors.PRODUCTION.value and not attrs['nip']:
+        if attrs['selector'] == Brewery.BrewerySelectors.PRODUCTION.value and not attrs.get('nip'):
             raise serializers.ValidationError("Production brewery must specify nip")
         return attrs
 
@@ -62,8 +64,8 @@ class RegistrationRequestSerializer(serializers.ModelSerializer):
                                                   role=validated_data['selector'],
                                                   selector=validated_data['selector'],
                                                   name=validated_data['name'],
-                                                  nip=validated_data['nip'],
-                                                  water_ph=validated_data.get('water_ph'))
+                                                  nip=validated_data['nip'])
+
 
 
 class BreweryCreateSerializer(serializers.Serializer):
@@ -130,6 +132,7 @@ class EquipmentSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("You cannot add equipment to a sector from another brewery")
         return attrs
 
+
 class EquipmentEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = Equipment
@@ -142,17 +145,43 @@ class BrewerySerializer(serializers.ModelSerializer):
         fields = '__all__'
         extra_kwargs = {'account': {'read_only': True}}
 
+class BreweryEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Brewery
+        fields = ['name', 'nip', 'water_ph']
+
+    def validate(self, attrs):
+        selector = getattr(self.instance, 'selector', None)
+        if selector == Brewery.BrewerySelectors.CONTRACT.value and attrs.get('water_ph'):
+            raise serializers.ValidationError("Contract brewery cannot have water_ph")
+        return attrs
+
+
+class WorkerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Worker
+        fields = '__all__'
+        extra_kwargs = {
+            'identificator': {'read_only': True},
+            'brewery': {'read_only': True}
+        }
+
+    def create(self, validated_data):
+        identificator = token_hex(16)
+        brewery = self.context.get('request').user.get_brewery()
+        return Worker.objects.create(identificator=identificator, brewery=brewery, **validated_data)
+
 
 class EquipmentFilterParametersSerializer(serializers.Serializer):
-    start_date = serializers.DateTimeField(required=True)
-    end_date = serializers.DateTimeField(required=True)
-    capacity = serializers.IntegerField(required=True)
+    start_date = serializers.DateField(required=False)
+    end_date = serializers.DateField(required=False)
+    capacity = serializers.IntegerField(required=False)
     min_temperature = serializers.DecimalField(decimal_places=2, max_digits=5, required=False)
     max_temperature = serializers.DecimalField(decimal_places=2, max_digits=5, required=False)
-    production_brewery = serializers.IntegerField(required=True)
-    uses_bacteria = serializers.BooleanField(required=True)
-    selector = serializers.CharField(required=True)
-    allows_sector_share = serializers.BooleanField(required=True)
+    production_brewery = serializers.IntegerField(required=False)
+    uses_bacteria = serializers.BooleanField(required=False)
+    selector = serializers.CharField(required=False)
+    allows_sector_share = serializers.BooleanField(required=False)
     package_type = serializers.CharField(required=False)
 
     def validate_production_brewery(self, value):
@@ -169,31 +198,21 @@ class EquipmentFilterParametersSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid selector")
         return value
 
-    def validate(self, attrs):
-        if attrs['selector'] == Equipment.EquipmentSelectors.VAT.value:
-            if attrs.get('package_type') is None:
-                raise serializers.ValidationError("Package type is required for vat")
-            if attrs.get('package_type') not in [el for el in Vatpackaging.PackagingTypes.values]:
-                raise serializers.ValidationError("Wrong package type")
-            if attrs.get('min_temperature') is None or attrs.get('max_temperature') is None:
-                raise serializers.ValidationError("Min and max temperature are required for vat")
-        return attrs
-
 
 class BreweriesFilterParametersSerializer(serializers.Serializer):
-    vat_start_date = serializers.DateTimeField(required=True)
-    vat_end_date = serializers.DateTimeField(required=True)
-    vat_capacity = serializers.IntegerField(required=True)
-    vat_min_temperature = serializers.DecimalField(decimal_places=2, max_digits=5, required=True)
-    vat_max_temperature = serializers.DecimalField(decimal_places=2, max_digits=5, required=True)
-    vat_package_type = serializers.CharField(required=True)
-    brewset_start_date = serializers.DateTimeField(required=True)
-    brewset_end_date = serializers.DateTimeField(required=True)
-    brewset_capacity = serializers.IntegerField(required=True)
-    uses_bacteria = serializers.BooleanField(required=True)
-    allows_sector_share = serializers.BooleanField(required=True)
-    water_ph_min = serializers.DecimalField(decimal_places=1, max_digits=3, required=True)
-    water_ph_max = serializers.DecimalField(decimal_places=1, max_digits=3, required=True)
+    vat_start_date = serializers.DateField(required=False)
+    vat_end_date = serializers.DateField(required=False)
+    vat_capacity = serializers.IntegerField(required=False)
+    vat_min_temperature = serializers.DecimalField(decimal_places=2, max_digits=5, required=False)
+    vat_max_temperature = serializers.DecimalField(decimal_places=2, max_digits=5, required=False)
+    vat_package_type = serializers.CharField(required=False)
+    brewset_start_date = serializers.DateField(required=False)
+    brewset_end_date = serializers.DateField(required=False)
+    brewset_capacity = serializers.IntegerField(required=False)
+    uses_bacteria = serializers.BooleanField(required=False)
+    allows_sector_share = serializers.BooleanField(required=False)
+    water_ph_min = serializers.DecimalField(decimal_places=1, max_digits=3, required=False)
+    water_ph_max = serializers.DecimalField(decimal_places=1, max_digits=3, required=False)
 
     def validate_vat_package_type(self, value):
         if value not in [el for el in Vatpackaging.PackagingTypes.values]:
@@ -218,6 +237,15 @@ class EqipmentReservationRequestSerializer(serializers.ModelSerializer):
 
 
 class ReservationRequestSerializer(serializers.ModelSerializer):
+    equipment_reservation_requests = EqipmentReservationRequestSerializer(many=True)
+    authorised_workers = WorkerSerializer(many=True)
+
+    class Meta:
+        model = ReservationRequest
+        fields = '__all__'
+
+
+class ReservationRequestCreateSerializer(serializers.ModelSerializer):
     equipment_reservation_requests = EqipmentReservationRequestSerializer(many=True)
 
     class Meta:
@@ -260,21 +288,31 @@ class ReservationRequestSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("Sector is already reserved for that period")
         return attrs
 
+    def validate_authorised_workers(self, value):
+        for worker in value:
+            if worker.brewery != self.context.get('contract_brewery'):
+                raise serializers.ValidationError("Worker does not exist")
+        return value
 
     def create(self, validated_data):
-        reservations = validated_data.pop('equipment_reservation_requests')
-        price = 0
-        for reservation in reservations:
-            start = reservation['start_date']
-            end = reservation['end_date']
-            equipment = reservation['equipment']
-            price += equipment.daily_price * math.ceil((end - start).total_seconds() / timedelta(days=1).total_seconds())
-        validated_data['price'] = price
-        reservation = ReservationRequest.objects.create(**validated_data)
-        for reservation_data in reservations:
-            EqipmentReservationRequest.objects.create(reservation_request=reservation, **reservation_data)
-
-        return reservation
+        try:
+            with transaction.atomic():
+                reservations = validated_data.pop('equipment_reservation_requests')
+                workers = validated_data.pop('authorised_workers')
+                price = 0
+                for eq_reservation in reservations:
+                    start = eq_reservation['start_date']
+                    end = eq_reservation['end_date']
+                    equipment = eq_reservation['equipment']
+                    price += equipment.daily_price * math.ceil((end - start).total_seconds() / timedelta(days=1).total_seconds())
+                validated_data['price'] = price
+                reservation = ReservationRequest.objects.create(**validated_data)
+                reservation.authorised_workers.set(workers)
+                for reservation_data in reservations:
+                    EqipmentReservationRequest.objects.create(reservation_request=reservation, **reservation_data)
+                return reservation
+        except Exception as e:
+            raise serializers.ValidationError(str(e))
 
 
 class EquipmentReservationSerializer(serializers.ModelSerializer):
@@ -283,8 +321,16 @@ class EquipmentReservationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class EquipmentWithReservationsSerializer(serializers.ModelSerializer):
+    reservations = EquipmentReservationSerializer(many=True)
+    class Meta:
+        model = Equipment
+        fields = '__all__'
+
+
 class ReservationSerializer(serializers.ModelSerializer):
     equipment_reservations = EquipmentReservationSerializer(many=True)
+    authorised_workers = WorkerSerializer(many=True)
     class Meta:
         model = Reservation
         fields = '__all__'
@@ -302,8 +348,8 @@ class ReservationCreateSerializer(serializers.Serializer):
         if reservation_request is None:
             raise serializers.ValidationError("Reservation request does not exist")
 
-        reservation_request_data = ReservationRequestSerializer(reservation_request).data
-        serializer = ReservationRequestSerializer(data=reservation_request_data,
+        reservation_request_data = ReservationRequestCreateSerializer(reservation_request).data
+        serializer = ReservationRequestCreateSerializer(data=reservation_request_data,
                                                   context={'contract_brewery': reservation_request.contract_brewery})
         serializer.is_valid(raise_exception=True)
 
@@ -312,16 +358,16 @@ class ReservationCreateSerializer(serializers.Serializer):
     def create(self, validated_data):
         try:
             with transaction.atomic():
-                reservation_request = ReservationRequest.objects.prefetch_related(
+                reservation_request = ReservationRequest.objects.prefetch_related('authorised_workers',
                     'equipment_reservation_requests').get(id=validated_data['reservation_request_id'])
                 reservation = Reservation.objects.create(
                     price=reservation_request.price,
                     brew_size=reservation_request.brew_size,
-                    authorised_workers=reservation_request.authorised_workers,
                     production_brewery=reservation_request.production_brewery,
                     contract_brewery=reservation_request.contract_brewery,
-                    allows_sector_share=reservation_request.allows_sector_share
+                    allows_sector_share=reservation_request.allows_sector_share,
                 )
+                reservation.authorised_workers.set(reservation_request.authorised_workers.all())
                 for eq_res_request in reservation_request.equipment_reservation_requests.all():
                     EquipmentReservation.objects.create(
                         selector=EquipmentReservation.EquipmentSelectors.BREW.value,
@@ -366,7 +412,8 @@ class ExecutionLogSerializer(serializers.ModelSerializer):
 class ExecutionLogEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExecutionLog
-        fields = ['log', 'is_successful']
+        fields = ['mashing_log', 'lautering_log', 'boiling_log',
+                  'fermentation_log', 'lagerring_log', 'is_successful']
 
 
 class BeerTypeSerializer(serializers.ModelSerializer):
@@ -412,6 +459,9 @@ class CombinedStatisticsSerializer(serializers.Serializer):
     total_beer_produced = serializers.FloatField()
     total_beer_in_production = serializers.FloatField()
     total_failed_percentage = serializers.FloatField()
+
+
+
 
 
 

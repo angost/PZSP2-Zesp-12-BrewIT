@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from .models import Brewery, Sector, Equipment, Reservation, EquipmentReservation, Vatpackaging,\
-    EqipmentReservationRequest, ReservationRequest, Recipe, ExecutionLog, BeerType, RegistrationRequest
+    EqipmentReservationRequest, ReservationRequest, Recipe, ExecutionLog, BeerType, RegistrationRequest,\
+    Worker
 
 @admin.register(get_user_model())
 class AccountAdmin(admin.ModelAdmin):
@@ -36,7 +37,8 @@ class EquipmentAdmin(admin.ModelAdmin):
 
 @admin.register(Reservation)
 class ReservationAdmin(admin.ModelAdmin):
-    list_display = ['reservation_id', 'price', 'brew_size', 'authorised_workers', 'production_brewery', 'contract_brewery', 'allows_sector_share']
+    list_display = ['reservation_id', 'price', 'brew_size', 'production_brewery',
+                     'contract_brewery', 'allows_sector_share']
     list_per_page = 20
     list_max_show_all = 50
     list_editable = []
@@ -64,21 +66,23 @@ class EqipmentReservationRequestAdmin(admin.ModelAdmin):
 
 @admin.register(ReservationRequest)
 class Reservation(admin.ModelAdmin):
-    list_display = ['id', 'price', 'brew_size', 'authorised_workers', 'production_brewery', 'contract_brewery', 'allows_sector_share']
+    list_display = ['id', 'price', 'brew_size', 'production_brewery',
+                     'contract_brewery', 'allows_sector_share']
     list_per_page = 20
     list_max_show_all = 50
     list_editable = []
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ['recipe_id', 'recipe_body', 'beer_type', 'contract_brewery']
+    list_display = ['recipe_id', 'beer_type', 'contract_brewery', 'name', 'mashing_body',
+                    'lautering_body', 'boiling_body', 'fermentation_body', 'lagerring_body']
     list_per_page = 20
     list_max_show_all = 50
-    list_editable = ['recipe_body']
 
 @admin.register(ExecutionLog)
 class ExecutionLogAdmin(admin.ModelAdmin):
-    list_display = ['log_id', 'start_date', 'end_date', 'is_successful', 'log', 'recipe', 'reservation']
+    list_display = ['log_id', 'start_date', 'end_date', 'is_successful', 'recipe', 'reservation',
+                    'mashing_log', 'lautering_log', 'boiling_log', 'fermentation_log', 'lagerring_log']
     list_per_page = 20
     list_max_show_all = 50
     list_editable = ['is_successful']
@@ -95,3 +99,10 @@ class RegistrationRequestAdmin(admin.ModelAdmin):
     list_display = ['id', 'email', 'role', 'selector', 'name', 'nip', 'water_ph']
     list_per_page = 20
     list_max_show_all = 50
+
+@admin.register(Worker)
+class WorkerAdmin(admin.ModelAdmin):
+    list_display = ['id', 'first_name', 'last_name', 'identificator', 'brewery']
+    list_per_page = 20
+    list_max_show_all = 50
+
