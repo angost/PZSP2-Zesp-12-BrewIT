@@ -265,10 +265,10 @@ class EquipmentList(generics.ListCreateAPIView):
 class EquipmentDetail(APIView):
     serializer_class = EquipmentSerializer
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = [IsAuthenticated, IsProductionBrewery]
+    permission_classes = [IsAuthenticated]
     def get_object(self, pk, request):
         try:
-            return request.user.get_brewery().equipment.get(pk=pk)
+            return Equipment.objects.get(pk=pk)
         except Equipment.DoesNotExist:
             raise Http404
 
