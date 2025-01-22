@@ -219,14 +219,18 @@ class _FilterPageTemplateState extends State<FilterPageTemplate> {
               onSaved: (newValue) {
                 if (editable) {
                   widget.elementData ??= {};
-                  widget.elementData![jsonFieldName] = newValue;
+                  if (newValue != null && newValue.trim().isNotEmpty) {
+                    widget.elementData![jsonFieldName] = newValue.trim();
+                  } else {
+                    // Remove the field if the value is empty
+                    widget.elementData!.remove(jsonFieldName);
+                  }
                 }
               },
               decoration: InputDecoration(
                 labelText: widget.fieldNames[index],
                 border: editable ? null : disabledTextFormFieldTheme.border,
-                fillColor:
-                    editable ? null : disabledTextFormFieldTheme.fillColor,
+                fillColor: editable ? null : disabledTextFormFieldTheme.fillColor,
               ),
               initialValue: fieldValues != null ? fieldValues[index] : "",
               enabled: editable,

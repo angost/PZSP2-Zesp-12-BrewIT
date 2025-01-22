@@ -29,54 +29,71 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
   double chosenBrewsetPrice = 0.0;
   int vatDays = 0;
   int brewsetDays = 0;
+  DateTime? vatStartDate;
+  DateTime? vatEndDate;
+  DateTime? brewsetStartDate;
+  DateTime? brewsetEndDate;
+  int? brewSize;
 
   @override
   void initState() {
     super.initState();
+
+    // Initialize dates from filtersData or set to null
+    vatStartDate = widget.filtersData?["vat_start_date"] != null
+        ? parseDateTime(widget.filtersData!["vat_start_date"])
+        : null;
+    vatEndDate = widget.filtersData?["vat_end_date"] != null
+        ? parseDateTime(widget.filtersData!["vat_end_date"])
+        : null;
+    brewsetStartDate = widget.filtersData?["brewset_start_date"] != null
+        ? parseDateTime(widget.filtersData!["brewset_start_date"])
+        : null;
+    brewsetEndDate = widget.filtersData?["brewset_end_date"] != null
+        ? parseDateTime(widget.filtersData!["brewset_end_date"])
+        : null;
+
+    brewSize = (widget.filtersData?["vat_capacity"] ?? 0) > (widget.filtersData?["brewset_capacity"] ?? 0)
+        ? (widget.filtersData?["vat_capacity"] as int? ?? 0)
+        : (widget.filtersData?["brewset_capacity"] as int? ?? 0);
+
+    vatDays = calculateDays(vatStartDate, vatEndDate);
+    brewsetDays = calculateDays(brewsetStartDate, brewsetEndDate);
+
     fetchData();
 
-    if (widget.filtersData != null) {
-      vatDays = calculateDays(widget.filtersData!["vat_start_date"],
-          widget.filtersData!["vat_end_date"]);
-      brewsetDays = calculateDays(widget.filtersData!["brewset_start_date"],
-          widget.filtersData!["brewset_end_date"]);
-    }
   }
 
-  int calculateDays(String startDate, String endDate) {
-    final start = DateTime.parse(startDate);
-    final end = DateTime.parse(endDate);
-    return end.difference(start).inDays + 1;
+  int calculateDays(DateTime? startDate, DateTime? endDate) {
+    if (startDate == null || endDate == null) {
+      return 0;
+    }
+    return endDate.difference(startDate).inDays + 1;
   }
 
   Future<void> fetchData() async {
     try {
-      if (widget.filtersData == null) {
-        throw DioException(requestOptions: RequestOptions());
-      }
-
-      final Map vatData = {
+      final vatData = {
         "selector": "VAT",
         "production_brewery": widget.commercialId,
-        "start_date": widget.filtersData!["vat_start_date"],
-        "end_date": widget.filtersData!["vat_end_date"],
-        "capacity": widget.filtersData!["vat_capacity"],
-        "min_temperature": widget.filtersData!["vat_min_temperature"],
-        "max_temperature": widget.filtersData!["vat_max_temperature"],
-        "package_type": widget.filtersData!["vat_package_type"],
-        "uses_bacteria": widget.filtersData!["uses_bacteria"],
-        "allows_sector_share": widget.filtersData!["allows_sector_share"],
+        "start_date": parseDate(vatStartDate),
+        "end_date": parseDate(vatEndDate),
+        "capacity": widget.filtersData?["vat_capacity"] ?? 0,
+        "min_temperature": widget.filtersData?["vat_min_temperature"] ?? 0,
+        "max_temperature": widget.filtersData?["vat_max_temperature"] ?? 0,
+        "package_type": widget.filtersData?["vat_package_type"] ?? null,
+        "uses_bacteria": widget.filtersData?["uses_bacteria"] ?? false,
+        "allows_sector_share": widget.filtersData?["allows_sector_share"] ?? false,
       };
 
-      final Map brewsetData = {
+      final brewsetData = {
         "selector": "BREWSET",
         "production_brewery": widget.commercialId,
-        "start_date": widget.filtersData!["brewset_start_date"],
-        "end_date": widget.filtersData!["brewset_end_date"],
-        "capacity": widget.filtersData!["brewset_capacity"],
-        "package_type": widget.filtersData!["vat_package_type"],
-        "uses_bacteria": widget.filtersData!["uses_bacteria"],
-        "allows_sector_share": widget.filtersData!["allows_sector_share"],
+        "start_date": parseDate(brewsetStartDate),
+        "end_date": parseDate(brewsetEndDate),
+        "capacity": widget.filtersData?["brewset_capacity"] ?? 0,
+        "uses_bacteria": widget.filtersData?["uses_bacteria"] ?? false,
+        "allows_sector_share": widget.filtersData?["allows_sector_share"] ?? false,
       };
 
       final responseVat =
@@ -86,7 +103,7 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
           vatElements = responseVat.data;
         });
       } else {
-        print("An error occurred");
+        print("Error fetching VAT data.");
       }
 
       final responseBrewset =
@@ -96,11 +113,59 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
           brewsetElements = responseBrewset.data;
         });
       } else {
-        print("An error occurred");
+        print("Error fetching Brewset data.");
       }
-    } on DioException catch (e) {
-      print("An error occurred: $e");
+    } catch (e) {
+      print("Error occurred: $e");
     }
+  }
+
+  Future<void> _selectDateRange(BuildContext context, bool isVat) async {
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(Duration(days: 365)),
+      initialDateRange: isVat
+          ? DateTimeRange(start: vatStartDate ?? DateTime.now(), end: vatEndDate ?? DateTime.now())
+          : DateTimeRange(
+              start: brewsetStartDate ?? DateTime.now(),
+              end: brewsetEndDate ?? DateTime.now(),
+            ),
+    );
+
+    if (picked != null) {
+      setState(() {
+        if (isVat) {
+          vatStartDate = picked.start;
+          vatEndDate = picked.end;
+          vatDays = calculateDays(vatStartDate, vatEndDate);
+        } else {
+          brewsetStartDate = picked.start;
+          brewsetEndDate = picked.end;
+          brewsetDays = calculateDays(brewsetStartDate, brewsetEndDate);
+        }
+      });
+    }
+  }
+
+  void _applyFilters() {
+      final updatedFilters = {
+        "vat_start_date": vatStartDate?.toIso8601String().substring(0, 10),
+        "vat_end_date": vatEndDate?.toIso8601String().substring(0, 10),
+        "brewset_start_date": brewsetStartDate?.toIso8601String().substring(0, 10),
+        "brewset_end_date": brewsetEndDate?.toIso8601String().substring(0, 10),
+        "vat_capacity": brewSize,
+        "brewset_capacity": brewSize
+      };
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => ChooseMachineSetPage(
+            {"brewery_id": widget.commercialId},
+            updatedFilters,
+          ),
+        ),
+      );
   }
 
   @override
@@ -112,6 +177,45 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            Row(
+              children: [
+                TextButton(
+                  onPressed: () => _selectDateRange(context, true),
+                  child: Text(
+                      "Set VAT Dates: ${vatStartDate?.toLocal().toShortString() ?? 'Start'} - ${vatEndDate?.toLocal().toShortString() ?? 'End'}"),
+                ),
+                TextButton(
+                  onPressed: () => _selectDateRange(context, false),
+                  child: Text(
+                      "Set Brewset Dates: ${brewsetStartDate?.toLocal().toShortString() ?? 'Start'} - ${brewsetEndDate?.toLocal().toShortString() ?? 'End'}"),
+                ),
+              ],
+            ),
+            TextFormField(
+              initialValue: brewSize?.toString(), // Display initial value if brewSize is set
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: "Wielkość warki",
+              ),
+              onChanged: (value) {
+                setState(() {
+                  brewSize = int.tryParse(value);
+                });
+              },
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "Wprowadź wielkość warki"; //
+                }
+                if (int.tryParse(value) == null) {
+                  return "Wprowadź prawidłową liczbę";
+                }
+                return null;
+              },
+            ),
+            ElevatedButton(
+              onPressed: _applyFilters,
+              child: Text("Aplikuj Filtry"),
+            ),
             Expanded(
               flex: 1,
               child: Row(
@@ -132,16 +236,16 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
                             widget.filtersData!["allows_sector_share"],
                         "price": (chosenBrewsetPrice * brewsetDays) +
                             (chosenVatPrice * vatDays),
+                        "brew_size": brewSize,
                         "equipment_reservation_requests": [
                           {
-                            "start_date": widget.filtersData!["vat_start_date"],
-                            "end_date": widget.filtersData!["vat_end_date"],
+                            "start_date": parseDate(vatStartDate),
+                            "end_date": parseDate(vatEndDate),
                             "equipment": chosenVatId
                           },
                           {
-                            "start_date":
-                                widget.filtersData!["brewset_start_date"],
-                            "end_date": widget.filtersData!["brewset_end_date"],
+                            "start_date": parseDate(brewsetStartDate),
+                            "end_date": parseDate(brewsetEndDate),
                             "equipment": chosenBrewsetId
                           }
                         ],
@@ -291,4 +395,37 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
       ),
     );
   }
+}
+
+
+extension DateShortString on DateTime {
+  String toShortString() {
+    return "${this.day}/${this.month}/${this.year}";
+  }
+}
+
+String? parseDate(DateTime? pickedDate) {
+  if (pickedDate == null) {
+    return null;
+  }
+  // Ensure only the date is used, ignoring the time component
+  return "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+}
+
+DateTime? parseDateTime(String? date) {
+  if (date == null || date.isEmpty) return null;
+
+  try {
+    final parts = date.split("-");
+    if (parts.length == 3) {
+      final year = int.parse(parts[0]);
+      final month = int.parse(parts[1]);
+      final day = int.parse(parts[2]);
+      return DateTime(year, month, day);
+    }
+  } catch (e) {
+    print("Error parsing date: $e");
+  }
+
+  return null; // Return null if parsing fails
 }

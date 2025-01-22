@@ -26,7 +26,8 @@ class CommercialOffersPage extends TablePageTemplate {
             apiString: "/breweries/",
             jsonFields: CommercialOffersFieldNames().jsonFieldNamesTable,
             passedElements: filteredElements,
-            filtersPanel: FiltersPanel(filtersData));
+            filtersPanel: FiltersPanel(filtersData),
+            hideFirstField: true);
 }
 
 class FiltersPanel extends StatefulWidget {
