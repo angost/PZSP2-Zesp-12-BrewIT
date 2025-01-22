@@ -2,8 +2,9 @@ import 'package:brew_it/core/theme/colors.dart';
 import 'package:brew_it/injection_container.dart';
 import 'package:brew_it/presentation/_common/widgets/main_button.dart';
 import 'package:brew_it/presentation/_common/widgets/my_app_bar.dart';
+import 'package:brew_it/presentation/_common/widgets/my_icon_button.dart';
 import 'package:brew_it/presentation/contract/commercial_offers/reservation_request_add_page.dart';
-import 'package:brew_it/presentation/contract/commercial_offers/details_page.dart';
+import 'package:brew_it/presentation/contract/commercial_offers/machine_details_page.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
@@ -79,7 +80,7 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
       };
 
       final responseVat =
-      await getIt<Dio>().post("/equipment/filtered/", data: vatData);
+          await getIt<Dio>().post("/equipment/filtered/", data: vatData);
       if (responseVat.statusCode == 200) {
         setState(() {
           vatElements = responseVat.data;
@@ -89,7 +90,7 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
       }
 
       final responseBrewset =
-      await getIt<Dio>().post("/equipment/filtered/", data: brewsetData);
+          await getIt<Dio>().post("/equipment/filtered/", data: brewsetData);
       if (responseBrewset.statusCode == 200) {
         setState(() {
           brewsetElements = responseBrewset.data;
@@ -100,15 +101,6 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
     } on DioException catch (e) {
       print("An error occurred: $e");
     }
-  }
-
-  void showMachineDetails(Map machineData) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => DetailsPage(elementData: machineData),
-      ),
-    );
   }
 
   @override
@@ -137,8 +129,9 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
                       return ReservationRequestAddPage({
                         "production_brewery": widget.commercialId,
                         "allows_sector_share":
-                        widget.filtersData!["allows_sector_share"],
-                        "price": (chosenBrewsetPrice * brewsetDays) + (chosenVatPrice * vatDays),
+                            widget.filtersData!["allows_sector_share"],
+                        "price": (chosenBrewsetPrice * brewsetDays) +
+                            (chosenVatPrice * vatDays),
                         "equipment_reservation_requests": [
                           {
                             "start_date": widget.filtersData!["vat_start_date"],
@@ -147,7 +140,7 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
                           },
                           {
                             "start_date":
-                            widget.filtersData!["brewset_start_date"],
+                                widget.filtersData!["brewset_start_date"],
                             "end_date": widget.filtersData!["brewset_end_date"],
                             "equipment": chosenBrewsetId
                           }
@@ -171,7 +164,7 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Text(
-                        "Wybierz kocioł:",
+                        "Wybierz kocioł",
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                       Text(
@@ -179,6 +172,9 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                     ],
+                  ),
+                  const SizedBox(
+                    height: 20,
                   ),
                   Row(
                     children: [
@@ -191,15 +187,23 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
                           },
                           itemBuilder: (context, index) {
                             final vat = vatElements[index];
-                            final vatPrice = double.tryParse(vat["daily_price"]) ?? 0.0;
+                            final vatPrice =
+                                double.tryParse(vat["daily_price"]) ?? 0.0;
                             final vatId = vat["equipment_id"];
                             return Row(
                               children: [
-                                GestureDetector(
-                                  onTap: () => showMachineDetails(vat),
-                                  child: Text(vat["name"]),
+                                Text(vat["name"]),
+                                Text(
+                                    " - ${vatPrice.toStringAsFixed(2)} PLN/dzień"),
+                                const SizedBox(
+                                  width: 40,
                                 ),
-                                Text(" - ${vatPrice.toStringAsFixed(2)} PLN/dzień"),
+                                MyIconButton(
+                                  type: "info",
+                                  navigateToPage: () {
+                                    return MachineDetailsPage(elementData: vat);
+                                  },
+                                ),
                                 IconButton(
                                   onPressed: () {
                                     setState(() {
@@ -231,11 +235,19 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
                             final brewsetId = brewset["equipment_id"];
                             return Row(
                               children: [
-                                GestureDetector(
-                                  onTap: () => showMachineDetails(brewset),
-                                  child: Text(brewset["name"]),
+                                Text(brewset["name"]),
+                                Text(
+                                    " - ${brewsetPrice.toStringAsFixed(2)} PLN/dzień"),
+                                const SizedBox(
+                                  width: 40,
                                 ),
-                                Text(" - ${brewsetPrice.toStringAsFixed(2)} PLN/dzień"),
+                                MyIconButton(
+                                  type: "info",
+                                  navigateToPage: () {
+                                    return MachineDetailsPage(
+                                        elementData: brewset);
+                                  },
+                                ),
                                 IconButton(
                                   onPressed: () {
                                     setState(() {
@@ -244,8 +256,7 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
                                     });
                                   },
                                   icon: const Icon(Icons.check),
-                                  color: chosenBrewsetId ==
-                                      brewsetId
+                                  color: chosenBrewsetId == brewsetId
                                       ? Colors.green
                                       : primaryTransparentColor,
                                 ),
@@ -256,7 +267,7 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
+                  const Spacer(),
                   Text(
                     "Dzienna cena wypożyczenia kadzi: ${chosenVatPrice.toStringAsFixed(2)} PLN",
                   ),
@@ -269,6 +280,9 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
                   Text(
                     "Cena wypożyczenia zestawu do warzenia (${chosenBrewsetPrice.toStringAsFixed(2)} PLN x $brewsetDays dni): ${(chosenBrewsetPrice) * brewsetDays} PLN",
                   ),
+                  const SizedBox(
+                    height: 50,
+                  )
                 ],
               ),
             ),
