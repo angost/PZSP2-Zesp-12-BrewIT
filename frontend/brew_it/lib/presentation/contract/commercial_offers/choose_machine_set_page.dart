@@ -83,7 +83,7 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
         "max_temperature": widget.filtersData?["vat_max_temperature"] ?? 0,
         "package_type": widget.filtersData?["vat_package_type"] ?? null,
         "uses_bacteria": widget.filtersData?["uses_bacteria"] ?? false,
-        "allows_sector_share": widget.filtersData?["allows_sector_share"] ?? false,
+        "allows_sector_share": widget.filtersData?["allows_sector_share"] ?? true,
       };
 
       final brewsetData = {
@@ -93,7 +93,7 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
         "end_date": parseDate(brewsetEndDate),
         "capacity": widget.filtersData?["brewset_capacity"] ?? 0,
         "uses_bacteria": widget.filtersData?["uses_bacteria"] ?? false,
-        "allows_sector_share": widget.filtersData?["allows_sector_share"] ?? false,
+        "allows_sector_share": widget.filtersData?["allows_sector_share"] ?? true,
       };
 
       final responseVat =
@@ -175,91 +175,152 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
       body: Padding(
         padding: const EdgeInsets.all(50),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 TextButton(
                   onPressed: () => _selectDateRange(context, true),
                   child: Text(
-                      "Set VAT Dates: ${vatStartDate?.toLocal().toShortString() ?? 'Start'} - ${vatEndDate?.toLocal().toShortString() ?? 'End'}"),
+                      "Daty wypożyczenia kadzi: ${vatStartDate?.toLocal().toShortString() ?? 'Początek'} - ${vatEndDate?.toLocal().toShortString() ?? 'Koniec'}"),
                 ),
                 TextButton(
                   onPressed: () => _selectDateRange(context, false),
                   child: Text(
-                      "Set Brewset Dates: ${brewsetStartDate?.toLocal().toShortString() ?? 'Start'} - ${brewsetEndDate?.toLocal().toShortString() ?? 'End'}"),
+                      "Daty wypożyczenia zestawu: ${brewsetStartDate?.toLocal().toShortString() ?? 'Początek'} - ${brewsetEndDate?.toLocal().toShortString() ?? 'Koniec'}"),
                 ),
               ],
             ),
-            TextFormField(
-              initialValue: brewSize?.toString(), // Display initial value if brewSize is set
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: "Wielkość warki",
+            SizedBox(
+              width: 200.0, // Set your desired width
+              child: TextFormField(
+                initialValue: brewSize?.toString(), // Display initial value if brewSize is set
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: "Wielkość warki",
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    brewSize = int.tryParse(value);
+                  });
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Wprowadź wielkość warki"; //
+                  }
+                  if (int.tryParse(value) == null) {
+                    return "Wprowadź prawidłową liczbę";
+                  }
+                  return null;
+                },
               ),
-              onChanged: (value) {
-                setState(() {
-                  brewSize = int.tryParse(value);
-                });
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "Wprowadź wielkość warki"; //
-                }
-                if (int.tryParse(value) == null) {
-                  return "Wprowadź prawidłową liczbę";
-                }
-                return null;
-              },
             ),
             ElevatedButton(
               onPressed: _applyFilters,
               child: Text("Aplikuj Filtry"),
             ),
-            Expanded(
-              flex: 1,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    "Wybierz zestaw urządzeń:",
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  const Spacer(),
-                  MainButton(
-                    "Wybierz",
-                    type: "primary_small",
-                    navigateToPage: () {
-                      return ReservationRequestAddPage({
-                        "production_brewery": widget.commercialId,
-                        "allows_sector_share":
-                            widget.filtersData!["allows_sector_share"],
-                        "price": (chosenBrewsetPrice * brewsetDays) +
-                            (chosenVatPrice * vatDays),
-                        "brew_size": brewSize,
-                        "equipment_reservation_requests": [
-                          {
-                            "start_date": parseDate(vatStartDate),
-                            "end_date": parseDate(vatEndDate),
-                            "equipment": chosenVatId
-                          },
-                          {
-                            "start_date": parseDate(brewsetStartDate),
-                            "end_date": parseDate(brewsetEndDate),
-                            "equipment": chosenBrewsetId
-                          }
-                        ],
-                      });
+    Expanded(
+      flex: 1,
+      child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+        Text(
+          "Wybierz zestaw urządzeń:",
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+            const Spacer(),
+            MainButton(
+              "Wybierz",
+              type: "primary_small",
+              navigateToPage: () {
+                // Perform validation
+                bool isValid = true;
+                List<String> errorMessages = [];
+
+                if (vatStartDate == null || vatEndDate == null) {
+                  isValid = false;
+                  errorMessages.add("Proszę wprowadzić daty dla Kadzi.");
+                }
+                if (brewsetStartDate == null || brewsetEndDate == null) {
+                  isValid = false;
+                  errorMessages.add("Proszę wprowadzić daty dla Zestawu do warzenia.");
+                }
+                if (chosenVatId == -1) {
+                  isValid = false;
+                  errorMessages.add("Proszę wybrać Kadź.");
+                }
+                if (chosenBrewsetId == -1) {
+                  isValid = false;
+                  errorMessages.add("Proszę wybrać urządzenie zestawu do warzenia.");
+                }
+                if (brewSize! <= 0) {
+                  isValid = false;
+                  errorMessages.add("Proszę podać wielkość warki i zaaplikować filtry.");
+                }
+
+                if (!isValid) {
+                  // Show error dialog with all messages
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text("Błąd"),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: errorMessages
+                                .map((message) => Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text("• ", style: TextStyle(fontWeight: FontWeight.bold)),
+                                Expanded(child: Text(message)),
+                              ],
+                            ))
+                                .toList(),
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                              child: const Text("OK"),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  });
+                  return null; // Explicitly return null for clarity
+                }
+
+                // Return the next page widget if valid
+                return ReservationRequestAddPage({
+                  "production_brewery": widget.commercialId,
+                  "allows_sector_share": true,
+                  "price": (chosenBrewsetPrice * brewsetDays) +
+                      (chosenVatPrice * vatDays),
+                  "brew_size": brewSize,
+                  "equipment_reservation_requests": [
+                    {
+                      "start_date": parseDate(vatStartDate),
+                      "end_date": parseDate(vatEndDate),
+                      "equipment": chosenVatId
                     },
-                  ),
-                  MainButton(
-                    "Anuluj",
-                    type: "secondary_small",
-                    pop: true,
-                  ),
-                ],
-              ),
+                    {
+                      "start_date": parseDate(brewsetStartDate),
+                      "end_date": parseDate(brewsetEndDate),
+                      "equipment": chosenBrewsetId
+                    }
+                  ],
+                });
+              },
             ),
+            MainButton(
+              "Anuluj",
+              type: "secondary_small",
+              pop: true,
+            ),
+          ],
+      ),
+    ),
             Expanded(
               flex: 8,
               child: Column(
@@ -268,7 +329,7 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Text(
-                        "Wybierz kocioł",
+                        "Wybierz kadź",
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                       Text(
