@@ -5,6 +5,8 @@ import 'package:brew_it/presentation/_common/widgets/my_icon_button.dart';
 import 'package:brew_it/presentation/contract/production_processes/production_process_add_page.dart';
 import 'package:brew_it/presentation/contract/production_processes/production_process_details_page.dart';
 import 'package:brew_it/presentation/contract/production_processes/production_process_edit_page.dart';
+import 'package:brew_it/presentation/contract/recipes/recipe_details_page.dart';
+import 'package:brew_it/presentation/contract/reservations/reservation_details_page.dart';
 
 class ProductionProcessesPage extends TablePageTemplate {
   ProductionProcessesPage({super.key})
@@ -30,5 +32,10 @@ class ProductionProcessesPage extends TablePageTemplate {
               )
             ],
             apiString: "/execution-logs/",
+            hideFirstField: true,
+            linkedFields: {
+              "reservation": (elementData) => ReservationDetailsPage(elementData),
+              "recipe": (elementData) => RecipeDetailsPage(elementData),
+            },
             jsonFields: ProductionProcessesFieldNames().jsonFieldNamesTable);
 }

@@ -12,9 +12,7 @@ class RecipeDetailsPage extends DetailsAddEditPageTemplate {
               MainButton(
                 "Powrót",
                 type: "primary_small",
-                navigateToPage: () {
-                  return RecipesPage();
-                },
+                pop: true,
               )
             ],
             options: [
@@ -37,5 +35,7 @@ class RecipeDetailsPage extends DetailsAddEditPageTemplate {
             ],
             fieldNames: RecipesFieldNames().fieldNames,
             jsonFieldNames: RecipesFieldNames().jsonFieldNames,
+            fieldTypes: RecipesFieldNames().fieldTypes,
+            fetchOptions: RecipesFieldNames().fetchOptions,
             elementData: elementData);
 }

@@ -198,12 +198,16 @@ class ProductionProcessesFieldNames extends StandardFieldNames {
           "Data początkowa",
           "Data końcowa",
           "Czy udany",
+          "Rezerwacja",
+          "Przepis",
           "Operacje"
         ], jsonFieldNamesTable: [
           "log_id",
           "start_date",
           "end_date",
-          "is_successful"
+          "is_successful",
+          "reservation",
+          "recipe"
         ], fieldTypes: [
           "DatePickerField",
           "DatePickerField",
@@ -508,7 +512,7 @@ class ReservationsContractFieldNames extends StandardFieldNames {
           "allows_sector_share",
         ], fieldTypes: [
           "TextField",
-          "TextField",
+          "DisplayField",
           "TextField",
           "TextField",
           "BooleanField",

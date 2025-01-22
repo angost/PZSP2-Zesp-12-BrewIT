@@ -15,6 +15,9 @@ class TablePageTemplate extends StatefulWidget {
       this.apiString,
       this.jsonFields,
       this.passedElements,
+      this.fetchDisplay,
+      this.hideFirstField = false,
+      this.linkedFields = const {},
       this.filtersPanel,
       super.key});
 
@@ -25,6 +28,9 @@ class TablePageTemplate extends StatefulWidget {
   final String? apiString;
   final List<String>? jsonFields;
   final List? passedElements;
+  final List<Map<String, String>>? fetchDisplay;
+  final bool hideFirstField;
+  final Map<String, Function(Map elementData)>? linkedFields;
   final FiltersPanel? filtersPanel;
 
   @override
@@ -33,6 +39,7 @@ class TablePageTemplate extends StatefulWidget {
 
 class _TablePageTemplateState extends State<TablePageTemplate> {
   List elements = [];
+  Map<String, Map<String, String>> fetchedFieldValues = {};
 
   @override
   void initState() {
@@ -44,6 +51,7 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
     } else if (widget.apiString != null && widget.apiString != "") {
       fetchData();
     }
+    fetchFieldValues();
   }
 
   Future<void> fetchData() async {
@@ -96,7 +104,7 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
                 // Nagłówki tabeli
                 Row(
                   children: [
-                    ...widget.headers.map(
+                    ...widget.headers.skip(widget.hideFirstField ? 1 : 0).map(
                       (header) => Expanded(
                         flex: 6,
                         child: Text(
@@ -120,20 +128,65 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
 
                       // Generowanie wartości pól
                       if (widget.jsonFields != null) {
-                        fieldValues = widget.jsonFields!.map((field) {
+                        fieldValues = widget.jsonFields!
+                        .skip(widget.hideFirstField ? 1 : 0)
+                        .map((field) {
+                      final isLinkedField = widget.linkedFields!.containsKey(field);
                           final value = element[field]?.toString() ?? '';
+                          final displayValue = fetchedFieldValues.containsKey(field) && fetchedFieldValues[field]!.containsKey(value)
+                          ? fetchedFieldValues[field]![value]!
+                          : value;
                           final formattedValue = _isIso8601Date(value)
                               ? _formatDateForDisplay(value)
-                              : value;
-                          return Expanded(
-                            flex: 6,
-                            child: Text(
-                              formattedValue,
-                              textAlign: TextAlign.center,
+                              : displayValue;
+
+
+                          bool isBooleanField = ((formattedValue == "true") || (formattedValue == "false")) ? true : false;
+                      Widget fieldWidget;
+
+                      if (isBooleanField) {
+                        // Render as a checkbox or empty box
+                        final boolValue = formattedValue.toLowerCase() == "true";
+                        fieldWidget = Icon(
+                          boolValue ? Icons.check_box : Icons.check_box_outline_blank,
+                          color: boolValue ? Colors.green : Colors.grey,
+                        );
+                      } else if (isLinkedField) {
+                        // Render as a clickable link
+                        fieldWidget = GestureDetector(
+                          onTap: () async {
+                            final navigateToPage = widget.linkedFields?[field];
+                            if (navigateToPage != null) {
+                              await fetchAndNavigate(
+                                field == "reservation_id" ? "/reservations" : "/${field}s",
+                                formattedValue,
+                                context,
+                                (data) => navigateToPage(data),
+                              );
+                            }
+                          },
+                          child: Text(
+                            "szczegóły",
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.blue,
+                              decoration: TextDecoration.underline,
                             ),
-                          );
-                        }).toList();
+                          ),
+                        );
+                      } else {
+                        // Render as plain text
+                        fieldWidget = Text(
+                          formattedValue,
+                          textAlign: TextAlign.center,
+                        );
                       }
+                      return Expanded(
+                        flex: 6,
+                        child: fieldWidget,
+                      );
+                    }).toList();
+                  }
 
                       // Obsługa kolumny "Operacje"
                       Widget? operationButtons;
@@ -196,4 +249,50 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
       return isoDate; // Return the original value if parsing fails
     }
   }
+
+  Future<void> fetchFieldValues() async {
+    if (widget.fetchDisplay == null) return;
+
+    for (final fieldConfig in widget.fetchDisplay!) {
+      try {
+        final response = await getIt<Dio>().get(fieldConfig["endpoint"]!);
+
+        if (response.statusCode == 200) {
+          final data = response.data as List;
+
+          // Map IDs to display values
+          final fieldValues = {
+            for (var item in data) item[fieldConfig["idField"]!].toString(): item[fieldConfig["displayField"]!].toString(),
+          };
+
+          setState(() {
+            fetchedFieldValues[fieldConfig["fieldKey"]!] = fieldValues;
+          });
+        }
+      } catch (e) {
+        print('Error fetching ${fieldConfig["fieldKey"]} values: $e');
+      }
+    }
+  }
+
+  Future<void> fetchAndNavigate(String endpoint, String id, BuildContext context, Function(Map<String, dynamic>) navigateToPage) async {
+    try {
+      final response = await getIt<Dio>().get("$endpoint/$id");
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => navigateToPage(data),
+          ),
+        );
+      } else {
+        print("Failed to fetch data from $endpoint/$id");
+      }
+    } catch (e) {
+      print("Error fetching data: $e");
+    }
+  }
+
 }
