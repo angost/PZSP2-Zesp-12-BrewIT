@@ -342,21 +342,19 @@ class SectorsFieldNames extends StandardFieldNames {
   });
 }
 
-class ReservationRequestsFieldNames extends StandardFieldNames {
-  ReservationRequestsFieldNames()
+class ReservationRequestsCommercialFieldNames extends StandardFieldNames {
+  ReservationRequestsCommercialFieldNames()
       : super(fieldNames: [
           "Id",
           "Browar kontraktowy",
-          "Browar komercyjny",
           "Ilość produkowanego piwa",
           "Cena",
           "Pozwala na dzielenie sektorów",
-          "Osoby upoważnione do wstępu",
+          // "Osoby upoważnione do wstępu",
           // "Maszyny"
         ], jsonFieldNames: [
           "id",
           "contract_brewery",
-          "production_brewery",
           "brew_size",
           "price",
           "allows_sector_share",
@@ -380,7 +378,6 @@ class ReservationRequestsFieldNames extends StandardFieldNames {
           "TextField",
           "TextField",
           "TextField",
-          "TextField",
           "BooleanField",
           "TextField",
         ], errorMessages: {});
@@ -393,7 +390,7 @@ class ReservationRequestsContractFieldNames extends StandardFieldNames {
     "Ilość produkowanego piwa",
     "Cena",
     "Pozwala na dzielenie sektorów",
-    "Osoby upoważnione do wstępu",
+    // "Osoby upoważnione do wstępu",
     // "Maszyny"
   ], jsonFieldNames: [
     "production_brewery",
@@ -404,14 +401,14 @@ class ReservationRequestsContractFieldNames extends StandardFieldNames {
     // "equipment_reservation_requests",
   ], fieldNamesTable: [
     "Id",
-    "Browar kontraktowy",
+    "Browar komercyjny",
     "Ilość produkowanego piwa",
     "Cena",
     "Pozwala na dzielenie sektorów",
     "Operacje",
   ], jsonFieldNamesTable: [
     "id",
-    "contract_brewery",
+    "production_brewery",
     "brew_size",
     "price",
     "allows_sector_share",
@@ -465,7 +462,7 @@ class ReservationsCommercialFieldNames extends StandardFieldNames {
           "Ilość produkowanego piwa",
           "Cena",
           "Pozwala na dzielenie sektorów",
-          "Osoby upoważnione do wstępu",
+          // "Osoby upoważnione do wstępu",
           // "Maszyny"
         ], jsonFieldNames: [
           "reservation_id",
@@ -488,7 +485,14 @@ class ReservationsCommercialFieldNames extends StandardFieldNames {
           "brew_size",
           "price",
           "allows_sector_share",
-        ], fieldTypes: [], errorMessages: {});
+        ], fieldTypes: [
+          "TextField",
+          "DisplayField",
+          "TextField",
+          "TextField",
+          "BooleanField",
+          "TextField",
+        ], errorMessages: {});
 }
 
 class ReservationsContractFieldNames extends StandardFieldNames {
@@ -499,7 +503,7 @@ class ReservationsContractFieldNames extends StandardFieldNames {
           "Ilość produkowanego piwa",
           "Cena",
           "Pozwala na dzielenie sektorów",
-          "Osoby upoważnione do wstępu",
+          // "Osoby upoważnione do wstępu",
           // "Maszyny"
         ], jsonFieldNames: [
           "reservation_id",

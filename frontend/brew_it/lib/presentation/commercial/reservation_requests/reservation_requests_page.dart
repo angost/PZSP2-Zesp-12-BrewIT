@@ -7,7 +7,7 @@ class ReservationRequestsPage extends TablePageTemplate {
   ReservationRequestsPage({super.key})
       : super(
             title: "Prośby o rezerwację:",
-            headers: ReservationRequestsFieldNames().fieldNamesTable,
+            headers: ReservationRequestsCommercialFieldNames().fieldNamesTable,
             options: [
               MyIconButton(
                 type: "info",
@@ -35,5 +35,5 @@ class ReservationRequestsPage extends TablePageTemplate {
             ],
             apiString: "/reservation-requests/",
             hideFirstField: true,
-            jsonFields: ReservationRequestsFieldNames().jsonFieldNamesTable);
+            jsonFields: ReservationRequestsCommercialFieldNames().jsonFieldNamesTable);
 }

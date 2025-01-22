@@ -107,8 +107,8 @@ class Command(BaseCommand):
             Sector(name='Sector 1.2', allows_bacteria=True, brewery=breweries[0]),
             Sector(name='Sector 2.1', allows_bacteria=False, brewery=breweries[1]),
             Sector(name='Sector 2.2', allows_bacteria=False, brewery=breweries[1]),
-            Sector(name='Sector 3.1', allows_bacteria=True, brewery=breweries[2]),
-            Sector(name='Sector 3.2', allows_bacteria=False, brewery=breweries[2]),
+            Sector(name='Sector 3.1', allows_bacteria=True, brewery=breweries[0]),
+            Sector(name='Sector 3.2', allows_bacteria=False, brewery=breweries[0]),
         ])
         print('Sectors created.')
 
@@ -146,10 +146,13 @@ class Command(BaseCommand):
                         contract_brewery=breweries[3], allows_sector_share=True),
             Reservation(price=7000, brew_size=700, production_brewery=breweries[0],
                         contract_brewery=breweries[4], allows_sector_share=True),
+            Reservation(price=5500, brew_size=500, production_brewery=breweries[1],
+                        contract_brewery=breweries[3], allows_sector_share=True),
         ])
         reservations = Reservation.objects.all()
         reservations[0].authorised_workers.set([workers[0], workers[1]])
         reservations[1].authorised_workers.set([workers[2], workers[3]])
+        reservations[2].authorised_workers.set([workers[4], workers[5]])
         print('Reservations created.')
 
     def create_equipment_reservations(self):
@@ -166,24 +169,24 @@ class Command(BaseCommand):
                                  reservation_id=reservations[0]),
             EquipmentReservation(selector=EquipmentReservation.EquipmentSelectors.BREW,
                                  start_date=start_date, end_date=start_date + timedelta(days=1),
-                                 equipment=equipment[1],
-                                 reservation_id=reservations[0]),
-            EquipmentReservation(selector=EquipmentReservation.EquipmentSelectors.BREW,
-                                 start_date=start_date+timedelta(days=1), end_date=start_date + timedelta(days=4),
                                  equipment=equipment[2],
                                  reservation_id=reservations[0]),
             EquipmentReservation(selector=EquipmentReservation.EquipmentSelectors.BREW,
                                  start_date=start_date+timedelta(days=1), end_date=start_date + timedelta(days=4),
+                                 equipment=equipment[1],
+                                 reservation_id=reservations[1]),
+            EquipmentReservation(selector=EquipmentReservation.EquipmentSelectors.BREW,
+                                 start_date=start_date+timedelta(days=1), end_date=start_date + timedelta(days=4),
                                  equipment=equipment[3],
-                                 reservation_id=reservations[0]),
+                                 reservation_id=reservations[1]),
             EquipmentReservation(selector=EquipmentReservation.EquipmentSelectors.BREW,
                                  start_date=start_date+timedelta(days=10), end_date=start_date + timedelta(days=13),
                                  equipment=equipment[4],
-                                 reservation_id=reservations[1]),
+                                 reservation_id=reservations[2]),
             EquipmentReservation(selector=EquipmentReservation.EquipmentSelectors.BREW,
                                  start_date=start_date+timedelta(days=13), end_date=start_date + timedelta(days=15),
                                  equipment=equipment[6],
-                                 reservation_id=reservations[1]),
+                                 reservation_id=reservations[2]),
 
         ])
         print('Equipment reservations created.')

@@ -42,7 +42,7 @@ class ReservationRequestDetailsPage extends DetailsAddEditPageTemplate {
                 },
               ),
             ],
-            fieldNames: ReservationRequestsFieldNames().fieldNames,
-            jsonFieldNames: ReservationRequestsFieldNames().jsonFieldNames,
+            fieldNames: ReservationRequestsCommercialFieldNames().fieldNames,
+            jsonFieldNames: ReservationRequestsCommercialFieldNames().jsonFieldNames,
             elementData: elementData);
 }
