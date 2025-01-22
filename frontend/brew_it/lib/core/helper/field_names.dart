@@ -222,11 +222,11 @@ class ProductionProcessesFieldNames extends StandardFieldNames {
           "EnumField",
           "EnumField",
           "BooleanField",
-          "TextField",
-          "TextField",
-          "TextField",
-          "TextField",
-          "TextField",
+          "LargeTextField",
+          "LargeTextField",
+          "LargeTextField",
+          "LargeTextField",
+          "LargeTextField",
         ], errorMessages: {
         "start_date": "Data początkowa jest wymagana.",
         "non_field_errors": {
@@ -560,14 +560,14 @@ class RecipesFieldNames extends StandardFieldNames {
         ], fieldTypes: [
           "TextField",
           "EnumField",
-          "TextField",
-          "TextField",
-          "TextField",
-          "TextField",
-          "TextField",
+          "LargeTextField",
+          "LargeTextField",
+          "LargeTextField",
+          "LargeTextField",
+          "LargeTextField",
         ], errorMessages: {
           "name": {
-            "This field is required.":
+            "This field may not be blank.":
             "Nazwa nie może być pusta",
           },
           "beer_type": {

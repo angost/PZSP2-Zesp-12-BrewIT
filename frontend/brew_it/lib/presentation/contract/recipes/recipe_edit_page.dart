@@ -16,7 +16,7 @@ class RecipeEditPage extends AddEditPageTemplate {
             },
             fieldNames: RecipesFieldNames().fieldNames,
             jsonFieldNames: RecipesFieldNames().jsonFieldNames,
-            fieldEditable: [false, true],
+            fieldEditable: [false, false, true, true, true, true, true],
             fieldTypes: RecipesFieldNames().fieldTypes,
             errorMessages: RecipesFieldNames().errorMessages,
             elementData: elementData);

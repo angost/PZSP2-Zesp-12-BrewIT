@@ -193,3 +193,145 @@ class DisplayField extends StatelessWidget {
   }
 }
 
+class LargeTextField extends StatefulWidget {
+  final String label;
+  final String initialValue;
+  final bool editable;
+  final InputDecoration? decoration;
+  final ValueChanged<String>? onSaved;
+
+  const LargeTextField({
+    required this.label,
+    required this.initialValue,
+    this.editable = true,
+    this.decoration,
+    this.onSaved,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  LargeTextFieldState createState() => LargeTextFieldState();
+}
+
+class LargeTextFieldState extends State<LargeTextField> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialValue);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // const SizedBox(height: 8),
+        GestureDetector(
+          onTap: () async {
+            final updatedText = await _showTextDialog(
+              context,
+              _controller.text,
+              widget.label,
+            );
+            if (updatedText != null) {
+              setState(() {
+                _controller.text = updatedText;
+              });
+              if (widget.onSaved != null) {
+                widget.onSaved!(updatedText);
+              }
+            }
+          },
+          child: AbsorbPointer(
+            absorbing: true, // Prevent manual typing; use dialog for editing
+            child: TextFormField(
+              controller: _controller,
+              maxLines: 4,
+              decoration: widget.decoration ??
+                  InputDecoration(
+                    border: widget.editable
+                        ? OutlineInputBorder()
+                        : InputBorder.none,
+                    fillColor: widget.editable ? null : Colors.grey[200],
+                    filled: !widget.editable,
+                  ),
+              readOnly: true,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<String?> _showTextDialog(
+      BuildContext context, String currentValue, String title) async {
+    TextEditingController dialogController =
+    TextEditingController(text: currentValue);
+
+    return await showDialog<String>(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.5, // 80% of the screen width
+            height: MediaQuery.of(context).size.height * 0.35, // 60% of the screen height
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    title,
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: TextField(
+                      controller: dialogController,
+                      maxLines: null, // Allow unlimited lines
+                      expands: true, // Ensures the TextField fills the space
+                      textAlignVertical: TextAlignVertical.top,
+                      readOnly: !widget.editable,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: "Wprowadź treść...",
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(null);
+                        },
+                        child: const Text("Anuluj"),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(dialogController.text);
+                        },
+                        child: const Text("Zapisz"),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+}

@@ -236,6 +236,31 @@ class _DetailsAddEditPageTemplateState
             ),
           );
 
+        case "LargeTextField":
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: LargeTextField(
+              label: widget.fieldNames[index],
+              initialValue:
+              fieldValues != null && fieldValues[index].isNotEmpty
+              ? fieldValues[index]
+                  : "",
+              editable: editable,
+              onSaved: (newValue) {
+                if (editable) {
+                  widget.elementData ??= {};
+                  widget.elementData![jsonFieldName] = newValue;
+                }
+              },
+              decoration: InputDecoration(
+              labelText: widget.fieldNames[index],
+              border: editable ? null : disabledTextFormFieldTheme.border,
+              fillColor:
+              editable ? null : disabledTextFormFieldTheme.fillColor,
+            ),
+            ),
+          );
+
         default: // TextField
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
