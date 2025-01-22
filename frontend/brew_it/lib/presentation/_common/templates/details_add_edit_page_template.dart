@@ -202,6 +202,26 @@ class _DetailsAddEditPageTemplateState
               },
             ),
           );
+        case "MultiEnumField":
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: MultiEnumField(
+              label: widget.fieldNames[index],
+              jsonFieldName: jsonFieldName,
+              options: widget.enumOptions?[jsonFieldName] ?? [],
+              selectedValues: fieldValues != null && fieldValues[index] != null
+                  ? fieldValues[index].toString().split(',')
+                  .where((value) => value.isNotEmpty)
+                  .toList()
+                  : [],
+              editable: editable,
+              onChanged: (newValues) {
+                if (editable) {
+                  widget.elementData![jsonFieldName] = newValues;
+                }
+              },
+            ),
+          );
         case "BooleanField":
           widget.elementData![jsonFieldName] =
               fieldValues != null ? (fieldValues[index]) : "false";

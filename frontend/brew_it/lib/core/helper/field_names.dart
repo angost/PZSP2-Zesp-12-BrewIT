@@ -421,6 +421,44 @@ class ReservationRequestsContractFieldNames extends StandardFieldNames {
   ], errorMessages: {});
 }
 
+class AddReservationRequestFieldNames extends StandardFieldNames {
+  AddReservationRequestFieldNames()
+      : super(fieldNames: [
+    "Browar komercyjny",
+    "Ilość produkowanego piwa",
+    "Cena",
+    "Pozwala na dzielenie sektorów",
+    "Osoby upoważnione do wstępu",
+    // "Maszyny"
+  ], jsonFieldNames: [
+    "production_brewery",
+    "brew_size",
+    "price",
+    "allows_sector_share",
+    "authorised_workers",
+    // "equipment_reservation_requests",
+  ], fieldNamesTable: [
+    "Id",
+    "Browar komercyjny",
+    "Ilość produkowanego piwa",
+    "Cena",
+    "Pozwala na dzielenie sektorów",
+    "Operacje",
+  ], jsonFieldNamesTable: [
+    "id",
+    "production_brewery",
+    "brew_size",
+    "price",
+    "allows_sector_share",
+  ], fieldTypes: [
+    "TextField",
+    "TextField",
+    "TextField",
+    "BooleanField",
+    "MultiEnumField",
+  ], errorMessages: {});
+}
+
 class AllowedPeopleFieldNames extends StandardFieldNames {
   AllowedPeopleFieldNames()
       : super(fieldNames: [], jsonFieldNames: [], fieldNamesTable: [

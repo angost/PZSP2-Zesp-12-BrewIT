@@ -175,6 +175,80 @@ class EnumField extends StatelessWidget {
   }
 }
 
+class MultiEnumField extends StatelessWidget {
+  final String label;
+  final String jsonFieldName;
+  final List<Map<String, String>> options;
+  final List<String> selectedValues;
+  final bool editable;
+  final void Function(List<String>) onChanged;
+  final InputDecoration? decoration;
+
+  const MultiEnumField({
+    required this.label,
+    required this.jsonFieldName,
+    required this.options,
+    required this.selectedValues,
+    required this.editable,
+    required this.onChanged,
+    this.decoration,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // Filter selected values to ensure they match available options
+    final currentValues = selectedValues
+        .where((value) => options.any((option) => option['apiValue'] == value))
+        .toList();
+
+    return FormField<List<String>>(
+      initialValue: currentValues,
+      builder: (FormFieldState<List<String>> field) {
+        return InputDecorator(
+          decoration: decoration ?? InputDecoration(
+            labelText: label,
+            border: editable
+                ? null
+                : disabledTextFormFieldTheme.border,
+            fillColor: editable
+                ? null
+                : disabledTextFormFieldTheme.fillColor,
+          ),
+          child: Wrap(
+            spacing: 8.0,
+            runSpacing: 4.0,
+            children: [
+              ...options.map((option) {
+                final isSelected = currentValues.contains(option['apiValue']);
+                return FilterChip(
+                  label: Text(option['display']!),
+                  selected: isSelected,
+                  onSelected: editable
+                      ? (bool selected) {
+                    List<String> newValues = List.from(currentValues);
+                    if (selected) {
+                      newValues.add(option['apiValue']!);
+                    } else {
+                      newValues.remove(option['apiValue']);
+                    }
+                    onChanged(newValues);
+                  }
+                      : null,
+                );
+              }).toList(),
+              if (options.isEmpty)
+                const Chip(
+                  label: Text('No options available'),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
 class DisplayField extends StatelessWidget {
   final String label;
   final String displayValue;
