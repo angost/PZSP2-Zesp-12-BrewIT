@@ -39,7 +39,6 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
   void initState() {
     super.initState();
 
-    // Initialize dates from filtersData or set to null
     vatStartDate = widget.filtersData?["vat_start_date"] != null
         ? parseDateTime(widget.filtersData!["vat_start_date"])
         : null;
@@ -61,7 +60,6 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
     brewsetDays = calculateDays(brewsetStartDate, brewsetEndDate);
 
     fetchData();
-
   }
 
   int calculateDays(DateTime? startDate, DateTime? endDate) {
@@ -121,42 +119,58 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
   }
 
   Future<void> _selectDateRange(BuildContext context, bool isVat) async {
-    final reservedDates = isVat
-        ? vatElements.expand((vat) => vat["reservations"]).map((res) {
-            return DateTimeRange(
-              start: DateTime.parse(res["start_date"]),
-              end: DateTime.parse(res["end_date"]),
-            );
-          }).toList()
-        : brewsetElements.expand((brewset) => brewset["reservations"]).map((res) {
-            return DateTimeRange(
-              start: DateTime.parse(res["start_date"]),
-              end: DateTime.parse(res["end_date"]),
-            );
-          }).toList();
+    // Pobierz listę rezerwacji dla wybranego sprzętu
+    final reservations = (isVat
+            ? vatElements.firstWhere(
+                (vat) => vat["equipment_id"] == chosenVatId,
+                orElse: () => {}, // Domyślnie zwróć pusty obiekt
+              )["reservations"]
+            : brewsetElements.firstWhere(
+                (brewset) => brewset["equipment_id"] == chosenBrewsetId,
+                orElse: () => {}, // Domyślnie zwróć pusty obiekt
+              )["reservations"]) ??
+        [];
+
+    // Przetwórz daty rezerwacji
+    final blockedDates = parseReservedDates(reservations);
+
+    // Funkcja walidująca wybór zakresu dat
+    bool isRangeValid(DateTimeRange range) {
+      for (final reserved in blockedDates) {
+        if (!(range.end.isBefore(reserved.start) || range.start.isAfter(reserved.end))) {
+          return false;
+        }
+      }
+      return true;
+    }
 
     final picked = await showDateRangePicker(
       context: context,
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(Duration(days: 365)),
       initialDateRange: isVat
-          ? DateTimeRange(start: vatStartDate ?? DateTime.now(), end: vatEndDate ?? DateTime.now())
+          ? DateTimeRange(
+              start: vatStartDate ?? DateTime.now(),
+              end: vatEndDate ?? DateTime.now(),
+            )
           : DateTimeRange(
               start: brewsetStartDate ?? DateTime.now(),
               end: brewsetEndDate ?? DateTime.now(),
             ),
       selectableDayPredicate: (currentDate, startDate, endDate) {
-        for (final reserved in reservedDates) {
+        // Przykład użycia startDate i endDate do sprawdzenia dostępności daty
+        for (final reserved in blockedDates) {
           if (currentDate.isAfter(reserved.start.subtract(Duration(days: 1))) &&
               currentDate.isBefore(reserved.end.add(Duration(days: 1)))) {
-            return false; // Nie można wybrać dat zarezerwowanych
+            return false; // Dzień jest zablokowany
           }
         }
-        return true;
+        return true; // Dzień jest dostępny
       },
     );
 
-    if (picked != null) {
+    // Aktualizacja zakresu dat
+    if (picked != null && isRangeValid(picked)) {
       setState(() {
         if (isVat) {
           vatStartDate = picked.start;
@@ -168,29 +182,33 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
           brewsetDays = calculateDays(brewsetStartDate, brewsetEndDate);
         }
       });
+    } else if (picked != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Wybrany zakres dat koliduje z już zarezerwowanymi datami.'),
+        ),
+      );
     }
   }
 
-
-
   void _applyFilters() {
-      final updatedFilters = {
-        "vat_start_date": vatStartDate?.toIso8601String().substring(0, 10),
-        "vat_end_date": vatEndDate?.toIso8601String().substring(0, 10),
-        "brewset_start_date": brewsetStartDate?.toIso8601String().substring(0, 10),
-        "brewset_end_date": brewsetEndDate?.toIso8601String().substring(0, 10),
-        "vat_capacity": brewSize,
-        "brewset_capacity": brewSize
-      };
+    final updatedFilters = {
+      "vat_start_date": vatStartDate?.toIso8601String().substring(0, 10),
+      "vat_end_date": vatEndDate?.toIso8601String().substring(0, 10),
+      "brewset_start_date": brewsetStartDate?.toIso8601String().substring(0, 10),
+      "brewset_end_date": brewsetEndDate?.toIso8601String().substring(0, 10),
+      "vat_capacity": brewSize,
+      "brewset_capacity": brewSize
+    };
 
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => ChooseMachineSetPage(
-            {"brewery_id": widget.commercialId},
-            updatedFilters,
-          ),
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => ChooseMachineSetPage(
+          {"brewery_id": widget.commercialId},
+          updatedFilters,
         ),
-      );
+      ),
+    );
   }
 
   @override
@@ -502,30 +520,21 @@ DateTime? parseDateTime(String? date) {
   if (date == null || date.isEmpty) return null;
 
   try {
-    final parts = date.split("-");
-    if (parts.length == 3) {
-      final year = int.parse(parts[0]);
-      final month = int.parse(parts[1]);
-      final day = int.parse(parts[2]);
-      return DateTime(year, month, day);
-    }
+    return DateTime.parse(date);
   } catch (e) {
     print("Error parsing date: $e");
+    return null; // Zwraca null, jeśli parsowanie się nie powiodło
   }
-
-  return null; // Return null if parsing fails
 }
 
-List<DateTime> parseReservedDates(List reservations) {
-  List<DateTime> blockedDates = [];
+List<DateTimeRange> parseReservedDates(List reservations) {
+  final List<DateTimeRange> blockedRanges = [];
   for (var reservation in reservations) {
     final startDate = parseDateTime(reservation["start_date"]);
     final endDate = parseDateTime(reservation["end_date"]);
     if (startDate != null && endDate != null) {
-      for (var i = 0; i <= endDate.difference(startDate).inDays; i++) {
-        blockedDates.add(startDate.add(Duration(days: i)));
-      }
+      blockedRanges.add(DateTimeRange(start: startDate, end: endDate));
     }
   }
-  return blockedDates;
+  return blockedRanges;
 }
