@@ -121,6 +121,20 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
   }
 
   Future<void> _selectDateRange(BuildContext context, bool isVat) async {
+    final reservedDates = isVat
+        ? vatElements.expand((vat) => vat["reservations"]).map((res) {
+            return DateTimeRange(
+              start: DateTime.parse(res["start_date"]),
+              end: DateTime.parse(res["end_date"]),
+            );
+          }).toList()
+        : brewsetElements.expand((brewset) => brewset["reservations"]).map((res) {
+            return DateTimeRange(
+              start: DateTime.parse(res["start_date"]),
+              end: DateTime.parse(res["end_date"]),
+            );
+          }).toList();
+
     final picked = await showDateRangePicker(
       context: context,
       firstDate: DateTime.now(),
@@ -131,6 +145,15 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
               start: brewsetStartDate ?? DateTime.now(),
               end: brewsetEndDate ?? DateTime.now(),
             ),
+      selectableDayPredicate: (currentDate, startDate, endDate) {
+        for (final reserved in reservedDates) {
+          if (currentDate.isAfter(reserved.start.subtract(Duration(days: 1))) &&
+              currentDate.isBefore(reserved.end.add(Duration(days: 1)))) {
+            return false; // Nie można wybrać dat zarezerwowanych
+          }
+        }
+        return true;
+      },
     );
 
     if (picked != null) {
@@ -147,6 +170,8 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
       });
     }
   }
+
+
 
   void _applyFilters() {
       final updatedFilters = {
@@ -489,4 +514,18 @@ DateTime? parseDateTime(String? date) {
   }
 
   return null; // Return null if parsing fails
+}
+
+List<DateTime> parseReservedDates(List reservations) {
+  List<DateTime> blockedDates = [];
+  for (var reservation in reservations) {
+    final startDate = parseDateTime(reservation["start_date"]);
+    final endDate = parseDateTime(reservation["end_date"]);
+    if (startDate != null && endDate != null) {
+      for (var i = 0; i <= endDate.difference(startDate).inDays; i++) {
+        blockedDates.add(startDate.add(Duration(days: i)));
+      }
+    }
+  }
+  return blockedDates;
 }
