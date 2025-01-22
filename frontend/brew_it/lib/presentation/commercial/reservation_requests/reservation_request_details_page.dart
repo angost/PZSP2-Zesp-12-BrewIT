@@ -23,9 +23,7 @@ class ReservationRequestDetailsPage extends DetailsAddEditPageTemplate {
                 apiCall: "/reservations/",
                 apiCallType: "post",
                 apiIdName: "reservation_request_id",
-                // elementId: elementData["id"],
-                elementId:
-                    1, // MOCK, change to elementData["id"], when api implements reservation request id
+                elementId: elementData["id"],
                 navigateToPage: () {
                   return ReservationRequestsPage();
                 },
@@ -34,15 +32,14 @@ class ReservationRequestDetailsPage extends DetailsAddEditPageTemplate {
                 type: "cancel",
                 apiCall: "/reservation-requests/",
                 apiCallType: "delete",
-                // elementId: elementData["id"],
-                elementId:
-                    1, // MOCK, change to elementData["id"], when api implements reservation request id
+                elementId: elementData["id"],
                 navigateToPage: () {
                   return ReservationRequestsPage();
                 },
               ),
             ],
             fieldNames: ReservationRequestsCommercialFieldNames().fieldNames,
-            jsonFieldNames: ReservationRequestsCommercialFieldNames().jsonFieldNames,
+            jsonFieldNames:
+                ReservationRequestsCommercialFieldNames().jsonFieldNames,
             elementData: elementData);
 }

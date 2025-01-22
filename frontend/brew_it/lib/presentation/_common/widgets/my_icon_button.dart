@@ -54,7 +54,8 @@ class MyIconButton extends StatelessWidget {
     return IconButton(
       onPressed: () async {
         try {
-          if (apiCall != null && (apiCallType == "post" || apiCallType == "delete")) {
+          if (apiCall != null &&
+              (apiCallType == "post" || apiCallType == "delete")) {
             final response;
             if (apiCallType == "post") {
               response = await getIt<Dio>().post(
@@ -62,6 +63,11 @@ class MyIconButton extends StatelessWidget {
                 data: {apiIdName: elementId},
               );
             } else {
+              final deletingConfirmed = await _showConfirmDialog(context);
+              if (!deletingConfirmed) {
+                return; // Exit if the user cancels
+              }
+
               response = await getIt<Dio>().delete(
                 "${apiCall!}$elementId/",
               );
@@ -79,7 +85,6 @@ class MyIconButton extends StatelessWidget {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return navigateToPage!(dataForPage, filtersData);
             }));
-
           } else if (navigateToPage != null) {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               if (dataForPage != null) {
@@ -88,7 +93,6 @@ class MyIconButton extends StatelessWidget {
                 return navigateToPage!();
               }
             }));
-
           } else if (customOnPressed != null) {
             // Custom button action
             customOnPressed!();
@@ -122,7 +126,9 @@ class MyIconButton extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) {
-        return dataForPage != null ? navigateToPage!(dataForPage) : navigateToPage!();
+        return dataForPage != null
+            ? navigateToPage!(dataForPage)
+            : navigateToPage!();
       }),
     );
   }
@@ -140,11 +146,15 @@ class MyIconButton extends StatelessWidget {
     if (e.response?.statusCode == 400) {
       final detail = e.response?.data['detail'];
       if (detail == 'Cannot delete equipment with active reservations.') {
-        _showErrorDialog(context, "Nie można usunąć urządzenia, ponieważ ma aktywne rezerwacje.");
-      } else if (detail == 'Cannot delete equipment with active reservation requests.') {
-        _showErrorDialog(context, "Nie można usunąć urządzenia, ponieważ ma aktywne żądania rezerwacji.");
+        _showErrorDialog(context,
+            "Nie można usunąć urządzenia, ponieważ ma aktywne rezerwacje.");
+      } else if (detail ==
+          'Cannot delete equipment with active reservation requests.') {
+        _showErrorDialog(context,
+            "Nie można usunąć urządzenia, ponieważ ma aktywne żądania rezerwacji.");
       } else {
-        _showErrorDialog(context, "Nie udało się usunąć obiektu. Jest powiązany z innym.");
+        _showErrorDialog(
+            context, "Nie udało się usunąć obiektu. Jest powiązany z innym.");
       }
     } else {
       _showErrorDialog(context, "Błąd połączenia z serwerem.");
@@ -168,4 +178,27 @@ class MyIconButton extends StatelessWidget {
       },
     );
   }
+}
+
+Future<bool> _showConfirmDialog(BuildContext context) async {
+  return await showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Operacja jest nieodwracalna"),
+            content: const Text("Chcesz kontynuować?"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text("Kontynuuj"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text("Anuluj"),
+              ),
+            ],
+          );
+        },
+      ) ??
+      false;
 }
