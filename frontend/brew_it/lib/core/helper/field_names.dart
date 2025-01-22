@@ -410,7 +410,7 @@ class ReservationRequestsCommercialFieldNames extends StandardFieldNames {
           "allows_sector_share",
         ], fieldTypes: [
           "TextField",
-          "TextField",
+          "DisplayField",
           "TextField",
           "TextField",
           "BooleanField",
@@ -448,7 +448,7 @@ class ReservationRequestsContractFieldNames extends StandardFieldNames {
           "price",
           "allows_sector_share",
         ], fieldTypes: [
-          "TextField",
+          "DisplayField",
           "TextField",
           "TextField",
           "BooleanField",

@@ -64,7 +64,8 @@ class _ReservationTemplateState extends State<ReservationTemplate> {
     // Initialize equipment reservations and workers
     if (elementData['equipment_reservations'] != null) {
       loadEquipmentDetails();
-    }
+    } else if (elementData['equipment_reservation_requests'] != null)
+      loadEquipmentDetailsReservations();
 
     authorizedWorkers = List<Map<String, dynamic>>.from(
         elementData['authorised_workers'] ?? []);
@@ -83,6 +84,34 @@ class _ReservationTemplateState extends State<ReservationTemplate> {
 
   Future<void> loadEquipmentDetails() async {
     final reservations = elementData['equipment_reservations'] as List;
+
+    for (var reservation in reservations) {
+      try {
+        final response = await getIt<Dio>().get('/equipment/${reservation['equipment']}');
+
+        if (response.statusCode == 200) {
+          final equipmentData = response.data;
+          // Add equipment details to the reservation
+          reservation['equipment_type'] = equipmentData['selector'];
+          reservation['equipment_name'] = equipmentData['name'];
+          reservation['equipment_capacity'] = equipmentData['capacity'].toString();
+
+          setState(() {
+            if (equipmentData['selector'] == 'VAT') {
+              vatReservations.add(reservation);
+            } else if (equipmentData['selector'] == 'BREWSET') {
+              brewsetReservations.add(reservation);
+            }
+          });
+        }
+      } catch (e) {
+        print('Error fetching equipment details for ID ${reservation['equipment']}: $e');
+      }
+    }
+  }
+
+  Future<void> loadEquipmentDetailsReservations() async {
+    final reservations = elementData['equipment_reservation_requests'] as List;
 
     for (var reservation in reservations) {
       try {
@@ -129,18 +158,21 @@ class _ReservationTemplateState extends State<ReservationTemplate> {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Expanded(
-                      child: EnumField(
-                        label: 'Typ',
-                        jsonFieldName: 'selector',
-                        options: widget.enumOptions?['selector'] ?? [],
-                        selectedValue: reservation['selector'] ?? '',
-                        editable: false,
-                        onChanged: (newValue) {
-                          setState(() {
-                            reservation['selector'] = newValue;
-                          });
-                        },
+                    Visibility(
+                      visible: widget.elementData?['equipment_reservations'] != null,
+                      child: Expanded(
+                        child: EnumField(
+                          label: 'Typ',
+                          jsonFieldName: 'selector',
+                          options: widget.enumOptions?['selector'] ?? [],
+                          selectedValue: reservation['selector'] ?? '',
+                          editable: false,
+                          onChanged: (newValue) {
+                            setState(() {
+                              reservation['selector'] = newValue;
+                            });
+                          },
+                        ),
                       ),
                     ),
                     const SizedBox(width: 16),
