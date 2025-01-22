@@ -71,7 +71,7 @@ class _FiltersPanelState extends State<FiltersPanel> {
               customErrorHandler: handleMultipleErrors,
             ),
             MainButton(
-              "Anuluj",
+              "Wyczyść",
               type: "secondary_small",
               navigateToPage: () {
                 return CommercialOffersPage({});

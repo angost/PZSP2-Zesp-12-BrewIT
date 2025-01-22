@@ -26,12 +26,12 @@ class MenuButton extends StatefulWidget {
 
   final typeToContent = {
     "machines": "Zarządzanie urządzeniami",
-    "sectors": "Twoje sektory",
-    "reservations": "Twoje rezerwacje",
+    "sectors": "Sektory",
+    "reservations": "Rezerwacje",
     "reservation_requests": "Prośby o rezerwację",
     "commercial_offers": "Oferta browarów komercyjnych",
     "production_processes": "Procesy wykonania piwa",
-    "recipes": "Twoje receptury",
+    "recipes": "Receptury",
     "registration_requests": "Prośby o rejestrację",
     "stats": "Statystyki",
     "logout": "Wyloguj się",
