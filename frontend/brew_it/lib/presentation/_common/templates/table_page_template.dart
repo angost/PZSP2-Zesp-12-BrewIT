@@ -99,25 +99,31 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
                 ),
                 const SizedBox(height: 16),
               ] +
-              [widget.filtersPanel ?? Container()] +
+              (widget.filtersPanel != null
+                  ? [widget.filtersPanel!, const SizedBox(height: 30)]
+                  : [Container()]) +
               [
                 // Nagłówki tabeli
                 Row(
                   children: [
                     ...widget.headers.skip(widget.hideFirstField ? 1 : 0).map(
-                      (header) => Expanded(
-                        flex: 6,
-                        child: Text(
-                          header,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          (header) => Expanded(
+                            flex: 6,
+                            child: Text(
+                              header,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
                   ],
                 ),
                 const Divider(),
                 // Tabela z danymi
+                elements.isEmpty
+                    ? Text("Brak elementów do wyświelenia",
+                        style: Theme.of(context).textTheme.titleSmall)
+                    : Container(),
                 Expanded(
                   child: ListView.separated(
                     itemCount: elements.length,
@@ -129,65 +135,75 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
                       // Generowanie wartości pól
                       if (widget.jsonFields != null) {
                         fieldValues = widget.jsonFields!
-                        .skip(widget.hideFirstField ? 1 : 0)
-                        .map((field) {
-                      final isLinkedField = widget.linkedFields!.containsKey(field);
+                            .skip(widget.hideFirstField ? 1 : 0)
+                            .map((field) {
+                          final isLinkedField =
+                              widget.linkedFields!.containsKey(field);
                           final value = element[field]?.toString() ?? '';
-                          final displayValue = fetchedFieldValues.containsKey(field) && fetchedFieldValues[field]!.containsKey(value)
-                          ? fetchedFieldValues[field]![value]!
-                          : value;
+                          final displayValue = fetchedFieldValues
+                                      .containsKey(field) &&
+                                  fetchedFieldValues[field]!.containsKey(value)
+                              ? fetchedFieldValues[field]![value]!
+                              : value;
                           final formattedValue = _isIso8601Date(value)
                               ? _formatDateForDisplay(value)
                               : displayValue;
 
+                          bool isBooleanField = ((formattedValue == "true") ||
+                                  (formattedValue == "false"))
+                              ? true
+                              : false;
+                          Widget fieldWidget;
 
-                          bool isBooleanField = ((formattedValue == "true") || (formattedValue == "false")) ? true : false;
-                      Widget fieldWidget;
-
-                      if (isBooleanField) {
-                        // Render as a checkbox or empty box
-                        final boolValue = formattedValue.toLowerCase() == "true";
-                        fieldWidget = Icon(
-                          boolValue ? Icons.check_box : Icons.check_box_outline_blank,
-                          color: boolValue ? Colors.green : Colors.grey,
-                        );
-                      } else if (isLinkedField) {
-                        // Render as a clickable link
-                        fieldWidget = GestureDetector(
-                          onTap: () async {
-                            final navigateToPage = widget.linkedFields?[field];
-                            if (navigateToPage != null) {
-                              await fetchAndNavigate(
-                                field == "reservation_id" ? "/reservations" : "/${field}s",
-                                formattedValue,
-                                context,
-                                (data) => navigateToPage(data),
-                              );
-                            }
-                          },
-                          child: Text(
-                            "szczegóły",
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: Colors.blue,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                        );
-                      } else {
-                        // Render as plain text
-                        fieldWidget = Text(
-                          formattedValue,
-                          textAlign: TextAlign.center,
-                        );
+                          if (isBooleanField) {
+                            // Render as a checkbox or empty box
+                            final boolValue =
+                                formattedValue.toLowerCase() == "true";
+                            fieldWidget = Icon(
+                              boolValue
+                                  ? Icons.check_box
+                                  : Icons.check_box_outline_blank,
+                              color: boolValue ? Colors.green : Colors.grey,
+                            );
+                          } else if (isLinkedField) {
+                            // Render as a clickable link
+                            fieldWidget = GestureDetector(
+                              onTap: () async {
+                                final navigateToPage =
+                                    widget.linkedFields?[field];
+                                if (navigateToPage != null) {
+                                  await fetchAndNavigate(
+                                    field == "reservation_id"
+                                        ? "/reservations"
+                                        : "/${field}s",
+                                    formattedValue,
+                                    context,
+                                    (data) => navigateToPage(data),
+                                  );
+                                }
+                              },
+                              child: const Text(
+                                "szczegóły",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            );
+                          } else {
+                            // Render as plain text
+                            fieldWidget = Text(
+                              formattedValue,
+                              textAlign: TextAlign.center,
+                            );
+                          }
+                          return Expanded(
+                            flex: 6,
+                            child: fieldWidget,
+                          );
+                        }).toList();
                       }
-                      return Expanded(
-                        flex: 6,
-                        child: fieldWidget,
-                      );
-                    }).toList();
-                  }
-
                       // Obsługa kolumny "Operacje"
                       Widget? operationButtons;
                       if (hasOperationsColumn && widget.options != null) {
@@ -262,7 +278,9 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
 
           // Map IDs to display values
           final fieldValues = {
-            for (var item in data) item[fieldConfig["idField"]!].toString(): item[fieldConfig["displayField"]!].toString(),
+            for (var item in data)
+              item[fieldConfig["idField"]!].toString():
+                  item[fieldConfig["displayField"]!].toString(),
           };
 
           setState(() {
@@ -275,7 +293,11 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
     }
   }
 
-  Future<void> fetchAndNavigate(String endpoint, String id, BuildContext context, Function(Map<String, dynamic>) navigateToPage) async {
+  Future<void> fetchAndNavigate(
+      String endpoint,
+      String id,
+      BuildContext context,
+      Function(Map<String, dynamic>) navigateToPage) async {
     try {
       final response = await getIt<Dio>().get("$endpoint/$id");
 
@@ -294,5 +316,4 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
       print("Error fetching data: $e");
     }
   }
-
 }
