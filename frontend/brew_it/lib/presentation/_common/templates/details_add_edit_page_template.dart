@@ -53,7 +53,11 @@ class _DetailsAddEditPageTemplateState
     widget.displayValues ??= {};
     if (widget.fetchOptions != null) {
       for (Map<String, String> fetchMap in widget.fetchOptions!) {
-        fetchObjectOptions(fetchMap);
+        if (fetchMap['endpoint'] == "/workers/") {
+          fetchWorkerOptions(fetchMap);
+        } else {
+          fetchObjectOptions(fetchMap);
+        }
       }
     }
     if (widget.fetchDisplay != null) {
@@ -209,19 +213,23 @@ class _DetailsAddEditPageTemplateState
               label: widget.fieldNames[index],
               jsonFieldName: jsonFieldName,
               options: widget.enumOptions?[jsonFieldName] ?? [],
-              selectedValues: fieldValues != null && fieldValues[index] != null
-                  ? fieldValues[index].toString().split(',')
-                  .where((value) => value.isNotEmpty)
+              selectedValues: fieldValues != null && fieldValues[index] is String
+                  ? (fieldValues[index] as String)
+                  .split(',')
+                  .where((val) => val.isNotEmpty) // Remove empty strings
+                  .map(int.parse) // Convert to integers
                   .toList()
                   : [],
               editable: editable,
-              onChanged: (newValues) {
+              onChanged: (newValue) {
                 if (editable) {
-                  widget.elementData![jsonFieldName] = newValues;
+                  widget.elementData ??= {};
+                  widget.elementData![jsonFieldName] = newValue; // Save List<int>
                 }
               },
             ),
           );
+
         case "BooleanField":
           widget.elementData![jsonFieldName] =
               fieldValues != null ? (fieldValues[index]) : "false";
@@ -351,6 +359,25 @@ class _DetailsAddEditPageTemplateState
       }
     } catch (e) {
       print('Error fetching display value for $fieldKey: $e');
+    }
+  }
+  Future<void> fetchWorkerOptions(Map<String, String> config) async {
+    try {
+      final response = await getIt<Dio>().get(config['endpoint']!);
+      if (response.statusCode == 200) {
+        final options = (response.data as List)
+            .map((item) => {
+          "display": "${item['first_name']} ${item['last_name']} \n identyfikator: ${item['identificator']}",
+          "apiValue": item[config['apiValueField']!].toString(),
+        })
+            .toList();
+        setState(() {
+          widget.enumOptions?[config['enumKey']!] = options;
+        });
+      }
+    } catch (e) {
+      print(
+          'Error fetching ${config['enumKey']} options from ${config['endpoint']}: $e');
     }
   }
 }

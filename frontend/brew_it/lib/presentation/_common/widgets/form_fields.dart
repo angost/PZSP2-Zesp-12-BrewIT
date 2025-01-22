@@ -179,9 +179,9 @@ class MultiEnumField extends StatelessWidget {
   final String label;
   final String jsonFieldName;
   final List<Map<String, String>> options;
-  final List<String> selectedValues;
+  final List<int> selectedValues; // Use List<int> here
   final bool editable;
-  final void Function(List<String>) onChanged;
+  final void Function(List<int>) onChanged; // Callback handles List<int>
   final InputDecoration? decoration;
 
   const MultiEnumField({
@@ -195,59 +195,82 @@ class MultiEnumField extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    // Filter selected values to ensure they match available options
-    final currentValues = selectedValues
-        .where((value) => options.any((option) => option['apiValue'] == value))
-        .toList();
+  String getDisplayValue(int apiValue) {
+    return options.firstWhere(
+          (option) => int.tryParse(option['apiValue'] ?? '') == apiValue,
+      orElse: () => {'display': apiValue.toString()},
+    )['display']!;
+  }
 
-    return FormField<List<String>>(
-      initialValue: currentValues,
-      builder: (FormFieldState<List<String>> field) {
-        return InputDecorator(
-          decoration: decoration ?? InputDecoration(
-            labelText: label,
-            border: editable
-                ? null
-                : disabledTextFormFieldTheme.border,
-            fillColor: editable
-                ? null
-                : disabledTextFormFieldTheme.fillColor,
-          ),
-          child: Wrap(
-            spacing: 8.0,
-            runSpacing: 4.0,
-            children: [
-              ...options.map((option) {
-                final isSelected = currentValues.contains(option['apiValue']);
-                return FilterChip(
-                  label: Text(option['display']!),
-                  selected: isSelected,
-                  onSelected: editable
-                      ? (bool selected) {
-                    List<String> newValues = List.from(currentValues);
-                    if (selected) {
-                      newValues.add(option['apiValue']!);
-                    } else {
-                      newValues.remove(option['apiValue']);
-                    }
-                    onChanged(newValues);
-                  }
-                      : null,
+  Future<void> _showSelectionDialog(BuildContext context) async {
+    List<int> tempSelected = List.from(selectedValues);
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Select $label'),
+          content: SingleChildScrollView(
+            child: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: options.map((option) {
+                    final int? apiValue = int.tryParse(option['apiValue'] ?? '');
+                    if (apiValue == null) return SizedBox.shrink(); // Skip invalid options
+                    final isSelected = tempSelected.contains(apiValue);
+                    return CheckboxListTile(
+                      title: Text(option['display'] ?? ''),
+                      value: isSelected,
+                      onChanged: (bool? selected) {
+                        setState(() {
+                          if (selected == true) {
+                            tempSelected.add(apiValue);
+                          } else {
+                            tempSelected.remove(apiValue);
+                          }
+                        });
+                      },
+                    );
+                  }).toList(),
                 );
-              }).toList(),
-              if (options.isEmpty)
-                const Chip(
-                  label: Text('No options available'),
-                ),
-            ],
+              },
+            ),
           ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              child: const Text('Save'),
+              onPressed: () {
+                onChanged(tempSelected); // Return a List<int>
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
         );
       },
     );
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: editable ? () => _showSelectionDialog(context) : null,
+      child: AbsorbPointer(
+        child: TextFormField(
+          decoration: decoration ?? InputDecoration(labelText: label),
+          readOnly: true,
+          initialValue: selectedValues.map(getDisplayValue).join(', '),
+        ),
+      ),
+    );
+  }
 }
+
+
 
 class DisplayField extends StatelessWidget {
   final String label;
