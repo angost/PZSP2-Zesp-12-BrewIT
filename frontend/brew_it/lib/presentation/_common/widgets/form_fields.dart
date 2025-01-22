@@ -22,26 +22,26 @@ class DatePickerField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Ensure initialValue is formatted for display
-    final String formattedInitialValue = initialValue.isNotEmpty
-        ? (DateTime.tryParse(initialValue) != null
-        ? "${DateTime.parse(initialValue).day}/${DateTime.parse(initialValue).month}/${DateTime.parse(initialValue).year}"
-        : initialValue)
-        : "";
+    final String formattedInitialValue = (() {
+      try {
+        return parseDate(initialValue);
+      } catch (_) {
+        // If parsing fails, return initialValue unchanged
+        return initialValue;
+      }
+    })();
 
     final TextEditingController controller =
     TextEditingController(text: formattedInitialValue);
 
     return TextFormField(
       controller: controller,
-      decoration: decoration ?? InputDecoration(
-        labelText: label,
-        border: editable
-            ? null
-            : disabledTextFormFieldTheme.border,
-        fillColor: editable
-            ? null
-            : disabledTextFormFieldTheme.fillColor,
-      ),
+      decoration: decoration ??
+          InputDecoration(
+            labelText: label,
+            border: editable ? null : disabledTextFormFieldTheme.border,
+            fillColor: editable ? null : disabledTextFormFieldTheme.fillColor,
+          ),
       readOnly: true,
       enabled: editable,
       onTap: () async {
@@ -54,14 +54,30 @@ class DatePickerField extends StatelessWidget {
         );
         if (pickedDate != null) {
           // Format the date for API and display
-          String formattedDateForApi = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+          String formattedDateForApi =
+              "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
           String formattedDateForDisplay =
-              "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
+              "${pickedDate.day.toString().padLeft(2, '0')}/${pickedDate.month.toString().padLeft(2, '0')}/${pickedDate.year}";
           controller.text = formattedDateForDisplay;
           onSaved(formattedDateForApi);
         }
       },
     );
+  }
+
+  String parseDate(String date) {
+    try {
+      final parts = date.split('-');
+      if (parts.length == 3) {
+        final year = parts[0];
+        final month = parts[1];
+        final day = parts[2];
+        return "$day/$month/$year";
+      }
+      return date; // Return unchanged if not in the expected format
+    } catch (_) {
+      return date; // Return unchanged in case of any error
+    }
   }
 }
 

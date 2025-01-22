@@ -10,7 +10,7 @@ class RecipeAddPage extends AddEditPageTemplate {
             apiCall: "/recipes/",
             apiCallType: "post",
             navigateToPageSave: (Map elementData) {
-              return RecipeDetailsPage(elementData);
+              return RecipesPage();
             },
             navigateToPageCancel: () {
               return RecipesPage();
