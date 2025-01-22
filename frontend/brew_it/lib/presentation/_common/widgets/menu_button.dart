@@ -21,6 +21,7 @@ class MenuButton extends StatefulWidget {
     "recipes": const Icon(Icons.receipt_long),
     "registration_requests": const Icon(Icons.person_add_alt),
     "stats": const Icon(Icons.bar_chart_outlined),
+    "brewery_data": const Icon(Icons.person),
     "logout": const Icon(Icons.logout_rounded),
   };
 
@@ -34,6 +35,7 @@ class MenuButton extends StatefulWidget {
     "recipes": "Receptury",
     "registration_requests": "Prośby o rejestrację",
     "stats": "Statystyki",
+    "brewery_data": "Dane browaru",
     "logout": "Wyloguj się",
   };
 

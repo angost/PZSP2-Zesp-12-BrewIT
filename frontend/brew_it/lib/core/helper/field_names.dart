@@ -696,3 +696,33 @@ class StatisticsSumFieldNames extends StandardFieldNames {
             fieldTypes: [],
             errorMessages: {});
 }
+
+class BreweryDataFieldNames extends StandardFieldNames {
+  BreweryDataFieldNames()
+      : super(fieldNames: [
+          "Id",
+          "Nazwa",
+          "NIP",
+          "Ph wody",
+        ], jsonFieldNames: [
+          "brewery_id",
+          "name",
+          "nip",
+          "water_ph",
+        ], fieldNamesTable: [
+          "Id",
+          "Nazwa",
+          "NIP",
+          "Ph wody",
+        ], jsonFieldNamesTable: [
+          "brewery_id",
+          "name",
+          "nip",
+          "water_ph",
+        ], fieldTypes: [
+          "TextField",
+          "TextField",
+          "TextField",
+          "TextField",
+        ], errorMessages: {});
+}
