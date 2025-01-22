@@ -11,24 +11,6 @@ class CommercialOffersPage extends TablePageTemplate {
   CommercialOffersPage([Map? filtersData, List? filteredElements])
       : super(
             title: "Browary spełniające warunki:",
-            buttons: [
-              MainButton(
-                "FILTRUJ",
-                type: "primary_small",
-                navigateToPage: () {
-                  return filtersData != null
-                      ? CommercialOffersFilterPage(filtersData)
-                      : CommercialOffersFilterPage({});
-                },
-              ),
-              MainButton(
-                "Wyczyść filtry",
-                type: "secondary_small",
-                navigateToPage: () {
-                  return CommercialOffersPage();
-                },
-              )
-            ],
             headers: CommercialOffersFieldNames().fieldNamesTable,
             options: [
               MyIconButton(
@@ -44,13 +26,14 @@ class CommercialOffersPage extends TablePageTemplate {
             apiString: "/breweries/",
             jsonFields: CommercialOffersFieldNames().jsonFieldNamesTable,
             passedElements: filteredElements,
-            filtersPanel: FiltersPanel({}));
+            filtersPanel: FiltersPanel(filtersData));
 }
 
 class FiltersPanel extends StatefulWidget {
   FiltersPanel(this.elementData, {super.key});
 
-  Map elementData;
+  Map? elementData;
+  final formKey = GlobalKey<FormState>();
 
   @override
   State<FiltersPanel> createState() => _FiltersPanelState();
@@ -69,50 +52,39 @@ class _FiltersPanelState extends State<FiltersPanel> {
           isExpanded = currentIsExpanded;
         });
       },
-      // trailing: Row(
-      //   children: [
-      //     MainButton(
-      //       "Aplikuj filtry",
-      //       type: "primary_small",
-      //       apiCall: "/breweries/filtered/",
-      //       apiCallType: "post_use_response_data",
-      //       formKey: GlobalKey<FormState>(),
-      //       navigateToPage: (Map elementData, List filteredElements) {
-      //         return CommercialOffersPage(elementData, filteredElements);
-      //       },
-      //       dataForPage: widget.elementData,
-      //       errorMessages: CommercialOffersFiltersFieldNames().errorMessages,
-      //       customErrorHandler: handleMultipleErrors,
-      //     ),
-      //     MainButton(
-      //       "Anuluj",
-      //       type: "secondary_small",
-      //       // pop: true,
-      //     )
-      //   ],
-      // ),
+      trailing: SizedBox(
+        width: 500,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            MainButton(
+              "Aplikuj filtry",
+              type: "primary_small",
+              apiCall: "/breweries/filtered/",
+              apiCallType: "post_use_response_data",
+              formKey: widget.formKey,
+              navigateToPage: (Map elementData, List filteredElements) {
+                return CommercialOffersPage(elementData, filteredElements);
+              },
+              dataForPage: widget.elementData,
+              errorMessages: CommercialOffersFiltersFieldNames().errorMessages,
+              customErrorHandler: handleMultipleErrors,
+            ),
+            MainButton(
+              "Anuluj",
+              type: "secondary_small",
+              navigateToPage: () {
+                return CommercialOffersPage({});
+              },
+            )
+          ],
+        ),
+      ),
       children: [
-        SizedBox(height: 300, child: CommercialOffersFilterPage({}))
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        //   children: [
-        //     Column(
-        //       children: [
-        //         Text('Ogólne'),
-        //       ],
-        //     ),
-        //     Column(
-        //       children: [
-        //         Text('Zbiornik'),
-        //       ],
-        //     ),
-        //     Column(
-        //       children: [
-        //         Text('Zestaw do warzenia'),
-        //       ],
-        //     ),
-        //   ],
-        // )
+        SizedBox(
+            height: 300,
+            child: CommercialOffersFilterPage(
+                widget.elementData ?? {}, widget.formKey))
       ],
     );
   }

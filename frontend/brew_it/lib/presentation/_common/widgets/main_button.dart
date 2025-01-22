@@ -7,17 +7,17 @@ import 'package:flutter/material.dart';
 class MainButton extends StatelessWidget {
   MainButton(this.content,
       {this.type = "default",
-        this.navigateToPage,
-        this.dataForPage,
-        this.customOnPressed,
-        this.formKey,
-        this.apiCall,
-        this.apiCallType,
-        this.errorMessages,
-        this.customErrorHandler,
-        this.pop = false,
-        this.navigateIsTablePage = false,
-        super.key});
+      this.navigateToPage,
+      this.dataForPage,
+      this.customOnPressed,
+      this.formKey,
+      this.apiCall,
+      this.apiCallType,
+      this.errorMessages,
+      this.customErrorHandler,
+      this.pop = false,
+      this.navigateIsTablePage = false,
+      super.key});
 
   final String content;
   final String type;
@@ -30,7 +30,8 @@ class MainButton extends StatelessWidget {
   final bool pop;
   final bool navigateIsTablePage;
   final Map<String, dynamic>? errorMessages;
-  final Function(BuildContext context, DioException e, Map<String, dynamic>? errorMessages)? customErrorHandler;
+  final Function(BuildContext context, DioException e,
+      Map<String, dynamic>? errorMessages)? customErrorHandler;
 
   final typeToStyle = {
     "default": secondaryButtonTheme,
@@ -113,8 +114,4 @@ class MainButton extends StatelessWidget {
             : typeToStyle["default"]!.style,
         child: Text(content));
   }
-
-
 }
-
-

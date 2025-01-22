@@ -9,6 +9,7 @@ class FilterPageTemplate extends StatefulWidget {
   FilterPageTemplate({
     required this.title,
     this.buttons,
+    this.formKey,
     this.options,
     required this.fieldNames,
     required this.jsonFieldNames,
@@ -21,6 +22,7 @@ class FilterPageTemplate extends StatefulWidget {
 
   final String title;
   final List<MainButton>? buttons;
+  GlobalKey<FormState>? formKey;
   final List<MyIconButton>? options;
   final List<String> fieldNames;
   final List<String> jsonFieldNames;
@@ -45,7 +47,6 @@ class _FilterPageTemplateState extends State<FilterPageTemplate> {
   @override
   Widget build(BuildContext context) {
     List<String>? fieldValues;
-    GlobalKey<FormState>? formKey;
 
     // Initialize field values
     if (widget.elementData != null && widget.elementData!.isNotEmpty) {
@@ -57,18 +58,22 @@ class _FilterPageTemplateState extends State<FilterPageTemplate> {
       );
     }
 
-    // Retrieve formKey from MainButton if available
-    if (widget.buttons != null) {
-      for (MainButton button in widget.buttons!) {
-        if (button.formKey != null) {
-          formKey = button.formKey;
-          break;
-        }
-      }
-    }
-
     final fieldsWidgets = generateFieldsWidgets(fieldValues);
-    final splitIndex = (fieldsWidgets.length / 2).round();
+    List<Widget> fieldsWidgetsVat = [];
+    List<Widget> fieldsWidgetsBrewset = [];
+    List<Widget> fieldsWidgetsGeneral = [];
+    int i = 0;
+    while (i < fieldsWidgets.length) {
+      String jsonName = widget.jsonFieldNames[i];
+      if (jsonName.contains('vat')) {
+        fieldsWidgetsVat.add(fieldsWidgets[i]);
+      } else if (jsonName.contains('brewset')) {
+        fieldsWidgetsBrewset.add(fieldsWidgets[i]);
+      } else {
+        fieldsWidgetsGeneral.add(fieldsWidgets[i]);
+      }
+      i += 1;
+    }
 
     return Card(
       color: Colors.transparent,
@@ -78,13 +83,44 @@ class _FilterPageTemplateState extends State<FilterPageTemplate> {
           Flexible(
             child: SingleChildScrollView(
               child: Form(
-                key: formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: fieldsWidgets,
-                ),
-              ),
+                  key: widget.formKey,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                                const Text('Ogólne'),
+                              ] +
+                              fieldsWidgetsGeneral,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 100,
+                      ),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                                const Text('Zbiornik'),
+                              ] +
+                              fieldsWidgetsVat,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 100,
+                      ),
+                      Expanded(
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                                  const Text('Zestaw do warzenia'),
+                                ] +
+                                fieldsWidgetsBrewset),
+                      ),
+                    ],
+                  )),
             ),
           ),
           const SizedBox(height: 20),

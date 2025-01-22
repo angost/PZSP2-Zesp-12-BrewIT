@@ -10,7 +10,7 @@ class HomePageContract extends HomePageTemplate {
       : super(title: "Twoje konto - Browar kontraktowy", buttons: [
           MenuButton(
             type: "commercial_offers",
-            navigateToPage: CommercialOffersPage(),
+            navigateToPage: CommercialOffersPage({}),
           ),
           MenuButton(
             type: "reservations",
