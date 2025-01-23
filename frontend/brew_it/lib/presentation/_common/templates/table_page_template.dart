@@ -18,6 +18,7 @@ class TablePageTemplate extends StatefulWidget {
       this.fetchDisplay,
       this.hideFirstField = false,
       this.linkedFields = const {},
+        this.dateFields = const [],
       this.filtersPanel,
       super.key});
 
@@ -31,6 +32,7 @@ class TablePageTemplate extends StatefulWidget {
   final List<Map<String, String>>? fetchDisplay;
   final bool hideFirstField;
   final Map<String, Function(Map elementData)>? linkedFields;
+  final List<String>? dateFields;
   final FiltersPanel? filtersPanel;
 
   @override
@@ -145,12 +147,11 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
                                   fetchedFieldValues[field]!.containsKey(value)
                               ? fetchedFieldValues[field]![value]!
                               : value;
-                          final formattedValue = _isIso8601Date(value)
-                              ? _formatDateForDisplay(value)
-                              : displayValue;
+                          final isDateField =
+                          widget.dateFields!.contains(field);
 
-                          bool isBooleanField = ((formattedValue == "true") ||
-                                  (formattedValue == "false"))
+                          bool isBooleanField = ((value == "true") ||
+                                  (value == "false"))
                               ? true
                               : false;
                           Widget fieldWidget;
@@ -158,7 +159,7 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
                           if (isBooleanField) {
                             // Render as a checkbox or empty box
                             final boolValue =
-                                formattedValue.toLowerCase() == "true";
+                                value.toLowerCase() == "true";
                             fieldWidget = Icon(
                               boolValue
                                   ? Icons.check_box
@@ -176,7 +177,7 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
                                     field == "reservation_id"
                                         ? "/reservations"
                                         : "/${field}s",
-                                    formattedValue,
+                                    value,
                                     context,
                                     (data) => navigateToPage(data),
                                   );
@@ -191,10 +192,18 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
                                 ),
                               ),
                             );
+
+                          } else if (isDateField ){
+                            final formattedValue = _formatDateForDisplay(value);
+                            fieldWidget = Text(
+                              formattedValue,
+                              textAlign: TextAlign.center,
+                            );
+
                           } else {
                             // Render as plain text
                             fieldWidget = Text(
-                              formattedValue,
+                              value,
                               textAlign: TextAlign.center,
                             );
                           }
