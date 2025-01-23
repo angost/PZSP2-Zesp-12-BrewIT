@@ -76,7 +76,7 @@ class MainButton extends StatelessWidget {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return navigateToPage!();
                   }));
-                }else if (apiCallType == "put") {
+                }else if (apiCallType == "put" || apiCallType == "post") {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return navigateToPage!(dataForPage);
                   }));
