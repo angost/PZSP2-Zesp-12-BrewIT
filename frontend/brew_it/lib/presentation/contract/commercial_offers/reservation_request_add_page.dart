@@ -27,7 +27,13 @@ class ReservationRequestAddPage extends AddEditPageTemplate {
                 "displayField": "first_name",
                 "apiValueField": "id",
                 "enumKey": "authorised_workers",
-              }
+              },
+              {
+                "endpoint": "/breweries/",
+                "displayField": "name",
+                "apiValueField": "brewery_id",
+                "enumKey": "production_brewery",
+              },
             ]
 
             ,

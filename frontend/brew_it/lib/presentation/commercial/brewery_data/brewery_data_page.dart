@@ -32,6 +32,7 @@ class BreweryDataPage extends DetailsAddEditPageTemplate {
             ],
             fieldNames: BreweryDataFieldNames().fieldNames,
             jsonFieldNames: BreweryDataFieldNames().jsonFieldNames,
+            hideFirstField: true,
             elementData: elementData);
 }
 

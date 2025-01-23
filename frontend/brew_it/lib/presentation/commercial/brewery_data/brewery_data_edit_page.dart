@@ -19,5 +19,6 @@ class BreweryDataEditPage extends AddEditPageTemplate {
             fieldEditable: [false, true, true, true],
             fieldTypes: BreweryDataFieldNames().fieldTypes,
             errorMessages: BreweryDataFieldNames().errorMessages,
+            hideFirstField: true,
             elementData: elementData);
 }

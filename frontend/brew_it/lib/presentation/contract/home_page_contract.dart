@@ -6,6 +6,7 @@ import 'package:brew_it/presentation/contract/recipes/recipes_page.dart';
 import 'package:brew_it/presentation/contract/reservation_requests/reservation_requests_page.dart';
 import 'package:brew_it/presentation/contract/reservations/reservations_page.dart';
 
+
 class HomePageContract extends HomePageTemplate {
   HomePageContract({super.key})
       : super(title: "Twoje konto - Browar kontraktowy", buttons: [

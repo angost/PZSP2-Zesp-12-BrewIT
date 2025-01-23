@@ -39,7 +39,6 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
   void initState() {
     super.initState();
 
-    // Initialize dates from filtersData or set to null
     vatStartDate = widget.filtersData?["vat_start_date"] != null
         ? parseDateTime(widget.filtersData!["vat_start_date"])
         : null;
@@ -53,15 +52,15 @@ class _ChooseMachineSetPageState extends State<ChooseMachineSetPage> {
         ? parseDateTime(widget.filtersData!["brewset_end_date"])
         : null;
 
-    brewSize = (widget.filtersData?["vat_capacity"] ?? 0) > (widget.filtersData?["brewset_capacity"] ?? 0)
-        ? (widget.filtersData?["vat_capacity"] as int? ?? 0)
-        : (widget.filtersData?["brewset_capacity"] as int? ?? 0);
+    brewSize = 0;
+    // (widget.filtersData?["vat_capacity"] as int? ?? 0) > (widget.filtersData?["brewset_capacity"] as int? ?? 0)
+    //     ? (widget.filtersData?["vat_capacity"] as int? ?? 0)
+    //     : (widget.filtersData?["brewset_capacity"] as int? ?? 0);
 
     vatDays = calculateDays(vatStartDate, vatEndDate);
     brewsetDays = calculateDays(brewsetStartDate, brewsetEndDate);
 
     fetchData();
-
   }
 
   int calculateDays(DateTime? startDate, DateTime? endDate) {

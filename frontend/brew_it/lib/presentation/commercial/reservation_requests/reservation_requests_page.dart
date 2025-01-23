@@ -34,6 +34,14 @@ class ReservationRequestsPage extends TablePageTemplate {
               ),
             ],
             apiString: "/reservation-requests/",
+            fetchDisplay: [
+              {
+                "fieldKey": "contract_brewery",
+                "endpoint": "/breweries/",
+                "idField": "brewery_id",
+                "displayField": "name",
+              },
+            ],
             hideFirstField: true,
             jsonFields: ReservationRequestsCommercialFieldNames().jsonFieldNamesTable);
 }

@@ -17,6 +17,14 @@ class ReservationRequestsPage extends TablePageTemplate {
               ),
             ],
             apiString: "/reservation-requests/",
+            fetchDisplay: [
+              {
+                "fieldKey": "production_brewery",
+                "endpoint": "/breweries/",
+                "idField": "brewery_id",
+                "displayField": "name",
+              },
+            ],
             hideFirstField: true,
             jsonFields:
                 ReservationRequestsContractFieldNames().jsonFieldNamesTable);

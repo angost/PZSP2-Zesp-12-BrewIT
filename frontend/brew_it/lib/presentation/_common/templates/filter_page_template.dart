@@ -103,7 +103,7 @@ class _FilterPageTemplateState extends State<FilterPageTemplate> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: <Widget>[
-                                const Text('Zbiornik'),
+                                const Text('Kadź'),
                               ] +
                               fieldsWidgetsVat,
                         ),

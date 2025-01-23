@@ -486,7 +486,7 @@ class AddReservationRequestFieldNames extends StandardFieldNames {
     "price",
     "allows_sector_share",
   ], fieldTypes: [
-    "TextField",
+    "DisplayField",
     "TextField",
     "TextField",
     "BooleanField",
