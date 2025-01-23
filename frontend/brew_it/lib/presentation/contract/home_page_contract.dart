@@ -5,6 +5,8 @@ import 'package:brew_it/presentation/contract/production_processes/production_pr
 import 'package:brew_it/presentation/contract/recipes/recipes_page.dart';
 import 'package:brew_it/presentation/contract/reservation_requests/reservation_requests_page.dart';
 import 'package:brew_it/presentation/contract/reservations/reservations_page.dart';
+import 'package:brew_it/presentation/contract/workers/workers_page.dart';
+
 
 class HomePageContract extends HomePageTemplate {
   HomePageContract({super.key})
@@ -28,6 +30,10 @@ class HomePageContract extends HomePageTemplate {
           MenuButton(
             type: "recipes",
             navigateToPage: RecipesPage(),
+          ),
+          MenuButton(
+            type: "workers",
+            navigateToPage: WorkersPage(),
           ),
           MenuButton(
             type: "logout",

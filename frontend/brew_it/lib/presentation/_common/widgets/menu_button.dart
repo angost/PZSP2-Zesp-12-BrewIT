@@ -23,6 +23,7 @@ class MenuButton extends StatefulWidget {
     "stats": const Icon(Icons.bar_chart_outlined),
     "brewery_data": const Icon(Icons.person),
     "logout": const Icon(Icons.logout_rounded),
+    "workers": const Icon(Icons.person),
   };
 
   final typeToContent = {
@@ -37,6 +38,7 @@ class MenuButton extends StatefulWidget {
     "stats": "Statystyki",
     "brewery_data": "Dane browaru",
     "logout": "Wyloguj się",
+    "workers": "Pracownicy",
   };
 
   @override

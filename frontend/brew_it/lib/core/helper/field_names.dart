@@ -764,3 +764,34 @@ class BreweryDataFieldNames extends StandardFieldNames {
           "TextField",
         ], errorMessages: {});
 }
+
+class WorkerFieldNames extends StandardFieldNames {
+  WorkerFieldNames()
+      : super(fieldNames: [
+          "Id pracownika",
+          "Imię",
+          "Nazwisko",
+          "Unikalny identyfikator",
+        ], jsonFieldNames: [
+          "id",
+          "first_name",
+          "last_name",
+          "identificator",
+        ], fieldNamesTable: [
+          "Id pracownika",
+          "Imię",
+          "Nazwisko",
+          "Unikalny identyfikator",
+          "Operacje",
+        ], jsonFieldNamesTable: [
+          "id",
+          "first_name",
+          "last_name",
+          "identificator",
+        ], fieldTypes: [
+          "TextField",
+          "TextField",
+          "TextField",
+          "TextField",
+        ], errorMessages: {});
+}
