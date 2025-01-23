@@ -28,5 +28,6 @@ class RegistrationRequestsPage extends TablePageTemplate {
           ],
           apiString: "/registration-requests/",
           jsonFields: RegistrationRequestsFieldNames().jsonFieldNamesTable,
+          hideFirstField: true,
         );
 }

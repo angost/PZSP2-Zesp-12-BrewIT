@@ -22,6 +22,7 @@ class DetailsAddEditPageTemplate extends StatefulWidget {
       this.fetchOptions,
       this.fetchDisplay,
       this.displayValues,
+        this.hideFirstField = false,
       super.key});
 
   final String title;
@@ -34,6 +35,7 @@ class DetailsAddEditPageTemplate extends StatefulWidget {
   Map<String, List<Map<String, String>>>? enumOptions;
   final List<Map<String, String>>? fetchOptions;
   final List<Map<String, String>>? fetchDisplay;
+  final bool hideFirstField;
   Map<String, String>? displayValues;
   Map? elementData;
 
@@ -91,7 +93,13 @@ class _DetailsAddEditPageTemplateState
     }
 
     final fieldsWidgets = generateFieldsWidgets(fieldValues);
-    final splitIndex = (fieldsWidgets.length / 2).round();
+    final filteredFieldsWidgets = [
+      for (int i = 0; i < fieldsWidgets.length; i++)
+        if (!(widget.hideFirstField && i == 0)) // Condition to exclude the first widget
+          fieldsWidgets[i],
+    ];
+
+    final splitIndex = (filteredFieldsWidgets.length / 2).round();
 
     return Scaffold(
         appBar: MyAppBar(context),
