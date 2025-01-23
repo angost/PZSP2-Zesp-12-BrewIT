@@ -150,8 +150,8 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
                           final isDateField =
                           widget.dateFields!.contains(field);
 
-                          bool isBooleanField = ((value == "true") ||
-                                  (value == "false"))
+                          bool isBooleanField = ((displayValue == "true") ||
+                                  (displayValue == "false"))
                               ? true
                               : false;
                           Widget fieldWidget;
@@ -177,7 +177,7 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
                                     field == "reservation_id"
                                         ? "/reservations"
                                         : "/${field}s",
-                                    value,
+                                    displayValue,
                                     context,
                                     (data) => navigateToPage(data),
                                   );
@@ -203,7 +203,7 @@ class _TablePageTemplateState extends State<TablePageTemplate> {
                           } else {
                             // Render as plain text
                             fieldWidget = Text(
-                              value,
+                              displayValue,
                               textAlign: TextAlign.center,
                             );
                           }
