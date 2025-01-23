@@ -378,12 +378,7 @@ class BreweryDetail(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
     def get_object(self, pk):
-        if self.request.user.role == get_user_model().AccountRoles.ADMIN.value:
-            breweries = Brewery.objects.all()
-        elif self.request.user.role == get_user_model().AccountRoles.CONTRACT.value:
-            breweries = Brewery.objects.filter(selector=Brewery.BrewerySelectors.PRODUCTION.value)
-        else:
-            breweries = Brewery.objects.filter(selector=Brewery.BrewerySelectors.CONTRACT.value)
+        breweries = Brewery.objects.all()
         try:
             return breweries.get(pk=pk)
         except Brewery.DoesNotExist:
