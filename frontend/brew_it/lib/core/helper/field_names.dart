@@ -155,19 +155,19 @@ class CommercialOffersFiltersFieldNames extends StandardFieldNames {
   CommercialOffersFiltersFieldNames()
       : super(
             fieldNames: [
-              "Zbiornik - data początkowa",
-              "Zbiornik - data końcowa",
-              "Zbiornik - pojemność",
-              "Zbiornik - temperatura minimalna",
-              "Zbiornik - temperatura maksymalna",
-              "Zbiornik - typ pakowania",
+              "Kadź - data początkowa",
+              "Kadź - data końcowa",
+              "Kadź - pojemność",
+              "Kadź - wymagana temperatura minimalna",
+              "Kadź - wymagana temperatura maksymalna",
+              "Kadź - typ pakowania",
               "Zestaw do warzenia - data początkowa",
               "Zestaw do warzenia - data końcowa",
               "Zestaw do warzenia - pojemność",
-              "Używa bakterii",
+              "Fermentacja bakteryjna",
               "Zezwala na dzielenie sektorów",
-              "Ph wody minimalne",
-              "Ph wody maksymalne",
+              "Dolna granica Ph wody",
+              "Górna granica Ph wody",
             ],
             jsonFieldNames: [
               "vat_start_date",
@@ -757,6 +757,37 @@ class BreweryDataFieldNames extends StandardFieldNames {
           "name",
           "nip",
           "water_ph",
+        ], fieldTypes: [
+          "TextField",
+          "TextField",
+          "TextField",
+          "TextField",
+        ], errorMessages: {});
+}
+
+class WorkerFieldNames extends StandardFieldNames {
+  WorkerFieldNames()
+      : super(fieldNames: [
+          "Id pracownika",
+          "Imię",
+          "Nazwisko",
+          "Unikalny identyfikator",
+        ], jsonFieldNames: [
+          "id",
+          "first_name",
+          "last_name",
+          "identificator",
+        ], fieldNamesTable: [
+          "Id pracownika",
+          "Imię",
+          "Nazwisko",
+          "Unikalny identyfikator",
+          "Operacje",
+        ], jsonFieldNamesTable: [
+          "id",
+          "first_name",
+          "last_name",
+          "identificator",
         ], fieldTypes: [
           "TextField",
           "TextField",
