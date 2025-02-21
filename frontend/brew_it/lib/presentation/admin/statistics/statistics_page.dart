@@ -39,6 +39,7 @@ class StatisticsPage extends TablePageTemplate {
           headers: StatisticsFieldNames().fieldNamesTable,
           apiString: "/statistics/",
           jsonFields: StatisticsFieldNames().jsonFieldNamesTable,
+          hideFirstField: true,
         );
 
   static Future<Map<String, dynamic>?> _fetchCombinedStatistics() async {

@@ -8,8 +8,7 @@ abstract class StandardFieldNames {
       required this.jsonFieldNamesTable,
       required this.fieldTypes,
       required this.errorMessages,
-      this.fetchOptions
-      });
+      this.fetchOptions});
 
   List<String> fieldNames;
   List<String> jsonFieldNames;
@@ -22,83 +21,108 @@ abstract class StandardFieldNames {
 
 class RegisterCommercialFieldNames extends StandardFieldNames {
   RegisterCommercialFieldNames()
-      : super(fieldNames: [
-          "Email",
-          "Hasło",
-          "Powtórz hasło",
-          "Nazwa firmy",
-          "NIP",
-          "Ph wody",
-        ], jsonFieldNames: [
-          "email",
-          "password",
-          "password2",
-          "name",
-          "nip",
-          "water_ph"
-        ],
-      fieldNamesTable: [],
-      jsonFieldNamesTable: [],
-      fieldTypes: [],
-      errorMessages: {
-        "email": {
-          "This field may not be blank.": "Email nie może być pusty.",
-          "Enter a valid email address.": "Wprowadź poprawny adres email.",
-          "Account with this email already exists": "Istnieje już konto z tym adresem email."
-        },
-        "password": {
-          "This field may not be blank.": "Hasło nie może być puste",
-          "This password is too short. It must contain at least 8 characters.": "Hasło musi mieć co najmniej 8 znaków.",
-          "This password is too common.": "Zbyt popularne hasło."
-        },
-        "password2": {"This field may not be blank.": "Należy powtórzyć hasło."},
-        "name": {"This field may not be blank.": "Nazwa firmy nie może być pusta."},
-        "water_ph": {
-          "Ensure that there are no more than 2 digits before the decimal point.": "Ph wody powinno mieć format XX.X.",
-        },
-        "non_field_errors": {
-          "Passwords do not match": "Powtórzone hasło nie jest identyczne.",
-          "Production brewery must specify water_ph": "Wymagane jest ph wody w browarze",
-        },
-      });
+      : super(
+            fieldNames: [
+              "Email",
+              "Hasło",
+              "Powtórz hasło",
+              "Nazwa firmy",
+              "NIP",
+              "Ph wody (wymagane do wypożyczania, można później)",
+            ],
+            jsonFieldNames: [
+              "email",
+              "password",
+              "password2",
+              "name",
+              "nip",
+              "water_ph"
+            ],
+            fieldNamesTable: [],
+            jsonFieldNamesTable: [],
+            fieldTypes: [],
+            errorMessages: {
+              "email": {
+                "This field may not be blank.": "Email nie może być pusty.",
+                "Enter a valid email address.":
+                    "Wprowadź poprawny adres email.",
+                "Account with this email already exists":
+                    "Istnieje już konto z tym adresem email."
+              },
+              "password": {
+                "This field may not be blank.": "Hasło nie może być puste",
+                "This password is too short. It must contain at least 8 characters.":
+                    "Hasło musi mieć co najmniej 8 znaków.",
+                "This password is too common.": "Zbyt popularne hasło."
+              },
+              "password2": {
+                "This field may not be blank.": "Należy powtórzyć hasło."
+              },
+              "name": {
+                "This field may not be blank.":
+                    "Nazwa firmy nie może być pusta."
+              },
+              "water_ph": {
+                "Ensure that there are no more than 2 digits before the decimal point.":
+                    "Ph wody powinno mieć format XX.X.",
+              },
+              "non_field_errors": {
+                "Passwords do not match":
+                    "Powtórzone hasło nie jest identyczne.",
+                "Production brewery must specify water_ph":
+                    "Wymagane jest ph wody w browarze",
+              },
+            });
 }
 
 class RegisterContractFieldNames extends StandardFieldNames {
   RegisterContractFieldNames()
-      : super(fieldNames: [
-          "Email",
-          "Hasło",
-          "Powtórz hasło",
-          "Nazwa firmy",
-          "NIP",
-        ], jsonFieldNames: [
-          "email",
-          "password",
-          "password2",
-          "name",
-          "nip",
-        ],
-      fieldNamesTable: [],
-      jsonFieldNamesTable: [],
-      fieldTypes: [],
-      errorMessages: {
-        "email": {
-          "This field may not be blank.": "Email nie może być pusty.",
-          "Enter a valid email address.": "Wprowadź poprawny adres email.",
-          "Account with this email already exists": "Istnieje już konto z tym adresem email."
-        },
-        "password": {
-          "This field may not be blank.": "Hasło nie może być puste",
-          "This password is too short. It must contain at least 8 characters.": "Hasło musi mieć co najmniej 8 znaków.",
-          "This password is too common.": "Zbyt popularne hasło."
-        },
-        "password2": {"This field may not be blank.": "Należy powtórzyć hasło."},
-        "name": {"This field may not be blank.": "Nazwa firmy nie może być pusta."},
-        "non_field_errors": {
-          "Passwords do not match": "Powtórzone hasło nie jest identyczne.",
-          "Production brewery must specify water_ph": "Wymagane jest ph wody w browarze",
-        },
-      });
+      : super(
+            fieldNames: [
+              "Email",
+              "Hasło",
+              "Powtórz hasło",
+              "Nazwa firmy",
+              "NIP",
+            ],
+            jsonFieldNames: [
+              "email",
+              "password",
+              "password2",
+              "name",
+              "nip",
+            ],
+            fieldNamesTable: [],
+            jsonFieldNamesTable: [],
+            fieldTypes: [],
+            errorMessages: {
+              "email": {
+                "This field may not be blank.": "Email nie może być pusty.",
+                "Enter a valid email address.":
+                    "Wprowadź poprawny adres email.",
+                "Account with this email already exists":
+                    "Istnieje już konto z tym adresem email."
+              },
+              "password": {
+                "This field may not be blank.": "Hasło nie może być puste",
+                "This password is too short. It must contain at least 8 characters.":
+                    "Hasło musi mieć co najmniej 8 znaków.",
+                "This password is too common.": "Zbyt popularne hasło."
+              },
+              "password2": {
+                "This field may not be blank.": "Należy powtórzyć hasło."
+              },
+              "name": {
+                "This field may not be blank.":
+                    "Nazwa firmy nie może być pusta."
+              },
+              "non_field_errors": {
+                "Passwords do not match":
+                    "Powtórzone hasło nie jest identyczne.",
+                "Production brewery must specify water_ph":
+                    "Wymagane jest ph wody w browarze",
+              },
+            });
 }
 
 class CommercialOffersFieldNames extends StandardFieldNames {
@@ -129,52 +153,61 @@ class CommercialOffersFieldNames extends StandardFieldNames {
 
 class CommercialOffersFiltersFieldNames extends StandardFieldNames {
   CommercialOffersFiltersFieldNames()
-      : super(fieldNames: [
-          "Zbiornik - data początkowa",
-          "Zbiornik - data końcowa",
-          "Zbiornik - pojemność",
-          "Zbiornik - temperatura minimalna",
-          "Zbiornik - temperatura maksymalna",
-          "Zbiornik - typ pakowania",
-          "Zestaw do warzenia - data początkowa",
-          "Zestaw do warzenia - data końcowa",
-          "Zestaw do warzenia - pojemność",
-          "Używa bakterii",
-          "Zezwala na dzielenie sektorów",
-          "Ph wody minimalne",
-          "Ph wody maksymalne",
-        ], jsonFieldNames: [
-          "vat_start_date",
-          "vat_end_date",
-          "vat_capacity",
-          "vat_min_temperature",
-          "vat_max_temperature",
-          "vat_package_type",
-          "brewset_start_date",
-          "brewset_end_date",
-          "brewset_capacity",
-          "uses_bacteria",
-          "allows_sector_share",
-          "water_ph_min",
-          "water_ph_max"
-        ],
-      fieldNamesTable: [],
-      jsonFieldNamesTable: [],
-      fieldTypes: [],
-      errorMessages: {
-        "vat_start_date": "Data początkowa zbiornika jest wymagana.",
-        "vat_end_date": "Data końcowa zbiornika jest wymagana.",
-        "vat_capacity": "Pojemność zbiornika musi być liczbą całkowitą.",
-        "vat_min_temperature": "Minimalna temperatura zbiornika musi być liczbą.",
-        "vat_max_temperature": "Maksymalna temperatura zbiornika musi być liczbą.",
-        "vat_package_type": "Typ opakowania zbiornika jest wymagany.",
-        "brewset_start_date": "Data początkowa zestawu do warzenia jest wymagana.",
-        "brewset_end_date": "Data końcowa zestawu do warzenia jest wymagana.",
-        "brewset_capacity": "Pojemność zestawu do warzenia musi być liczbą całkowitą.",
-        "uses_bacteria": "Pole 'Używa bakterii' jest wymagane.",
-        "allows_sector_share": "Pole 'Zezwala na współdzielenie sektora' jest wymagane.",
-        "water_ph_min": "Minimalne pH wody musi być liczbą.",
-        "water_ph_max": "Maksymalne pH wody musi być liczbą.",});
+      : super(
+            fieldNames: [
+              "Kadź - data początkowa",
+              "Kadź - data końcowa",
+              "Kadź - pojemność",
+              "Kadź - wymagana temperatura minimalna",
+              "Kadź - wymagana temperatura maksymalna",
+              "Kadź - typ pakowania",
+              "Zestaw do warzenia - data początkowa",
+              "Zestaw do warzenia - data końcowa",
+              "Zestaw do warzenia - pojemność",
+              "Fermentacja bakteryjna",
+              "Zezwala na dzielenie sektorów",
+              "Dolna granica Ph wody",
+              "Górna granica Ph wody",
+            ],
+            jsonFieldNames: [
+              "vat_start_date",
+              "vat_end_date",
+              "vat_capacity",
+              "vat_min_temperature",
+              "vat_max_temperature",
+              "vat_package_type",
+              "brewset_start_date",
+              "brewset_end_date",
+              "brewset_capacity",
+              "uses_bacteria",
+              "allows_sector_share",
+              "water_ph_min",
+              "water_ph_max"
+            ],
+            fieldNamesTable: [],
+            jsonFieldNamesTable: [],
+            fieldTypes: [],
+            errorMessages: {
+              "vat_start_date": "Data początkowa zbiornika jest wymagana.",
+              "vat_end_date": "Data końcowa zbiornika jest wymagana.",
+              "vat_capacity": "Pojemność zbiornika musi być liczbą całkowitą.",
+              "vat_min_temperature":
+                  "Minimalna temperatura zbiornika musi być liczbą.",
+              "vat_max_temperature":
+                  "Maksymalna temperatura zbiornika musi być liczbą.",
+              "vat_package_type": "Typ opakowania zbiornika jest wymagany.",
+              "brewset_start_date":
+                  "Data początkowa zestawu do warzenia jest wymagana.",
+              "brewset_end_date":
+                  "Data końcowa zestawu do warzenia jest wymagana.",
+              "brewset_capacity":
+                  "Pojemność zestawu do warzenia musi być liczbą całkowitą.",
+              "uses_bacteria": "Pole 'Używa bakterii' jest wymagane.",
+              "allows_sector_share":
+                  "Pole 'Zezwala na współdzielenie sektora' jest wymagane.",
+              "water_ph_min": "Minimalne pH wody musi być liczbą.",
+              "water_ph_max": "Maksymalne pH wody musi być liczbą.",
+            });
 }
 
 class ProductionProcessesFieldNames extends StandardFieldNames {
@@ -184,15 +217,23 @@ class ProductionProcessesFieldNames extends StandardFieldNames {
           "Data końcowa",
           "Rezerwacja",
           "Przepis",
-          "Opis",
           "Czy udany",
+          "Zacieranie",
+          "Filtracja",
+          "Gotowanie",
+          "Fermentacja",
+          "Leżakowanie",
         ], jsonFieldNames: [
           "start_date",
           "end_date",
           "reservation",
           "recipe",
-          "log",
           "is_successful",
+          "mashing_log",
+          "lautering_log",
+          "boiling_log",
+          "fermentation_log",
+          "lagerring_log"
         ], fieldNamesTable: [
           "Id",
           "Data początkowa",
@@ -213,23 +254,29 @@ class ProductionProcessesFieldNames extends StandardFieldNames {
           "DatePickerField",
           "EnumField",
           "EnumField",
-          "TextField",
-          "BooleanField"
+          "BooleanField",
+          "LargeTextField",
+          "LargeTextField",
+          "LargeTextField",
+          "LargeTextField",
+          "LargeTextField",
         ], errorMessages: {
-        "start_date": "Data początkowa jest wymagana.",
-        "non_field_errors": {
-          "Execution log for this reservation already exists":
-            "Dziennik wykonania dla tej rezerwacji już istnieje.",
-          "Reservation does not exist": "Rezerwacja nie istnieje.",
-        },
-        "reservation": {
-          "This field may not be null" : "Rezerwacja nie może być pusta.",
-          r'Invalid pk "\d+" - object does not exist.': "Taka rezerwacja nie istnieje."
-        },
-        "recipe": {
-          "This field may not be null" : "Przepis nie może być pusty.",
-          r'Invalid pk "\d+" - object does not exist.': "Taki przepis nie istnieje."
-        }
+          "start_date": "Data początkowa jest wymagana.",
+          "non_field_errors": {
+            "Execution log for this reservation already exists":
+                "Dziennik wykonania dla tej rezerwacji już istnieje.",
+            "Reservation does not exist": "Rezerwacja nie istnieje.",
+          },
+          "reservation": {
+            "This field is required.": "Rezerwacja nie może być pusta.",
+            r'Invalid pk "\d+" - object does not exist.':
+                "Taka rezerwacja nie istnieje."
+          },
+          "recipe": {
+            "This field is required.": "Przepis nie może być pusty.",
+            r'Invalid pk "\d+" - object does not exist.':
+                "Taki przepis nie istnieje."
+          }
         }, fetchOptions: [
           {
             "endpoint": "/reservations/",
@@ -239,7 +286,7 @@ class ProductionProcessesFieldNames extends StandardFieldNames {
           },
           {
             "endpoint": "/recipes/",
-            "displayField": "recipe_id",
+            "displayField": "name",
             "apiValueField": "recipe_id",
             "enumKey": "recipe",
           }
@@ -327,24 +374,22 @@ class SectorsFieldNames extends StandardFieldNames {
         ], errorMessages: {
           "name": "Nazwa nie może być pusta.",
           "allows_bacteria": "Wybrać opcję bakterii",
-  });
+        });
 }
 
-class ReservationRequestsFieldNames extends StandardFieldNames {
-  ReservationRequestsFieldNames()
+class ReservationRequestsCommercialFieldNames extends StandardFieldNames {
+  ReservationRequestsCommercialFieldNames()
       : super(fieldNames: [
           "Id",
           "Browar kontraktowy",
-          "Browar komercyjny",
           "Ilość produkowanego piwa",
           "Cena",
           "Pozwala na dzielenie sektorów",
-          "Osoby upoważnione do wstępu",
+          // "Osoby upoważnione do wstępu",
           // "Maszyny"
         ], jsonFieldNames: [
           "id",
           "contract_brewery",
-          "production_brewery",
           "brew_size",
           "price",
           "allows_sector_share",
@@ -365,8 +410,7 @@ class ReservationRequestsFieldNames extends StandardFieldNames {
           "allows_sector_share",
         ], fieldTypes: [
           "TextField",
-          "TextField",
-          "TextField",
+          "DisplayField",
           "TextField",
           "TextField",
           "BooleanField",
@@ -376,6 +420,44 @@ class ReservationRequestsFieldNames extends StandardFieldNames {
 
 class ReservationRequestsContractFieldNames extends StandardFieldNames {
   ReservationRequestsContractFieldNames()
+      : super(fieldNames: [
+          "Browar komercyjny",
+          "Ilość produkowanego piwa",
+          "Cena",
+          "Pozwala na dzielenie sektorów",
+          // "Osoby upoważnione do wstępu",
+          // "Maszyny"
+        ], jsonFieldNames: [
+          "production_brewery",
+          "brew_size",
+          "price",
+          "allows_sector_share",
+          "authorised_workers",
+          // "equipment_reservation_requests",
+        ], fieldNamesTable: [
+          "Id",
+          "Browar komercyjny",
+          "Ilość produkowanego piwa",
+          "Cena",
+          "Pozwala na dzielenie sektorów",
+          "Operacje",
+        ], jsonFieldNamesTable: [
+          "id",
+          "production_brewery",
+          "brew_size",
+          "price",
+          "allows_sector_share",
+        ], fieldTypes: [
+          "DisplayField",
+          "TextField",
+          "TextField",
+          "BooleanField",
+          "TextField",
+        ], errorMessages: {});
+}
+
+class AddReservationRequestFieldNames extends StandardFieldNames {
+  AddReservationRequestFieldNames()
       : super(fieldNames: [
     "Browar komercyjny",
     "Ilość produkowanego piwa",
@@ -392,23 +474,23 @@ class ReservationRequestsContractFieldNames extends StandardFieldNames {
     // "equipment_reservation_requests",
   ], fieldNamesTable: [
     "Id",
-    "Browar kontraktowy",
+    "Browar komercyjny",
     "Ilość produkowanego piwa",
     "Cena",
     "Pozwala na dzielenie sektorów",
     "Operacje",
   ], jsonFieldNamesTable: [
     "id",
-    "contract_brewery",
+    "production_brewery",
     "brew_size",
     "price",
     "allows_sector_share",
   ], fieldTypes: [
-    "TextField",
+    "DisplayField",
     "TextField",
     "TextField",
     "BooleanField",
-    "TextField",
+    "MultiEnumField",
   ], errorMessages: {});
 }
 
@@ -453,7 +535,7 @@ class ReservationsCommercialFieldNames extends StandardFieldNames {
           "Ilość produkowanego piwa",
           "Cena",
           "Pozwala na dzielenie sektorów",
-          "Osoby upoważnione do wstępu",
+          // "Osoby upoważnione do wstępu",
           // "Maszyny"
         ], jsonFieldNames: [
           "reservation_id",
@@ -476,7 +558,14 @@ class ReservationsCommercialFieldNames extends StandardFieldNames {
           "brew_size",
           "price",
           "allows_sector_share",
-        ], fieldTypes: [], errorMessages: {});
+        ], fieldTypes: [
+          "TextField",
+          "DisplayField",
+          "TextField",
+          "TextField",
+          "BooleanField",
+          "TextField",
+        ], errorMessages: {});
 }
 
 class ReservationsContractFieldNames extends StandardFieldNames {
@@ -487,7 +576,7 @@ class ReservationsContractFieldNames extends StandardFieldNames {
           "Ilość produkowanego piwa",
           "Cena",
           "Pozwala na dzielenie sektorów",
-          "Osoby upoważnione do wstępu",
+          // "Osoby upoważnione do wstępu",
           // "Maszyny"
         ], jsonFieldNames: [
           "reservation_id",
@@ -523,36 +612,55 @@ class ReservationsContractFieldNames extends StandardFieldNames {
 class RecipesFieldNames extends StandardFieldNames {
   RecipesFieldNames()
       : super(fieldNames: [
+          "Nazwa",
           "Typ piwa",
-          "Treść",
+          "Zacieranie",
+          "Filtracja",
+          "Gotowanie",
+          "Fermentacja",
+          "Leżakowanie",
         ], jsonFieldNames: [
+          "name",
           "beer_type",
-          "recipe_body",
+          "mashing_body",
+          "lautering_body",
+          "boiling_body",
+          "fermentation_body",
+          "lagerring_body"
         ], fieldNamesTable: [
           "Id",
+          "Nazwa",
           "Typ piwa",
           "Operacje",
         ], jsonFieldNamesTable: [
           "recipe_id",
+          "name",
           "beer_type",
         ], fieldTypes: [
+          "TextField",
           "EnumField",
-          "TextField"
+          "LargeTextField",
+          "LargeTextField",
+          "LargeTextField",
+          "LargeTextField",
+          "LargeTextField",
         ], errorMessages: {
-          "beer_type": {
-            "cannot be empty":
-            "Typ piwa nie może być pusty",
-            r'Invalid pk "\d+" - object does not exist.': r'Niewłaściwy klucz typu piwa',
+          "name": {
+            "This field may not be blank.": "Nazwa nie może być pusta",
           },
-          "recipe_body": "Treść nie może mieć więcej niż 2048 znaków."
+          "beer_type": {
+            "This field is required.": "Typ piwa nie może być pusty",
+            r'Invalid pk "\d+" - object does not exist.':
+                r'Niewłaściwy klucz typu piwa',
+          },
         }, fetchOptions: [
           {
             "endpoint": "/beer-types/",
             "displayField": "name",
             "apiValueField": "beer_type_id",
             "enumKey": "beer_type",
-          }]
-  );
+          }
+        ]);
 }
 
 class RegistrationRequestsFieldNames extends StandardFieldNames {
@@ -606,17 +714,84 @@ class StatisticsFieldNames extends StandardFieldNames {
 
 class StatisticsSumFieldNames extends StandardFieldNames {
   StatisticsSumFieldNames()
+      : super(
+            fieldNames: [
+              "Liczba browarów kontraktowych",
+              "Liczba browarów komercyjnych",
+              "Sumaryczna ilość wyprodukowanego piwa",
+              "Sumaryczna ilość piwa w produkcji",
+              "Sumaryczny % nieudanych prcoesów wykonywania piwa",
+            ],
+            jsonFieldNames: [
+              "all_contract",
+              "all_production",
+              "total_beer_produced",
+              "total_beer_in_production",
+              "total_failed_percentage",
+            ],
+            fieldNamesTable: [],
+            jsonFieldNamesTable: [],
+            fieldTypes: [],
+            errorMessages: {});
+}
+
+class BreweryDataFieldNames extends StandardFieldNames {
+  BreweryDataFieldNames()
       : super(fieldNames: [
-          "Liczba browarów kontraktowych",
-          "Liczba browarów komercyjnych",
-          "Sumaryczna ilość wyprodukowanego piwa",
-          "Sumaryczna ilość piwa w produkcji",
-          "Sumaryczny % nieudanych prcoesów wykonywania piwa",
+          "Id",
+          "Nazwa",
+          "NIP",
+          "Ph wody",
         ], jsonFieldNames: [
-          "all_contract",
-          "all_production",
-          "total_beer_produced",
-          "total_beer_in_production",
-          "total_failed_percentage",
-        ], fieldNamesTable: [], jsonFieldNamesTable: [], fieldTypes: [], errorMessages: {});
+          "brewery_id",
+          "name",
+          "nip",
+          "water_ph",
+        ], fieldNamesTable: [
+          "Id",
+          "Nazwa",
+          "NIP",
+          "Ph wody",
+        ], jsonFieldNamesTable: [
+          "brewery_id",
+          "name",
+          "nip",
+          "water_ph",
+        ], fieldTypes: [
+          "TextField",
+          "TextField",
+          "TextField",
+          "TextField",
+        ], errorMessages: {});
+}
+
+class WorkerFieldNames extends StandardFieldNames {
+  WorkerFieldNames()
+      : super(fieldNames: [
+          "Id pracownika",
+          "Imię",
+          "Nazwisko",
+          "Unikalny identyfikator",
+        ], jsonFieldNames: [
+          "id",
+          "first_name",
+          "last_name",
+          "identificator",
+        ], fieldNamesTable: [
+          "Id pracownika",
+          "Imię",
+          "Nazwisko",
+          "Unikalny identyfikator",
+          "Operacje",
+        ], jsonFieldNamesTable: [
+          "id",
+          "first_name",
+          "last_name",
+          "identificator",
+        ], fieldTypes: [
+          "TextField",
+          "TextField",
+          "TextField",
+          "TextField",
+        ], errorMessages: {});
 }

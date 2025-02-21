@@ -17,9 +17,25 @@ class ReservationRequestAddPage extends AddEditPageTemplate {
               return CommercialOffersPage();
             },
             navigateToCancelIsTablePage: true,
-            fieldNames: ReservationRequestsContractFieldNames().fieldNames,
-            jsonFieldNames: ReservationRequestsContractFieldNames().jsonFieldNames,
-            fieldTypes: ReservationRequestsContractFieldNames().fieldTypes,
-            fieldEditable: [false, true, false, false, true],
+            fieldNames: AddReservationRequestFieldNames().fieldNames,
+            jsonFieldNames: AddReservationRequestFieldNames().jsonFieldNames,
+            fieldTypes: AddReservationRequestFieldNames().fieldTypes,
+            fieldEditable: [false, false, false, false, true],
+            fetchOptions: [
+              {
+                "endpoint": "/workers/",
+                "displayField": "first_name",
+                "apiValueField": "id",
+                "enumKey": "authorised_workers",
+              },
+              {
+                "endpoint": "/breweries/",
+                "displayField": "name",
+                "apiValueField": "brewery_id",
+                "enumKey": "production_brewery",
+              },
+            ]
+
+            ,
             elementData: elementData);
 }

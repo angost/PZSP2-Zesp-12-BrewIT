@@ -26,7 +26,8 @@ class CommercialOffersPage extends TablePageTemplate {
             apiString: "/breweries/",
             jsonFields: CommercialOffersFieldNames().jsonFieldNamesTable,
             passedElements: filteredElements,
-            filtersPanel: FiltersPanel(filtersData));
+            filtersPanel: FiltersPanel(filtersData),
+            hideFirstField: true);
 }
 
 class FiltersPanel extends StatefulWidget {
@@ -71,7 +72,7 @@ class _FiltersPanelState extends State<FiltersPanel> {
               customErrorHandler: handleMultipleErrors,
             ),
             MainButton(
-              "Anuluj",
+              "Wyczyść",
               type: "secondary_small",
               navigateToPage: () {
                 return CommercialOffersPage({});

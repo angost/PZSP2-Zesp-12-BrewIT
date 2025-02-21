@@ -76,10 +76,12 @@ class MainButton extends StatelessWidget {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return navigateToPage!();
                   }));
-                } else {
+                }else if (apiCallType == "put" || apiCallType == "post") {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return navigateToPage!(dataForPage);
+                  return navigateToPage!(dataForPage);
                   }));
+                } else {
+                  showErrorDialog(context, "Navigation failed: No valid page.");
                 }
               } else {
                 print("An error occured");
@@ -92,17 +94,17 @@ class MainButton extends StatelessWidget {
               }
             }
           } else if (navigateToPage != null) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              if (dataForPage != null) {
-                try {
-                  return navigateToPage!(dataForPage);
-                } catch (e) {
-                  return navigateToPage!();
-                }
-              } else {
-                return navigateToPage!();
-              }
-            }));
+            final nextPage = dataForPage != null
+                ? navigateToPage!(dataForPage)
+                : navigateToPage!();
+            if (nextPage != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => nextPage),
+              );
+            } else {
+              // showErrorDialog(context, "Navigation failed: No valid page.");
+            }
           } else if (pop) {
             Navigator.pop(context);
           } else if (customOnPressed != null) {
@@ -114,4 +116,23 @@ class MainButton extends StatelessWidget {
             : typeToStyle["default"]!.style,
         child: Text(content));
   }
+
+  void showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Error"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 }

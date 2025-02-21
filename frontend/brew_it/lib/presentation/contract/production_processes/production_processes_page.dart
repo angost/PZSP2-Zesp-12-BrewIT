@@ -37,5 +37,6 @@ class ProductionProcessesPage extends TablePageTemplate {
               "reservation": (elementData) => ReservationDetailsPage(elementData),
               "recipe": (elementData) => RecipeDetailsPage(elementData),
             },
+            dateFields: ["start_date", "end_date"],
             jsonFields: ProductionProcessesFieldNames().jsonFieldNamesTable);
 }

@@ -69,6 +69,13 @@ class Brewery(models.Model):
         db_table = 'brewery'
 
 
+class Worker(models.Model):
+    first_name = models.CharField(max_length=32)
+    last_name = models.CharField(max_length=32)
+    identificator = models.CharField(max_length=32)
+    brewery = models.ForeignKey(Brewery, on_delete=models.CASCADE, related_name='workers')
+
+
 class RegistrationRequest(models.Model):
     email = models.EmailField(_("email address"))
     role = models.CharField(
@@ -119,9 +126,14 @@ class Equipment(models.Model):
 
 class Recipe(models.Model):
     recipe_id = models.AutoField(primary_key=True)
-    recipe_body = models.CharField(max_length=2048, blank=True, null=True)
+    name = models.CharField(max_length=128)
+    mashing_body = models.CharField(max_length=2048, blank=True, null=True)
+    lautering_body = models.CharField(max_length=2048, blank=True, null=True)
+    boiling_body = models.CharField(max_length=2048, blank=True, null=True)
+    fermentation_body = models.CharField(max_length=2048, blank=True, null=True)
+    lagerring_body = models.CharField(max_length=2048, blank=True, null=True)
     beer_type = models.ForeignKey(BeerType, models.DO_NOTHING)
-    contract_brewery = models.ForeignKey(Brewery, models.DO_NOTHING)
+    contract_brewery = models.ForeignKey(Brewery, on_delete=models.CASCADE, related_name='recipes')
 
     class Meta:
         managed = True
@@ -131,16 +143,15 @@ class Recipe(models.Model):
 class ReservationRequest(models.Model):
     price = models.IntegerField()
     brew_size = models.IntegerField()
-    authorised_workers = models.CharField(max_length=512, blank=True, null=True)
+    authorised_workers = models.ManyToManyField(Worker, related_name='reservation_requests')
     production_brewery = models.ForeignKey(Brewery, models.DO_NOTHING)
     contract_brewery = models.ForeignKey(Brewery, models.DO_NOTHING, related_name='reservation_requests_contract')
     allows_sector_share = models.BooleanField()
-    # uses_bacteria = models.BooleanField() idk
 
 
 class EqipmentReservationRequest(models.Model):
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
+    start_date = models.DateField()
+    end_date = models.DateField()
     equipment = models.ForeignKey(Equipment, models.DO_NOTHING, related_name='equipment_reservation_requests')
     reservation_request = models.ForeignKey(ReservationRequest, models.CASCADE, related_name='equipment_reservation_requests')
 
@@ -149,7 +160,7 @@ class Reservation(models.Model):
     reservation_id = models.AutoField(primary_key=True)
     price = models.IntegerField()
     brew_size = models.IntegerField()
-    authorised_workers = models.CharField(max_length=512, blank=True, null=True)
+    authorised_workers = models.ManyToManyField(Worker, related_name='reservations')
     production_brewery = models.ForeignKey(Brewery, models.DO_NOTHING, related_name='reservation_production_brewery')
     contract_brewery = models.ForeignKey(Brewery, models.DO_NOTHING, related_name='reservation_contract_brewery')
     allows_sector_share = models.BooleanField()
@@ -166,8 +177,8 @@ class EquipmentReservation(models.Model):
     selector = models.CharField(max_length=10,
                                 choices=EquipmentSelectors.choices,
                                 blank=False)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
+    start_date = models.DateField()
+    end_date = models.DateField()
     equipment = models.ForeignKey(Equipment, models.DO_NOTHING, related_name='reservations')
     reservation_id = models.ForeignKey(Reservation, models.CASCADE, blank=True, null=True, related_name='equipment_reservations')
 
@@ -178,12 +189,16 @@ class EquipmentReservation(models.Model):
 
 class ExecutionLog(models.Model):
     log_id = models.AutoField(primary_key=True)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField(blank=True, null=True)
+    start_date = models.DateField()
+    end_date = models.DateField(blank=True, null=True)
     is_successful = models.BooleanField(blank=True, null=True)
-    log = models.CharField(max_length=2048, blank=True, null=True)
+    mashing_log = models.CharField(max_length=2048, blank=True, null=True)
+    lautering_log = models.CharField(max_length=2048, blank=True, null=True)
+    boiling_log = models.CharField(max_length=2048, blank=True, null=True)
+    fermentation_log = models.CharField(max_length=2048, blank=True, null=True)
+    lagerring_log = models.CharField(max_length=2048, blank=True, null=True)
     recipe = models.ForeignKey('Recipe', models.DO_NOTHING)
-    reservation = models.ForeignKey('Reservation', models.DO_NOTHING, related_name='execution_logs')
+    reservation = models.ForeignKey('Reservation', on_delete=models.CASCADE, related_name='execution_logs')
 
     class Meta:
         managed = True

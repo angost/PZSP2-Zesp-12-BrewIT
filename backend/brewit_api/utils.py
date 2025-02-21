@@ -16,54 +16,55 @@ def filter_equipment(parameters: dict):
     # allows_sector_share
     # package_type
 
-    equimpment = Equipment.objects.all()
+    equipment = Equipment.objects.select_related('sector', 'brewery').prefetch_related('vat_packaging', 'reservations')
 
-    equimpment = equimpment.filter(
-        Q(capacity__gte=parameters['capacity']) &
-        Q(selector=parameters['selector'])
-    )
-
+    filters = Q()
+    if parameters.get('selector'):
+        filters &= Q(selector=parameters['selector'])
+    if parameters.get('capacity'):
+        filters &= Q(capacity__gte=parameters['capacity'])
     if parameters.get('uses_bacteria'):
-        equimpment = equimpment.filter(sector__allows_bacteria=True)
-
+        filters &= Q(sector__allows_bacteria=True)
     if parameters.get('production_brewery'):
-        equimpment = equimpment.filter(brewery=parameters['production_brewery'])
-
+        filters &= Q(brewery=parameters['production_brewery'])
     if parameters.get('selector') == Equipment.EquipmentSelectors.VAT.value:
-        equimpment = equimpment.filter(
-            Q(vat_packaging__packaging_type=parameters['package_type']) &
-            Q(min_temperature__lte=parameters['min_temperature']) &
-            Q(max_temperature__gte=parameters['max_temperature'])
-        )
+        if parameters.get('min_temperature'):
+            filters &= Q(min_temperature__lte=parameters['min_temperature'])
+        if parameters.get('max_temperature'):
+            filters &= Q(max_temperature__gte=parameters['max_temperature'])
+        if parameters.get('package_type'):
+            filters &= Q(vat_packaging__packaging_type=parameters['package_type'])
 
-    alredy_reserved = equimpment.filter(
-        Q(reservations__start_date__lt=parameters['end_date']) &
-        Q(reservations__end_date__gt=parameters['start_date'])
-    ).distinct().values_list('equipment_id', flat=True)
+    equipment = equipment.filter(filters).distinct()
 
-    equimpment = equimpment.exclude(equipment_id__in=alredy_reserved)
+    if parameters.get('start_date') and parameters.get('end_date'):
+        alredy_reserved = equipment.filter(
+            Q(reservations__start_date__lt=parameters['end_date']) &
+            Q(reservations__end_date__gt=parameters['start_date'])
+        ).distinct().values_list('equipment_id', flat=True)
 
-    # exlude sectors, where there is reservation made by another brewery
-    if not parameters['allows_sector_share']:
-        occupied_sectors = EquipmentReservation.objects.filter(
-            Q(start_date__lt=parameters['end_date']) &
-            Q(end_date__gt=parameters['start_date'])
-        ).exclude(
-            reservation_id__contract_brewery=parameters['contract_brewery']
-        ).values_list('equipment__sector_id', flat=True)
-    else:
-        # exlude sectors, where there is reservation with allows_sector_share=False made by another brewery
-        occupied_sectors = EquipmentReservation.objects.filter(
-            Q(start_date__lt=parameters['end_date']) &
-            Q(end_date__gt=parameters['start_date']) &
-            Q(reservation_id__allows_sector_share=False)
-        ).exclude(
-            reservation_id__contract_brewery=parameters['contract_brewery']
-        ).values_list('equipment__sector_id', flat=True)
+        equipment = equipment.exclude(equipment_id__in=alredy_reserved)
 
-    equimpment = equimpment.exclude(sector_id__in=occupied_sectors)
+        # exlude sectors, where there is reservation made by another brewery
+        if parameters.get('allows_sector_share') is False:
+            occupied_sectors = EquipmentReservation.objects.filter(
+                Q(start_date__lt=parameters['end_date']) &
+                Q(end_date__gt=parameters['start_date'])
+            ).exclude(
+                reservation_id__contract_brewery=parameters['contract_brewery']
+            ).values_list('equipment__sector_id', flat=True)
+        else:
+            # exlude sectors, where there is reservation with allows_sector_share=False made by another brewery
+            occupied_sectors = EquipmentReservation.objects.filter(
+                Q(start_date__lt=parameters['end_date']) &
+                Q(end_date__gt=parameters['start_date']) &
+                Q(reservation_id__allows_sector_share=False)
+            ).exclude(
+                reservation_id__contract_brewery=parameters['contract_brewery']
+            ).values_list('equipment__sector_id', flat=True)
+        equipment = equipment.exclude(sector_id__in=occupied_sectors)
 
-    return equimpment
+    return equipment
 
 
 def filter_breweries(parameters: dict):
@@ -87,26 +88,26 @@ def filter_breweries(parameters: dict):
     # contract_brewery
 
     vat_parameters = {
-        'start_date': parameters['vat_start_date'],
-        'end_date': parameters['vat_end_date'],
-        'capacity': parameters['vat_capacity'],
-        'min_temperature': parameters['vat_min_temperature'],
-        'max_temperature': parameters['vat_max_temperature'],
-        'uses_bacteria': parameters['uses_bacteria'],
+        'start_date': parameters.get('vat_start_date'),
+        'end_date': parameters.get('vat_end_date'),
+        'capacity': parameters.get('vat_capacity'),
+        'min_temperature': parameters.get('vat_min_temperature'),
+        'max_temperature': parameters.get('vat_max_temperature'),
+        'uses_bacteria': parameters.get('uses_bacteria'),
         'selector': Equipment.EquipmentSelectors.VAT.value,
-        'allows_sector_share': parameters['allows_sector_share'],
-        'package_type': parameters['vat_package_type'],
-        'contract_brewery': parameters['contract_brewery'],
+        'allows_sector_share': parameters.get('allows_sector_share'),
+        'package_type': parameters.get('vat_package_type'),
+        'contract_brewery': parameters.get('contract_brewery'),
     }
 
     brewset_parameters = {
-        'start_date': parameters['brewset_start_date'],
-        'end_date': parameters['brewset_end_date'],
-        'capacity': parameters['brewset_capacity'],
-        'uses_bacteria': parameters['uses_bacteria'],
+        'start_date': parameters.get('brewset_start_date'),
+        'end_date': parameters.get('brewset_end_date'),
+        'capacity': parameters.get('brewset_capacity'),
+        'uses_bacteria': parameters.get('uses_bacteria'),
         'selector': Equipment.EquipmentSelectors.BREWSET.value,
-        'allows_sector_share': parameters['allows_sector_share'],
-        'contract_brewery': parameters['contract_brewery'],
+        'allows_sector_share': parameters.get('allows_sector_share'),
+        'contract_brewery': parameters.get('contract_brewery'),
     }
 
     available_vats = filter_equipment(vat_parameters)
@@ -118,10 +119,12 @@ def filter_breweries(parameters: dict):
     available_breweries = Brewery.objects.filter(
         brewery_id__in=set(breweries_with_vats).intersection(breweries_with_brewsets)
     )
-    available_breweries = available_breweries.filter(
-        Q(water_ph__gte=parameters['water_ph_min']) &
-        Q(water_ph__lte=parameters['water_ph_max'])
-    )
+    brewery_filters = Q()
+    if parameters.get('water_ph_min'):
+        brewery_filters &= Q(water_ph__gte=parameters['water_ph_min'])
+    if parameters.get('water_ph_max'):
+        brewery_filters &= Q(water_ph__lte=parameters['water_ph_max'])
+    available_breweries = available_breweries.filter(brewery_filters)
 
     return available_breweries
 

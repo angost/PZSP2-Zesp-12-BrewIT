@@ -7,7 +7,7 @@ class ReservationRequestsPage extends TablePageTemplate {
   ReservationRequestsPage({super.key})
       : super(
             title: "Prośby o rezerwację:",
-            headers: ReservationRequestsFieldNames().fieldNamesTable,
+            headers: ReservationRequestsCommercialFieldNames().fieldNamesTable,
             options: [
               MyIconButton(
                 type: "info",
@@ -34,6 +34,14 @@ class ReservationRequestsPage extends TablePageTemplate {
               ),
             ],
             apiString: "/reservation-requests/",
+            fetchDisplay: [
+              {
+                "fieldKey": "contract_brewery",
+                "endpoint": "/breweries/",
+                "idField": "brewery_id",
+                "displayField": "name",
+              },
+            ],
             hideFirstField: true,
-            jsonFields: ReservationRequestsFieldNames().jsonFieldNamesTable);
+            jsonFields: ReservationRequestsCommercialFieldNames().jsonFieldNamesTable);
 }

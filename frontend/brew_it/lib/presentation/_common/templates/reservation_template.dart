@@ -8,22 +8,22 @@ import 'package:brew_it/injection_container.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
-class DetailsAddEditPageTemplate extends StatefulWidget {
-  DetailsAddEditPageTemplate(
-      {required this.title,
-      this.buttons,
-      this.options,
-      required this.fieldNames,
-      required this.jsonFieldNames,
-      this.fieldEditable,
-      this.fieldTypes,
-      this.elementData,
-      this.enumOptions,
-      this.fetchOptions,
-      this.fetchDisplay,
-      this.displayValues,
-        this.hideFirstField = false,
-      super.key});
+class ReservationTemplate extends StatefulWidget {
+  ReservationTemplate({
+    required this.title,
+    this.buttons,
+    this.options,
+    required this.fieldNames,
+    required this.jsonFieldNames,
+    this.fieldEditable,
+    this.fieldTypes,
+    this.elementData,
+    this.enumOptions,
+    this.fetchOptions,
+    this.fetchDisplay,
+    this.displayValues,
+    super.key,
+  });
 
   final String title;
   final List<MainButton>? buttons;
@@ -35,31 +35,44 @@ class DetailsAddEditPageTemplate extends StatefulWidget {
   Map<String, List<Map<String, String>>>? enumOptions;
   final List<Map<String, String>>? fetchOptions;
   final List<Map<String, String>>? fetchDisplay;
-  final bool hideFirstField;
   Map<String, String>? displayValues;
   Map? elementData;
 
   @override
-  State<DetailsAddEditPageTemplate> createState() =>
-      _DetailsAddEditPageTemplateState();
+  State<ReservationTemplate> createState() =>
+      _ReservationTemplateState();
 }
 
-class _DetailsAddEditPageTemplateState
-    extends State<DetailsAddEditPageTemplate> {
+class _ReservationTemplateState extends State<ReservationTemplate> {
   late Map<dynamic, dynamic> elementData;
+  List<Map<String, dynamic>> vatReservations = [];
+  List<Map<String, dynamic>> brewsetReservations = [];
+  List<Map<String, dynamic>> authorizedWorkers = [];
 
   @override
   void initState() {
     super.initState();
-    widget.enumOptions ??= {};
+    widget.enumOptions ??= {
+      'selector': [
+        {'display': 'Brewing', 'apiValue': 'BREW'},
+        {'display': 'Cleaning', 'apiValue': 'CLEAN'},
+      ]
+    };
     widget.displayValues ??= {};
+    elementData = widget.elementData ?? {};
+
+    // Initialize equipment reservations and workers
+    if (elementData['equipment_reservations'] != null) {
+      loadEquipmentDetails();
+    } else if (elementData['equipment_reservation_requests'] != null)
+      loadEquipmentDetailsReservations();
+
+    authorizedWorkers = List<Map<String, dynamic>>.from(
+        elementData['authorised_workers'] ?? []);
+
     if (widget.fetchOptions != null) {
       for (Map<String, String> fetchMap in widget.fetchOptions!) {
-        if (fetchMap['endpoint'] == "/workers/") {
-          fetchWorkerOptions(fetchMap);
-        } else {
-          fetchObjectOptions(fetchMap);
-        }
+        fetchObjectOptions(fetchMap);
       }
     }
     if (widget.fetchDisplay != null) {
@@ -67,7 +80,157 @@ class _DetailsAddEditPageTemplateState
         fetchFieldDisplayValue(config: fetchMap);
       }
     }
-    elementData = widget.elementData ?? {};
+  }
+
+  Future<void> loadEquipmentDetails() async {
+    final reservations = elementData['equipment_reservations'] as List;
+
+    for (var reservation in reservations) {
+      try {
+        final response = await getIt<Dio>().get('/equipment/${reservation['equipment']}');
+
+        if (response.statusCode == 200) {
+          final equipmentData = response.data;
+          // Add equipment details to the reservation
+          reservation['equipment_type'] = equipmentData['selector'];
+          reservation['equipment_name'] = equipmentData['name'];
+          reservation['equipment_capacity'] = equipmentData['capacity'].toString();
+
+          setState(() {
+            if (equipmentData['selector'] == 'VAT') {
+              vatReservations.add(reservation);
+            } else if (equipmentData['selector'] == 'BREWSET') {
+              brewsetReservations.add(reservation);
+            }
+          });
+        }
+      } catch (e) {
+        print('Error fetching equipment details for ID ${reservation['equipment']}: $e');
+      }
+    }
+  }
+
+  Future<void> loadEquipmentDetailsReservations() async {
+    final reservations = elementData['equipment_reservation_requests'] as List;
+
+    for (var reservation in reservations) {
+      try {
+        final response = await getIt<Dio>().get('/equipment/${reservation['equipment']}');
+
+        if (response.statusCode == 200) {
+          final equipmentData = response.data;
+          // Add equipment details to the reservation
+          reservation['equipment_type'] = equipmentData['selector'];
+          reservation['equipment_name'] = equipmentData['name'];
+          reservation['equipment_capacity'] = equipmentData['capacity'].toString();
+
+          setState(() {
+            if (equipmentData['selector'] == 'VAT') {
+              vatReservations.add(reservation);
+            } else if (equipmentData['selector'] == 'BREWSET') {
+              brewsetReservations.add(reservation);
+            }
+          });
+        }
+      } catch (e) {
+        print('Error fetching equipment details for ID ${reservation['equipment']}: $e');
+      }
+    }
+  }
+
+  Widget buildEquipmentReservationSection(
+      String title, List<Map<String, dynamic>> reservations) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 8),
+        ...reservations.map((reservation) => Card(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Sprzęt: ${reservation['equipment_name']} (Pojemność: ${reservation['equipment_capacity']})',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Visibility(
+                      visible: widget.elementData?['equipment_reservations'] != null,
+                      child: Expanded(
+                        child: EnumField(
+                          label: 'Typ',
+                          jsonFieldName: 'selector',
+                          options: widget.enumOptions?['selector'] ?? [],
+                          selectedValue: reservation['selector'] ?? '',
+                          editable: false,
+                          onChanged: (newValue) {
+                            setState(() {
+                              reservation['selector'] = newValue;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: DatePickerField(
+                        label: 'Początek',
+                        jsonFieldName: 'start_date',
+                        initialValue: reservation['start_date'] ?? '',
+                        editable: false,
+                        onSaved: (newValue) {
+                          reservation['start_date'] = newValue;
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: DatePickerField(
+                        label: 'Koniec',
+                        jsonFieldName: 'end_date',
+                        initialValue: reservation['end_date'] ?? '',
+                        editable: false,
+                        onSaved: (newValue) {
+                          reservation['end_date'] = newValue;
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        )),
+      ],
+    );
+  }
+
+  Widget buildWorkersList() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Authorized Workers',
+            style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 8),
+        ListView.builder(
+          shrinkWrap: true,
+          itemCount: authorizedWorkers.length,
+          itemBuilder: (context, index) {
+            final worker = authorizedWorkers[index];
+            return Card(
+              child: ListTile(
+                title: Text('${worker['first_name']} ${worker['last_name']}'),
+                subtitle: Text('ID: ${worker['identificator']}'),
+              ),
+            );
+          },
+        ),
+      ],
+    );
   }
 
   @override
@@ -78,7 +241,7 @@ class _DetailsAddEditPageTemplateState
     if (widget.elementData != null && widget.elementData!.isNotEmpty) {
       fieldValues = List.generate(
           widget.jsonFieldNames.length,
-          (index) => widget.elementData![widget.jsonFieldNames[index]] != null
+              (index) => widget.elementData![widget.jsonFieldNames[index]] != null
               ? widget.elementData![widget.jsonFieldNames[index]].toString()
               : "");
     }
@@ -92,82 +255,56 @@ class _DetailsAddEditPageTemplateState
       }
     }
 
-    final fieldsWidgets = generateFieldsWidgets(fieldValues);
-    final filteredFieldsWidgets = [
-      for (int i = 0; i < fieldsWidgets.length; i++)
-        if (!(widget.hideFirstField && i == 0)) // Condition to exclude the first widget
-          fieldsWidgets[i],
-    ];
-
-    final splitIndex = (filteredFieldsWidgets.length / 2).round();
-
     return Scaffold(
-        appBar: MyAppBar(context),
-        body: Padding(
-          padding: const EdgeInsets.all(50),
-          child: Stack(
+      appBar: MyAppBar(context),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(50),
+        child: Form(
+          key: formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
+                  Text(widget.title,
+                      style: Theme.of(context).textTheme.titleSmall),
                   const Spacer(),
-                  Column(
-                    children: <Widget>[] +
-                        (widget.buttons ?? []) +
-                        [
-                          Row(
-                            children: widget.options ?? [],
-                          ),
-                          const Spacer()
-                        ],
-                  )
+                  ...?widget.buttons,
+                  Row(children: widget.options ?? []),
                 ],
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
+              const SizedBox(height: 24),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    flex: 1,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(widget.title,
-                            style: Theme.of(context).textTheme.titleSmall),
-                        const Spacer(),
+                        buildEquipmentReservationSection('Kadź', vatReservations),
+                        const SizedBox(height: 24),
+                        buildEquipmentReservationSection('Zestaw do warzenia', brewsetReservations),
                       ],
                     ),
                   ),
+                  const SizedBox(width: 24),
                   Expanded(
-                      flex: 8,
-                      child: Form(
-                          key: formKey,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children:
-                                      fieldsWidgets.sublist(0, splitIndex),
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 100,
-                              ),
-                              Expanded(
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: fieldsWidgets.sublist(
-                                      splitIndex, fieldsWidgets.length),
-                                ),
-                              ),
-                            ],
-                          )))
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        buildWorkersList(),
+                        const SizedBox(height: 24),
+                        ...generateFieldsWidgets(fieldValues),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   List<Widget> generateFieldsWidgets(List<String>? fieldValues) {
@@ -214,30 +351,6 @@ class _DetailsAddEditPageTemplateState
               },
             ),
           );
-        case "MultiEnumField":
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: MultiEnumField(
-              label: widget.fieldNames[index],
-              jsonFieldName: jsonFieldName,
-              options: widget.enumOptions?[jsonFieldName] ?? [],
-              selectedValues: fieldValues != null && fieldValues[index] is String
-                  ? (fieldValues[index] as String)
-                  .split(',')
-                  .where((val) => val.isNotEmpty) // Remove empty strings
-                  .map(int.parse) // Convert to integers
-                  .toList()
-                  : [],
-              editable: editable,
-              onChanged: (newValue) {
-                if (editable) {
-                  widget.elementData ??= {};
-                  widget.elementData![jsonFieldName] = newValue; // Save List<int>
-                }
-              },
-            ),
-          );
-
         case "BooleanField":
           widget.elementData![jsonFieldName] =
               fieldValues != null ? (fieldValues[index]) : "false";
@@ -367,25 +480,6 @@ class _DetailsAddEditPageTemplateState
       }
     } catch (e) {
       print('Error fetching display value for $fieldKey: $e');
-    }
-  }
-  Future<void> fetchWorkerOptions(Map<String, String> config) async {
-    try {
-      final response = await getIt<Dio>().get(config['endpoint']!);
-      if (response.statusCode == 200) {
-        final options = (response.data as List)
-            .map((item) => {
-          "display": "${item['first_name']} ${item['last_name']} \n identyfikator: ${item['identificator']}",
-          "apiValue": item[config['apiValueField']!].toString(),
-        })
-            .toList();
-        setState(() {
-          widget.enumOptions?[config['enumKey']!] = options;
-        });
-      }
-    } catch (e) {
-      print(
-          'Error fetching ${config['enumKey']} options from ${config['endpoint']}: $e');
     }
   }
 }

@@ -21,20 +21,24 @@ class MenuButton extends StatefulWidget {
     "recipes": const Icon(Icons.receipt_long),
     "registration_requests": const Icon(Icons.person_add_alt),
     "stats": const Icon(Icons.bar_chart_outlined),
+    "brewery_data": const Icon(Icons.person),
     "logout": const Icon(Icons.logout_rounded),
+    "workers": const Icon(Icons.person),
   };
 
   final typeToContent = {
     "machines": "Zarządzanie urządzeniami",
-    "sectors": "Twoje sektory",
-    "reservations": "Twoje rezerwacje",
+    "sectors": "Sektory",
+    "reservations": "Rezerwacje",
     "reservation_requests": "Prośby o rezerwację",
     "commercial_offers": "Oferta browarów komercyjnych",
     "production_processes": "Procesy wykonania piwa",
-    "recipes": "Twoje receptury",
+    "recipes": "Receptury",
     "registration_requests": "Prośby o rejestrację",
     "stats": "Statystyki",
+    "brewery_data": "Dane browaru",
     "logout": "Wyloguj się",
+    "workers": "Pracownicy",
   };
 
   @override

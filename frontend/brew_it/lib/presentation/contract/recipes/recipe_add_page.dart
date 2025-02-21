@@ -10,14 +10,14 @@ class RecipeAddPage extends AddEditPageTemplate {
             apiCall: "/recipes/",
             apiCallType: "post",
             navigateToPageSave: (Map elementData) {
-              return RecipeDetailsPage(elementData);
+              return RecipesPage();
             },
             navigateToPageCancel: () {
               return RecipesPage();
             },
             fieldNames: RecipesFieldNames().fieldNames,
             jsonFieldNames: RecipesFieldNames().jsonFieldNames,
-            fieldEditable: [true, true],
+            fieldEditable: [true, true, true, true, true, true, true],
             fieldTypes: RecipesFieldNames().fieldTypes,
             errorMessages: RecipesFieldNames().errorMessages,
             fetchOptions: RecipesFieldNames().fetchOptions,

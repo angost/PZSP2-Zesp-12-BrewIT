@@ -16,7 +16,18 @@ class ProductionProcessEditPage extends AddEditPageTemplate {
             },
             fieldNames: ProductionProcessesFieldNames().fieldNames,
             jsonFieldNames: ProductionProcessesFieldNames().jsonFieldNames,
-            fieldEditable: [false, false, false, false, true, true],
+            fieldEditable: [
+              false,
+              false,
+              false,
+              false,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+            ],
             fieldTypes: ProductionProcessesFieldNames().fieldTypes,
             elementData: elementData);
 }

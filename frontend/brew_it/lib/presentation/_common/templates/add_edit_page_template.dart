@@ -21,6 +21,7 @@ class AddEditPageTemplate extends DetailsAddEditPageTemplate {
         Map<String, List<Map<String, String>>>? enumOptions,
         List<Map<String, String>>? fetchOptions,
         List<Map<String, String>>? fetchDisplay,
+        bool hideFirstField = false,
       super.key})
       : super(
             title: title,
@@ -50,5 +51,6 @@ class AddEditPageTemplate extends DetailsAddEditPageTemplate {
             enumOptions: enumOptions,
             fetchOptions: fetchOptions,
             fetchDisplay: fetchDisplay,
+            hideFirstField: hideFirstField,
             elementData: elementData);
 }
